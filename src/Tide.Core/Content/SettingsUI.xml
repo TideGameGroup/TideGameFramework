@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XnaContent xmlns:ns="Microsoft.Xna.Framework">
+  <Asset Type="Tide.XMLSchema.FCanvas">
+    <ID>settings</ID>
+	  <root>0 0 0 0</root>
+	  <anchor>C</anchor>
+	  <parents>-1 -1 -1 -1 -1</parents>
+    <fonts>
+      <Item>RoentgenNbp</Item>
+      <Item>RoentgenNbp</Item>
+      <Item>RoentgenNbp</Item>
+      <Item>RoentgenNbp</Item>
+      <Item>RoentgenNbp</Item>
+    </fonts>
+    <IDs>
+      <Item>text1</Item>
+      <Item>slider1</Item>
+      <Item>text2</Item>
+      <Item>tickbox1</Item>
+      <Item>button1</Item>
+    </IDs>
+    <textures>
+      <Item>Textures/MenuUI</Item>
+      <Item>Textures/MenuUI</Item>
+      <Item>Textures/MenuUI</Item>
+      <Item>Textures/MenuUI</Item>
+      <Item>Textures/MenuUI</Item>
+	  </textures>
+	  <texts>
+      <Item>Volume</Item>
+      <Item></Item>
+      <Item>Fullscreen</Item>
+      <Item></Item>
+      <Item></Item>
+	  </texts>
+    <tooltips>
+      <Item></Item>
+      <Item></Item>
+      <Item></Item>
+      <Item></Item>
+      <Item></Item>
+    </tooltips>
+	  <rectangles>
+      -64 40 256 32
+      0 32 128 32
+      -64 104 32 32
+      0 96 32 32
+      256 256 32 32
+    </rectangles>
+    <alignments>
+      <Item>Right</Item>
+      <Item>Left</Item>
+      <Item>Right</Item>
+      <Item>Left</Item>
+      <Item>Left</Item>
+    </alignments>
+	  <sources>
+      0 0 0 0
+      64 32 32 32
+      0 0 0 0
+      192 32 32 32
+      32 32 32 32
+    </sources>
+    <colors>
+      FFB6B2A5
+      FFB6B2A5
+      FFB6B2A5
+      FFB6B2A5
+      FFB6B2A5
+      FFB6B2A5
+    </colors>
+    <highlightColors>
+      FFfafafa
+      FFfafafa
+      FFfafafa
+      FFfafafa
+      FFfafafa
+    </highlightColors>
+	  <widgetTypes>
+      <Item>text</Item>
+      <Item>slider</Item>
+      <Item>text</Item>
+      <Item>tickbox</Item>
+      <Item>button</Item>
+	  </widgetTypes>
+  </Asset>
+</XnaContent>
