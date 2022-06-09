@@ -22,7 +22,7 @@ namespace Tide.Core
         public List<List<Vector3>> positions           = new List<List<Vector3>>();
 
         protected string currentFunction = "";
-        protected int currentPage  = 0;
+        protected int currentPage  = -1;
         protected int deferredPage = 0;
 
         public ACinematicComponent(
@@ -49,6 +49,11 @@ namespace Tide.Core
         public void GoBack(GameTime gameTime)
         {
             deferredPage--;
+        }
+
+        public bool IsPlaying()
+        {
+            return currentPage != -1 && currentPage < bLocksInput.Count;
         }
 
         private void BindCinematic(int page, double time)
@@ -161,7 +166,7 @@ namespace Tide.Core
 
         public void Update(GameTime gameTime)
         {
-            if (currentPage != deferredPage)
+            if (currentPage >= 0 && currentPage != deferredPage)
             {
                 UnbindCinematicBindings(currentPage);
 
@@ -229,6 +234,7 @@ namespace Tide.Core
                 positions.Add(new List<Vector3>(array));
             }
 
+            currentPage = 0;
             BindCinematic(currentPage, 0.0);
             CinematicCanvas.SetWidgetText("text", texts[currentPage]);
         }

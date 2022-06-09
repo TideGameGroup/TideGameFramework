@@ -11,33 +11,34 @@ namespace Tide.Core
         private SpriteFont font;
         private int height = 900;
 
-        // State
         private RasterizerState rasterizerState;
-
         private RasterizerState rasterizerUIState;
 
-        // Profiling
         private UStatistics statistics = null;
 
         private Stopwatch updateStopwatch = null;
         private int width = 900;
         protected RenderTarget2D RenderTarget;
+        protected RenderTarget2D PostProcessTarget;
         public bool bDrawStats = true;
 
         public TGame()
         {
-            GraphicsDeviceManager = new GraphicsDeviceManager(this);
+            GraphicsDeviceManager = new GraphicsDeviceManager(this)
+            {
+                SynchronizeWithVerticalRetrace = false
+            };
             Window.ClientSizeChanged += new EventHandler<EventArgs>(OnResize);
+            IsFixedTimeStep = false;
         }
 
-        protected GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
-
         protected UContentManager ContentManager { get; private set; }
+        protected GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
+        protected UPostProcessStack PostProcessStack { get; private set; }
         protected UComponentGraph ScriptGraph { get; private set; }
         protected USettings Settings { get; private set; }
         protected SpriteBatch SpriteBatch { get; private set; }
 
-        // public
         public UView3D View3D { get; set; }
 
         [Conditional("DEBUG")]
@@ -72,7 +73,17 @@ namespace Tide.Core
                 parameters.DepthStencilFormat,
                 parameters.MultiSampleCount,
                 RenderTargetUsage.DiscardContents
-                );
+                ); 
+            
+            PostProcessTarget = new RenderTarget2D(GraphicsDevice,
+                 parameters.BackBufferWidth,
+                 parameters.BackBufferHeight,
+                 false,
+                 format,
+                 parameters.DepthStencilFormat,
+                 parameters.MultiSampleCount,
+                 RenderTargetUsage.DiscardContents
+                 );
         }
 
         private void SetFullscreen()
@@ -129,12 +140,22 @@ namespace Tide.Core
 
             base.Draw(gameTime);
 
+            PostProcessStack.DrawPostProcess(RenderTarget, RenderTarget, SpriteBatch, gameTime);
+            DrawToBackBuffer(RenderTarget);
+
+            // stats
+            drawStopwatch.Stop();
+            DrawStats(gameTime);
+        }
+
+        private void DrawToBackBuffer(RenderTarget2D renderTarget)
+        {
             GraphicsDevice.SetRenderTarget(null);
             GraphicsDevice.Clear(new Color(45, 45, 45, 1));
 
             SpriteBatch.Begin(0, BlendState.Opaque, SamplerState.PointClamp);
             PresentationParameters parameters = GraphicsDevice.PresentationParameters;
-            SpriteBatch.Draw(RenderTarget,
+            SpriteBatch.Draw(renderTarget,
                 new Rectangle(
                     0,
                     0,
@@ -143,10 +164,6 @@ namespace Tide.Core
                     ),
                 Color.White);
             SpriteBatch.End();
-
-            // stats
-            drawStopwatch.Stop();
-            DrawStats(gameTime);
         }
 
         protected override void Initialize()
@@ -159,9 +176,15 @@ namespace Tide.Core
             rasterizerState = new RasterizerState() { ScissorTestEnable = false };
             rasterizerUIState = new RasterizerState() { ScissorTestEnable = true };
             statistics = new UStatistics();
+
             View3D = new UView3D(GraphicsDevice.Viewport);
             ScriptGraph = new UComponentGraph();
+            PostProcessStack = new UPostProcessStack(ContentManager, GraphicsDevice);
             Settings = new USettings();
+
+            ScriptGraph.RegisterScript(PostProcessStack);
+            ScriptGraph.RegisterScript(Settings);
+            ScriptGraph.RegisterScript(statistics);
 
             settingChangedEvent fullscreenEvent = new settingChangedEvent(() =>
             {

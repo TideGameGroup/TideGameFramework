@@ -27,6 +27,36 @@ namespace Tide.Core
         public OnEvent OnRegisterComponent { get; set; }
         public OnEvent OnUnregisterComponent { get; set; }
 
+        /// <summary>
+        /// This function is syntactic sugar for checking passed values are non-null
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="t"></param>
+        /// <param name="o"></param>
+        protected static void NullCheck<T>(T t)
+        {
+            if (t == null)
+            { 
+                throw new ArgumentNullException(nameof(t));
+            }
+        }
+
+        /// <summary>
+        /// This function is syntactic sugar for checking passed values are non-null
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="t"></param>
+        /// <param name="o"></param>
+        protected static void TrySetDefault<T>(T t, out T o)
+        {
+            o = t ?? throw new ArgumentNullException(nameof(t));
+        }
+
+        protected static void TrySetOptional<T>(T t, out T o)
+        {
+            o = t;
+        }
+
         public UComponent RegisterChildComponent(UComponent child, int at = -1)
         {
             if (child == null) { return null; }
@@ -38,6 +68,7 @@ namespace Tide.Core
             child.Parent = this;
 
             at = (at == -1) ? Children.Count : at;
+            at = Math.Min(Children.Count, at);
             Children.Insert(at, child);
 
             OnRegisterChildComponent?.Invoke(child);

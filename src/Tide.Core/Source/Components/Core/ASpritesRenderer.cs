@@ -293,6 +293,13 @@ namespace Tide.Core
             return ID;
         }
 
+        public void OffsetSource(int i, int x, int y)
+        {
+            Rectangle r = sources[i];
+            r.Offset(x, y);
+            sources[i] = r;
+        }
+
         public void SetColor(int i, Color color)
         {
             colors[i] = color;

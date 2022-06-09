@@ -29,6 +29,9 @@ namespace Tide.Core
         protected Dictionary<string, int> widgetNameIndexMap = new Dictionary<string, int>();
         protected List<FSetting> widgetValues = new List<FSetting>();
 
+        public string hoverSound = "blip";
+        public string clickSound = "tick";
+
         public ACanvasComponent(UContentManager content, AInputComponent input, FCanvas canvas, EFocus focus = EFocus.GameUI, UAudio audio = null)
         {
             this.content = content ?? throw new ArgumentNullException(nameof(content));
@@ -154,7 +157,7 @@ namespace Tide.Core
             else
             {
                 frameHoveredWidgets.TryAdd(i, gameTime.TotalGameTime.TotalSeconds);
-                audio?.PlaySingle("Sounds/blip");
+                audio?.PlaySingle(hoverSound);
             }
         }
 
@@ -473,7 +476,7 @@ namespace Tide.Core
                     {
                         binding.Invoke(gameTime);
                     }
-                    audio?.PlaySingle("tick");
+                    audio?.PlaySingle(clickSound);
                 }
             }
         }

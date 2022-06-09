@@ -173,10 +173,6 @@ namespace Tide.Core
 
         internal static bool StaticBroadPhase(ACollider2DComponent iCollider, int i, ACollider2DComponent jCollider, int j)
         {
-            // check the two colliders are in adjacent cells
-            //int cellDeltaX = Math.Abs(iCollider.cells[iIndex].X - jCollider.cells[jIndex].X);
-            //int cellDeltaY = Math.Abs(iCollider.cells[iIndex].Y - jCollider.cells[jIndex].Y);
-
             GridCell a = GetCell(iCollider.transforms.positions[i]);
             GridCell b = GetCell(jCollider.transforms.positions[j]);
 

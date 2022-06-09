@@ -15,6 +15,8 @@ namespace Tide.Core
         protected List<double> timestamps = new List<double>();
         protected GameTime gameTime = null;
 
+        protected List<int> removeList = new List<int>();
+
         public AEntityComponent()
         {
             Transforms = new ATransform2D();
@@ -43,6 +45,17 @@ namespace Tide.Core
         }
 
         public bool RemoveAt(int i)
+        {
+            OnRemoveEntity?.Invoke(i);
+
+            Transforms.RemoveAt(i);
+            SpriteRenderer.RemoveAt(i);
+            timestamps.RemoveAt(i);
+
+            return true;
+        }
+
+        public bool RemoveAtSafe(int i)
         {
             OnRemoveEntity?.Invoke(i);
 
