@@ -7,8 +7,6 @@ namespace Tide.Core
 {
     public class TGame : Game
     {
-        private int designHeight = 720;
-        private int designWidth = 1280;
         private Stopwatch drawStopwatch = null;
         private SpriteFont font;
         private int height = 720;
@@ -25,8 +23,8 @@ namespace Tide.Core
         public Color clearColor = Color.AntiqueWhite;
         public int numPhysicsSubsteps = 2;
 
-        private Texture2D backdropTexture;
-        private Texture2D vignetteTexture;
+        private Texture2D backgroundTexture;
+        private Texture2D overlayTexture;
 
         public TGame()
         {
@@ -143,7 +141,10 @@ namespace Tide.Core
                 SamplerState.PointClamp,
                 null, null, null, null);
 
-            SpriteBatch.Draw(backdropTexture, GraphicsDevice.Viewport.Bounds, Color.White);
+            if (backgroundTexture != null)
+            {
+                SpriteBatch.Draw(backgroundTexture, GraphicsDevice.Viewport.Bounds, Color.White);
+            }
 
             foreach (UComponent script in ScriptGraph)
             {
@@ -163,7 +164,10 @@ namespace Tide.Core
                 }
             }
 
-            SpriteBatch.Draw(vignetteTexture, GraphicsDevice.Viewport.Bounds, Color.White);
+            if (overlayTexture != null)
+            {
+                SpriteBatch.Draw(overlayTexture, GraphicsDevice.Viewport.Bounds, Color.White);
+            }
 
             SpriteBatch.End();
 
@@ -171,8 +175,6 @@ namespace Tide.Core
 
             PostProcessStack.DrawPostProcess(RenderTarget, RenderTarget, SpriteBatch, gameTime);
             DrawToBackBuffer(RenderTarget);
-
-
 
             // stats
             drawStopwatch.Stop();
@@ -224,8 +226,8 @@ namespace Tide.Core
             ContentManager = new UContentManager(Content, GraphicsDevice);
             font = ContentManager.Load<SpriteFont>("Arial");
 
-            backdropTexture = ContentManager.Load<Texture2D>("back");
-            vignetteTexture = ContentManager.Load<Texture2D>("Vignette");
+            backgroundTexture = ContentManager.Load<Texture2D>("back");
+            overlayTexture = ContentManager.Load<Texture2D>("Vignette");
         }
 
         protected virtual void OnDraw2D(UView3D view3D, SpriteBatch spriteBatch, GameTime gameTime)
