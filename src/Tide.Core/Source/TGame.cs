@@ -19,6 +19,7 @@ namespace Tide.Core
         protected UStatistics statistics = null;
         public bool bDrawStats = true;
         public bool bFixedTimestep = true;
+        public bool bAllowUserResizing = true;
         public bool bVsync = false;
         public Color clearColor = Color.AntiqueWhite;
         public int numPhysicsSubsteps = 2;
@@ -34,8 +35,7 @@ namespace Tide.Core
             };
             Window.ClientSizeChanged += new EventHandler<EventArgs>(OnResize);
             IsFixedTimeStep = bFixedTimestep;
-
-            Window.AllowUserResizing = true;
+            Window.AllowUserResizing = bAllowUserResizing;
         }
 
         protected UContentManager ContentManager { get; private set; }
