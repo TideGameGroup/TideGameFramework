@@ -28,18 +28,22 @@ namespace Tide.Core
         public ACinematicComponent(
             UContentManager content,
             UInput input,
-            int page = 0
+            int page = -1
             )
         {
             this.input = new AInputComponent(input); 
 
             CinematicCanvas = new ACanvasComponent(content, this.input, content.Load<FCanvas>("Cinematic"), EFocus.Cinematic | EFocus.GameUI);
-
-            RegisterChildComponent(CinematicCanvas);
             canvases.Add("self", CinematicCanvas);
 
             currentPage  = page;
             deferredPage = page;
+
+            if (currentPage == -1)
+            {
+                CinematicCanvas.bIsActive = false;
+                CinematicCanvas.bIsVisible = false;
+            }
         }
 
         public void GoNext(GameTime gameTime)
@@ -187,12 +191,11 @@ namespace Tide.Core
                         CinematicCanvas.bIsActive  = true;
                         CinematicCanvas.SetWidgetText("text", texts[currentPage]);
                     }
-
-
                 }
                 else
                 {
                     UnregisterChildComponent(CinematicCanvas);
+                    //currentPage = -1;
                 }
             }
 
@@ -202,10 +205,26 @@ namespace Tide.Core
             }
         }
 
-
-
         /// <summary>
 
+        private string currentCinematic = "";
+
+        public void TryLoadCinematic(UContentManager content, string serialisedScriptPath)
+        {
+            if (currentPage > -1 && currentCinematic == serialisedScriptPath)
+            {
+                currentPage = 0;
+                deferredPage = 0;
+                RegisterChildComponent(CinematicCanvas);
+                BindCinematic(currentPage, 0.0);
+            }
+            else
+            {
+                Load(content, serialisedScriptPath);
+                RegisterChildComponent(CinematicCanvas);
+                currentCinematic = serialisedScriptPath;
+            }
+        }
 
         public void Load(UContentManager content, string serialisedScriptPath)
         {
@@ -224,6 +243,9 @@ namespace Tide.Core
             bindingTypes    = new List<bindingType>(cinematic.bindingType);
             bindings        = new List<string>(cinematic.bindings);
 
+            highlights.Clear();
+            positions.Clear();
+
             foreach (var array in cinematic.highlights)
             {
                 highlights.Add(new List<string>(array));
@@ -234,7 +256,10 @@ namespace Tide.Core
                 positions.Add(new List<Vector3>(array));
             }
 
+            CinematicCanvas.bIsActive = true;
+            CinematicCanvas.bIsVisible = true;
             currentPage = 0;
+            deferredPage = 0;
             BindCinematic(currentPage, 0.0);
             CinematicCanvas.SetWidgetText("text", texts[currentPage]);
         }

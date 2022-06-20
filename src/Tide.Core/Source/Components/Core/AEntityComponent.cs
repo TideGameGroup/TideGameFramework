@@ -33,10 +33,10 @@ namespace Tide.Core
         public EntityDelegate OnRemoveEntity { get; set; }
         public EntityUpdateDelegate OnUpdateEntity { get; set; }
 
-        public int Add(Vector3 position, string animation)
+        public int Add(Vector3 position, string animation, float scale = 1f)
         {
-            Transforms.Add(0, position);
-            SpriteRenderer.Add(animation);
+            Transforms.Add(0, position, scale);
+            SpriteRenderer.Add(animation, scale);
             timestamps.Add(gameTime != null ? gameTime.TotalGameTime.TotalSeconds : 0.0f);
 
             OnAddEntity?.Invoke(Transforms.Count - 1);
@@ -80,6 +80,12 @@ namespace Tide.Core
 
             Transforms.Load(content, entities.transform2D);
             SpriteRenderer.Load(content, entities.spriteRenderer);
+
+            for (int i = 0; i < Transforms.positions.Count; i++)
+            {
+                timestamps.Add(gameTime != null ? gameTime.TotalGameTime.TotalSeconds : 0.0f);
+                OnAddEntity?.Invoke(i);
+            }
         }
 
         public string Serialise(string path, ref Dictionary<string, ISerialisedInstanceData> serialisedSet)
@@ -90,8 +96,8 @@ namespace Tide.Core
 
             serialisedSet.Add(ID, new FEntities
             {
-                transform2D = Path.Combine(path, tID),
-                spriteRenderer = Path.Combine(path, sID),
+                transform2D = tID,
+                spriteRenderer = sID,
             }
             );
             return ID;

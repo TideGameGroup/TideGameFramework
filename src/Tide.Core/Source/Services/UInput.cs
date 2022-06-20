@@ -128,6 +128,12 @@ namespace Tide.Core
             keyBindings.Add(new FBinding(Keys.Q, "Q"));
             keyBindings.Add(new FBinding(Keys.E, "E"));
             keyBindings.Add(new FBinding(Keys.F, "focus"));
+            keyBindings.Add(new FBinding(Keys.Z, "z"));
+
+            keyBindings.Add(new FBinding(Keys.Up, "uparrow"));
+            keyBindings.Add(new FBinding(Keys.Down, "downarrow"));
+            keyBindings.Add(new FBinding(Keys.Left, "leftarrow"));
+            keyBindings.Add(new FBinding(Keys.Right, "rightarrow"));
 
             keyBindings.Add(new FBinding(Keys.D1, "1"));
             keyBindings.Add(new FBinding(Keys.D2, "2"));

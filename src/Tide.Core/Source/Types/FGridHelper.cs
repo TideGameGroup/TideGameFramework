@@ -1,7 +1,7 @@
 ﻿using System;
 using Tide.Core;
 
-namespace Grim.Core
+namespace Tide.Core
 {
     public class FGridHelper
     {

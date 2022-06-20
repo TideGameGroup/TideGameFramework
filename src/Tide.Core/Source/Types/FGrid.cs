@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Tide.Core;
 
-namespace Grim.Core
+namespace Tide.Core
 {
     public class FGrid<T> where T : struct
     {

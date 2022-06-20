@@ -12,9 +12,9 @@ namespace Tide.Core
 
         public AImposterSpritesRendererComponent(ATransform2D transforms, int angles)
         {
-            SpritesRenderer = new ASpritesRenderer(transforms);
+            SpriteRenderer = new ASpritesRenderer(transforms);
 
-            RegisterChildComponent(SpritesRenderer);
+            RegisterChildComponent(SpriteRenderer);
 
             this.transforms = transforms;
 
@@ -23,26 +23,26 @@ namespace Tide.Core
         }
 
         public int Count => transforms.Count;
-        public ASpritesRenderer SpritesRenderer { get; private set; }
+        public ASpritesRenderer SpriteRenderer { get; private set; }
 
         public int AddSprite(string defaultAnimation = "")
         {
-            return SpritesRenderer.Add(defaultAnimation);
+            return SpriteRenderer.Add(defaultAnimation);
         }
 
         public void AddSpriteAnimation(string name, int frames, int width, Texture2D texture, Rectangle source, bool shouldLoop = false)
         {
-            SpritesRenderer.AddSpriteAnimation(name, frames, width, texture, source, shouldLoop);
+            SpriteRenderer.AddSpriteAnimation(name, frames, width, texture, source, shouldLoop);
         }
 
         public void Play(int i, string name, int startFrame = 0, bool forceLoop = false, float exactStart = 0.0f, bool clampToFrameCount = true)
         {
-            SpritesRenderer.Play(i, name, startFrame, forceLoop, exactStart, clampToFrameCount);
+            SpriteRenderer.Play(i, name, startFrame, forceLoop, exactStart, clampToFrameCount);
         }
 
         public void SetShouldDraw(int i, bool val)
         {
-            SpritesRenderer.SetShouldDraw(i, val);
+            SpriteRenderer.SetShouldDraw(i, val);
         }
 
         public void Update(GameTime gameTime)
@@ -60,12 +60,12 @@ namespace Tide.Core
                 {
                     angleList[i] = a;
 
-                    SpritesRenderer.Play(
+                    SpriteRenderer.Play(
                         i,
-                        SpritesRenderer.GetPlaying(i),
-                        SpritesRenderer.GetAnimationData(i).frames * a,
-                        SpritesRenderer.GetLooping(i),
-                        SpritesRenderer.GetElapsedTime(i),
+                        SpriteRenderer.GetPlaying(i),
+                        SpriteRenderer.GetAnimationData(i).frames * a,
+                        SpriteRenderer.GetLooping(i),
+                        SpriteRenderer.GetElapsedTime(i),
                         false
                         );
                 }

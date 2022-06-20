@@ -81,6 +81,7 @@ namespace Tide.Core
             if (soundEventTable.ContainsKey(instance))
             {
                 settings.RemoveOnChangedCallback("volume", soundEventTable[instance]);
+                instance.Stop();
             }
         }
     }

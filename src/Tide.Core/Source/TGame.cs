@@ -7,29 +7,37 @@ namespace Tide.Core
 {
     public class TGame : Game
     {
+        private int designHeight = 720;
+        private int designWidth = 1280;
         private Stopwatch drawStopwatch = null;
         private SpriteFont font;
-        private int height = 900;
-
+        private int height = 720;
+        private int width = 1280;
         private RasterizerState rasterizerState;
         private RasterizerState rasterizerUIState;
-
-        private UStatistics statistics = null;
-
         private Stopwatch updateStopwatch = null;
-        private int width = 900;
-        protected RenderTarget2D RenderTarget;
         protected RenderTarget2D PostProcessTarget;
+        protected RenderTarget2D RenderTarget;
+        protected UStatistics statistics = null;
         public bool bDrawStats = true;
+        public bool bFixedTimestep = true;
+        public bool bVsync = false;
+        public Color clearColor = Color.AntiqueWhite;
+        public int numPhysicsSubsteps = 2;
+
+        private Texture2D backdropTexture;
+        private Texture2D vignetteTexture;
 
         public TGame()
         {
             GraphicsDeviceManager = new GraphicsDeviceManager(this)
             {
-                SynchronizeWithVerticalRetrace = false
+                SynchronizeWithVerticalRetrace = bVsync
             };
             Window.ClientSizeChanged += new EventHandler<EventArgs>(OnResize);
-            IsFixedTimeStep = false;
+            IsFixedTimeStep = bFixedTimestep;
+
+            Window.AllowUserResizing = true;
         }
 
         protected UContentManager ContentManager { get; private set; }
@@ -38,7 +46,6 @@ namespace Tide.Core
         protected UComponentGraph ScriptGraph { get; private set; }
         protected USettings Settings { get; private set; }
         protected SpriteBatch SpriteBatch { get; private set; }
-
         public UView3D View3D { get; set; }
 
         [Conditional("DEBUG")]
@@ -61,6 +68,24 @@ namespace Tide.Core
             SpriteBatch.End();
         }
 
+        private void DrawToBackBuffer(RenderTarget2D renderTarget)
+        {
+            GraphicsDevice.SetRenderTarget(null);
+            GraphicsDevice.Clear(clearColor);
+
+            SpriteBatch.Begin(0, BlendState.Opaque, SamplerState.PointClamp);
+            PresentationParameters parameters = GraphicsDevice.PresentationParameters;
+            SpriteBatch.Draw(renderTarget,
+                new Rectangle(
+                    0,
+                    0,
+                    parameters.BackBufferWidth,
+                    parameters.BackBufferHeight
+                    ),
+                Color.White);
+            SpriteBatch.End();
+        }
+
         private void RecreateRenderTarget()
         {
             PresentationParameters parameters = GraphicsDevice.PresentationParameters;
@@ -73,8 +98,8 @@ namespace Tide.Core
                 parameters.DepthStencilFormat,
                 parameters.MultiSampleCount,
                 RenderTargetUsage.DiscardContents
-                ); 
-            
+                );
+
             PostProcessTarget = new RenderTarget2D(GraphicsDevice,
                  parameters.BackBufferWidth,
                  parameters.BackBufferHeight,
@@ -110,13 +135,15 @@ namespace Tide.Core
             drawStopwatch.Restart();
 
             GraphicsDevice.SetRenderTarget(RenderTarget);
-            GraphicsDevice.Clear(new Color(45, 45, 45, 1));
+            GraphicsDevice.Clear(clearColor);
 
             SpriteBatch.Begin(
                 SpriteSortMode.Deferred,
                 BlendState.AlphaBlend,
-                SamplerState.LinearClamp,
+                SamplerState.PointClamp,
                 null, null, null, null);
+
+            SpriteBatch.Draw(backdropTexture, GraphicsDevice.Viewport.Bounds, Color.White);
 
             foreach (UComponent script in ScriptGraph)
             {
@@ -136,6 +163,8 @@ namespace Tide.Core
                 }
             }
 
+            SpriteBatch.Draw(vignetteTexture, GraphicsDevice.Viewport.Bounds, Color.White);
+
             SpriteBatch.End();
 
             base.Draw(gameTime);
@@ -143,27 +172,11 @@ namespace Tide.Core
             PostProcessStack.DrawPostProcess(RenderTarget, RenderTarget, SpriteBatch, gameTime);
             DrawToBackBuffer(RenderTarget);
 
+
+
             // stats
             drawStopwatch.Stop();
             DrawStats(gameTime);
-        }
-
-        private void DrawToBackBuffer(RenderTarget2D renderTarget)
-        {
-            GraphicsDevice.SetRenderTarget(null);
-            GraphicsDevice.Clear(new Color(45, 45, 45, 1));
-
-            SpriteBatch.Begin(0, BlendState.Opaque, SamplerState.PointClamp);
-            PresentationParameters parameters = GraphicsDevice.PresentationParameters;
-            SpriteBatch.Draw(renderTarget,
-                new Rectangle(
-                    0,
-                    0,
-                    parameters.BackBufferWidth,
-                    parameters.BackBufferHeight
-                    ),
-                Color.White);
-            SpriteBatch.End();
         }
 
         protected override void Initialize()
@@ -209,7 +222,10 @@ namespace Tide.Core
         protected override void LoadContent()
         {
             ContentManager = new UContentManager(Content, GraphicsDevice);
-            font = ContentManager.Load<SpriteFont>("RoentgenNbp");
+            font = ContentManager.Load<SpriteFont>("Arial");
+
+            backdropTexture = ContentManager.Load<Texture2D>("back");
+            vignetteTexture = ContentManager.Load<Texture2D>("Vignette");
         }
 
         protected virtual void OnDraw2D(UView3D view3D, SpriteBatch spriteBatch, GameTime gameTime)
@@ -239,6 +255,9 @@ namespace Tide.Core
         protected override void Update(GameTime gameTime)
         {
             updateStopwatch.Restart();
+            
+            PhysicsUpdate(gameTime);
+
             foreach (UComponent script in ScriptGraph)
             {
                 if (script is IUpdateComponent && script.bIsActive)
@@ -248,6 +267,46 @@ namespace Tide.Core
             }
             OnUpdate(gameTime);
             updateStopwatch.Stop();
+        }
+
+        private void PhysicsUpdate(GameTime gameTime)
+        {
+            float step = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            foreach (UComponent script in ScriptGraph)
+            {
+                if (script is IPhysicsComponent && script.bIsActive)
+                {
+                    ((IPhysicsComponent)script).PrePhysics(step);
+                }
+            }
+
+            for (int n = 0; n < numPhysicsSubsteps; n++)
+            {
+                foreach (UComponent script in ScriptGraph)
+                {
+                    if (script is IPhysicsComponent && script.bIsActive)
+                    {
+                        ((IPhysicsComponent)script).CollisionUpdate(step / numPhysicsSubsteps);
+                    }
+                }
+
+                foreach (UComponent script in ScriptGraph)
+                {
+                    if (script is IPhysicsComponent && script.bIsActive)
+                    {
+                        ((IPhysicsComponent)script).PhysicsUpdate(step / numPhysicsSubsteps);
+                    }
+                }
+            }
+
+            foreach (UComponent script in ScriptGraph)
+            {
+                if (script is IPhysicsComponent && script.bIsActive)
+                {
+                    ((IPhysicsComponent)script).PostPhysics(step);
+                }
+            }
         }
 
         public void SetFullscreen(bool set)

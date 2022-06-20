@@ -67,6 +67,17 @@ namespace Tide.Core
             return index;
         }
 
+        public void LoadSpriteAnimations(UContentManager content, string textureAnimationDataName)
+        {
+            FTextureAnimationData textureData = content.Load<FTextureAnimationData>(textureAnimationDataName);
+
+            foreach (FSpriteAnimationData data in textureData.animations)
+            {
+                Texture2D textureAtlas = content.Load<Texture2D>(data.texture);
+                AddSpriteAnimation(data, textureAtlas);
+            }
+        }
+
         public void AddSpriteAnimation(FSpriteAnimationData data, Texture2D texture)
         {
             nameTextureMap.TryAdd(texture.Name, texture);

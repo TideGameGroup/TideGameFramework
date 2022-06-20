@@ -20,16 +20,18 @@ namespace Tide.Core
         public Vector2 window;
         public Viewport viewport;
 
-        protected bool _isOrtho;
+        public bool isOrtho;
+        public float scale;
 
         public UView3D(Viewport viewport, bool isOrtho = false)
         {
             position = Vector3.Up;
             rotation = new Vector3(0.0f, MathHelper.ToRadians(-45), 0.0f);
             window   = new Vector2(4.0f, 2.4f);
+            scale = 10f;
 
             this.viewport = viewport;
-            _isOrtho = isOrtho;
+            this.isOrtho = isOrtho;
 
             BuildMatrices();
         }
@@ -40,7 +42,8 @@ namespace Tide.Core
             this.rotation = rotation;
             this.window   = window;
             this.viewport = viewport;
-            _isOrtho = isOrtho;
+            this.isOrtho = isOrtho;
+            scale = 10f;
 
             BuildMatrices();
         }
@@ -64,9 +67,11 @@ namespace Tide.Core
 
         public void BuildProjectionMatrix()
         {
-            if (_isOrtho)
+            if (isOrtho)
             {
-                Projection = Matrix.CreateOrthographic(window.X, window.Y, 0.5f, 1.5f);
+                window.X = scale * viewport.AspectRatio;
+                window.Y = scale;
+                Projection = Matrix.CreateOrthographic(window.X, window.Y, 0.1f, 1000f);
             }
             else
             {
@@ -112,7 +117,7 @@ namespace Tide.Core
 
         public Vector3 ScreenToWorld(Vector2 screen)
         {
-            Vector3 comp = new Vector3(screen.X, screen.Y, 0.0f);
+            Vector3 comp = new Vector3(screen.X, screen.Y, 0f);
             return viewport.Unproject(comp, Projection, ViewMatrix, Matrix.Identity);
         }
 
