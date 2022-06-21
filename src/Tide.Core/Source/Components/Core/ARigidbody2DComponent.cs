@@ -32,7 +32,7 @@ namespace Tide.Core
 
         public int Count => transforms.Count;
 
-        private void HandleCollision(int i, Vector2 normal, ACollider2DComponent other, int j, float step, bool shouldCalculate)
+        private void HandleCollision(int i, Vector2 normal, ACollider2DComponent other, int j, GameTime gameTime, bool shouldCalculate)
         {
             if (shouldCalculate == false)
             {
@@ -109,19 +109,19 @@ namespace Tide.Core
 
         #region IPhysicsComponent
 
-        public void CollisionUpdate(float step)
+        public void CollisionUpdate(GameTime gameTime)
         {
         }
 
-        public void PhysicsUpdate(float step)
+        public void PhysicsUpdate(GameTime gameTime)
         {
             for (int i = 0; i < impulses.Count; i++)
             {
                 Vector3 pos = transforms.positions[i];
                 pos.X += impulses[i].X;
                 pos.Z += impulses[i].Y;
-                pos.X += velocities[i].X * step;
-                pos.Z += velocities[i].Y * step;
+                pos.X += velocities[i].X * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                pos.Z += velocities[i].Y * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
                 impulses[i] = Vector2.Zero;
                 //velocities[i] = Vector2.Zero;
@@ -130,11 +130,11 @@ namespace Tide.Core
             }
         }
 
-        public void PostPhysics(float step)
+        public void PostPhysics(GameTime gameTime)
         {
         }
 
-        public void PrePhysics(float step)
+        public void PrePhysics(GameTime gameTime)
         {
         }
 

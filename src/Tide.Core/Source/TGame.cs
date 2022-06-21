@@ -273,23 +273,29 @@ namespace Tide.Core
 
         private void PhysicsUpdate(GameTime gameTime)
         {
-            float step = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            TimeSpan elapsedStepTime = gameTime.ElapsedGameTime / numPhysicsSubsteps;
+            GameTime stepTime = new GameTime(
+                gameTime.TotalGameTime - gameTime.ElapsedGameTime,
+                gameTime.ElapsedGameTime / numPhysicsSubsteps
+                );
 
             foreach (UComponent script in ScriptGraph)
             {
                 if (script is IPhysicsComponent && script.bIsActive)
                 {
-                    ((IPhysicsComponent)script).PrePhysics(step);
+                    ((IPhysicsComponent)script).PrePhysics(gameTime);
                 }
             }
 
             for (int n = 0; n < numPhysicsSubsteps; n++)
             {
+                stepTime.TotalGameTime += elapsedStepTime * (n + 1);
+
                 foreach (UComponent script in ScriptGraph)
                 {
                     if (script is IPhysicsComponent && script.bIsActive)
                     {
-                        ((IPhysicsComponent)script).CollisionUpdate(step / numPhysicsSubsteps);
+                        ((IPhysicsComponent)script).CollisionUpdate(stepTime);
                     }
                 }
 
@@ -297,7 +303,7 @@ namespace Tide.Core
                 {
                     if (script is IPhysicsComponent && script.bIsActive)
                     {
-                        ((IPhysicsComponent)script).PhysicsUpdate(step / numPhysicsSubsteps);
+                        ((IPhysicsComponent)script).PhysicsUpdate(stepTime);
                     }
                 }
             }
@@ -306,7 +312,7 @@ namespace Tide.Core
             {
                 if (script is IPhysicsComponent && script.bIsActive)
                 {
-                    ((IPhysicsComponent)script).PostPhysics(step);
+                    ((IPhysicsComponent)script).PostPhysics(gameTime);
                 }
             }
         }

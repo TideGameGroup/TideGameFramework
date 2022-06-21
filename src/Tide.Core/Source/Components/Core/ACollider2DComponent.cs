@@ -7,7 +7,7 @@ using Tide.XMLSchema;
 namespace Tide.Core
 {
     //todo replace Iscript2 with root component
-    using CollisionCallback = Action<int, Vector2, ACollider2DComponent, int, float, bool>;
+    using CollisionCallback = Action<int, Vector2, ACollider2DComponent, int, GameTime, bool>;
 
 
     public class ACollider2DComponent : UComponent, IPhysicsComponent, ISerialisableComponent
@@ -105,7 +105,7 @@ namespace Tide.Core
             return false;
         }
 
-        internal static bool CalculateCollisionsBetweenColliderComponents(ACollider2DComponent iCollider, ACollider2DComponent jCollider, float step)
+        internal static bool CalculateCollisionsBetweenColliderComponents(ACollider2DComponent iCollider, ACollider2DComponent jCollider, GameTime gameTime)
         {
             for (int i = 0; i < iCollider.Count; i++) // maybe multithread
             {
@@ -127,7 +127,7 @@ namespace Tide.Core
                         {
                             foreach (var callback in iCollider.collisionCallbacks)
                             {
-                                callback.Invoke(i, -normal, jCollider, j, step, true);
+                                callback.Invoke(i, -normal, jCollider, j, gameTime, true);
                             }
                         }
 
@@ -135,7 +135,7 @@ namespace Tide.Core
                         {
                             foreach (var callback in jCollider.collisionCallbacks)
                             {
-                                callback.Invoke(j, normal, iCollider, i, step, false);
+                                callback.Invoke(j, normal, iCollider, i, gameTime, false);
                             }
                         }
                     }
@@ -326,7 +326,7 @@ namespace Tide.Core
             return collision;
         }
 
-        public static void StaticTickImplementation(UComponentGraph ComponentGraph, float step)
+        public static void StaticTickImplementation(UComponentGraph ComponentGraph, GameTime gameTime)
         {
             List<ACollider2DComponent> StaticColliders = ComponentGraph.FindAll<ACollider2DComponent>();
 
@@ -345,7 +345,7 @@ namespace Tide.Core
                     if ((StaticColliders[i].layer & StaticColliders[j].mask) > 0 ||
                         (StaticColliders[j].layer & StaticColliders[i].mask) > 0)
                     {
-                        CalculateCollisionsBetweenColliderComponents(StaticColliders[i], StaticColliders[j], step);
+                        CalculateCollisionsBetweenColliderComponents(StaticColliders[i], StaticColliders[j], gameTime);
                     }
                 }
             }
@@ -449,23 +449,23 @@ namespace Tide.Core
 
         #region IPhysicsComponent
 
-        public void CollisionUpdate(float step)
+        public void CollisionUpdate(GameTime gameTime)
         {
             if (this == ScriptGraph.Find<ACollider2DComponent>())
             {
-                StaticTickImplementation(ScriptGraph, step);
+                StaticTickImplementation(ScriptGraph, gameTime);
             }
         }
 
-        public void PhysicsUpdate(float step)
+        public void PhysicsUpdate(GameTime gameTime)
         {
         }
 
-        public void PostPhysics(float step)
+        public void PostPhysics(GameTime gameTime)
         {
         }
 
-        public void PrePhysics(float step)
+        public void PrePhysics(GameTime gameTime)
         {
         }
 

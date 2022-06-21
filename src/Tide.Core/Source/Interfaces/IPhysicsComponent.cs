@@ -4,9 +4,9 @@ namespace Tide.Core
 {
     public interface IPhysicsComponent
     {
-        public void PrePhysics(float step);
-        public void CollisionUpdate(float step);
-        public void PhysicsUpdate(float step);
-        public void PostPhysics(float step);
+        public void PrePhysics(GameTime gameTime);
+        public void CollisionUpdate(GameTime gameTime);
+        public void PhysicsUpdate(GameTime gameTime);
+        public void PostPhysics(GameTime gameTime);
     }
 }
