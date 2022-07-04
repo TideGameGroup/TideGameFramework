@@ -33,25 +33,15 @@ namespace Tide.Core
 
         #region ISerialisableComponent
 
-
         public void Load(UContentManager content, string serialisedScriptPath)
         {
             if (serialisedScriptPath == "") { return; }
 
             FTransform instance = content.Load<FTransform>(serialisedScriptPath);
 
-            List<Vector2> truePositions = new List<Vector2>();
-
             for (int i = 0; i < instance.positions.Length; i++)
             {
-                instance.positions[i].Y = -instance.positions[i].Z;
-                instance.positions[i].Z = 0f;
-                instance.positions[i] = instance.positions[i] * 32f;
-            }
-
-            for (int i = 0; i < truePositions.Count; i++)
-            {
-                Add(instance.angles[i], truePositions[i], instance.scales[i]);
+                Add(instance.angles[i], instance.positions[i], instance.scales[i]);
             }
         }
 
@@ -62,7 +52,7 @@ namespace Tide.Core
             serialisedSet.Add(ID,
                 new FTransform
                 {
-                    //positions = positions.ToArray(),
+                    positions = positions.ToArray(),
                     angles = angles.ToArray(),
                     scales = scales.ToArray()
                 }

@@ -134,8 +134,6 @@ namespace Tide.Core
                     continue;
                 }
 
-                Rectangle source = sources[i];
-
                 int frame = startFrames[i] + (int)(elapsedTimes[i] * frameRates[i]);
 
                 // step frame?
@@ -157,16 +155,19 @@ namespace Tide.Core
                 int x = frame % widths[i];
                 int y = frame / widths[i];
 
-                Rectangle offsetSource = source;
-                offsetSource.Offset(source.Width * x, source.Height * y);
+                Rectangle source = sources[i];
+                Rectangle centre = new Rectangle(0, 0, source.Width, source.Height);
+                Rectangle offset = source;
+
+                offset.Offset(source.Width * x, source.Height * y);
 
                 spriteBatch.Draw(
                     tex,
                     transforms.positions[i] * new Vector2(1f, -1f),
-                    offsetSource, //spriteTexture.Bounds,
+                    offset,
                     colors[i],
                     bViewAlignedSprites ? 0 : transforms.angles[i],
-                    Vector2.Zero, //tex.Bounds.Center.ToVector2(),
+                    centre.Center.ToVector2(),
                     1f,
                     SpriteEffects.None,
                     0f
