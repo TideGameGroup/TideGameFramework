@@ -8,9 +8,9 @@ namespace Tide.Core
     {
         private readonly int angleCount;
         private List<int> angleList;
-        private ATransform2D transforms;
+        private ATransform transforms;
 
-        public AImposterSpritesRendererComponent(ATransform2D transforms, int angles)
+        public AImposterSpritesRendererComponent(ATransform transforms, int angles)
         {
             SpriteRenderer = new ASpritesRenderer(transforms);
 

@@ -19,7 +19,7 @@ namespace Tide.Core
 
         public AEntityComponent()
         {
-            Transforms = new ATransform2D();
+            Transforms = new ATransform();
             SpriteRenderer = new ASpritesRenderer(Transforms);
 
             RegisterChildComponent(Transforms);
@@ -28,12 +28,12 @@ namespace Tide.Core
 
         public int Count => Transforms.Count;
         public ASpritesRenderer SpriteRenderer { get; protected set; }
-        public ATransform2D Transforms { get; protected set; }
+        public ATransform Transforms { get; protected set; }
         public EntityDelegate OnAddEntity { get; set; }
         public EntityDelegate OnRemoveEntity { get; set; }
         public EntityUpdateDelegate OnUpdateEntity { get; set; }
 
-        public int Add(Vector3 position, string animation, float scale = 1f)
+        public int Add(Vector2 position, string animation, float scale = 1f)
         {
             Transforms.Add(0, position, scale);
             SpriteRenderer.Add(animation, scale);
@@ -78,7 +78,7 @@ namespace Tide.Core
 
             FEntities entities = content.Load<FEntities>(serialisedScriptPath);
 
-            Transforms.Load(content, entities.transform2D);
+            Transforms.Load(content, entities.transform);
             SpriteRenderer.Load(content, entities.spriteRenderer);
 
             for (int i = 0; i < Transforms.positions.Count; i++)
@@ -96,7 +96,7 @@ namespace Tide.Core
 
             serialisedSet.Add(ID, new FEntities
             {
-                transform2D = tID,
+                transform = tID,
                 spriteRenderer = sID,
             }
             );

@@ -5,15 +5,15 @@ namespace Tide.Core
 {
     public struct FRigidbody2DComponentContructorArgs
     {
-        public ACollider2DComponent collider2DComponent;
-        public ATransform2D transforms;
+        public AColliderComponent collider2DComponent;
+        public ATransform transforms;
     }
 
-    public class ARigidbody2DComponent : UComponent, IPhysicsComponent
+    public class ARigidbodyComponent : UComponent, IPhysicsComponent
     {
-        private readonly ACollider2DComponent collider2DComponent;
+        private readonly AColliderComponent collider2DComponent;
 
-        private readonly ATransform2D transforms;
+        private readonly ATransform transforms;
         private List<Vector2> impulses = new List<Vector2>();
         private List<Vector2> accelerations = new List<Vector2>();
 
@@ -21,7 +21,7 @@ namespace Tide.Core
         private List<float> masses = new List<float>();
         private List<Vector2> velocities = new List<Vector2>();
 
-        public ARigidbody2DComponent(FRigidbody2DComponentContructorArgs args)
+        public ARigidbodyComponent(FRigidbody2DComponentContructorArgs args)
         {
             TrySetDefault(args.transforms, out transforms);
             TrySetDefault(args.collider2DComponent, out collider2DComponent);
@@ -32,7 +32,7 @@ namespace Tide.Core
 
         public int Count => transforms.Count;
 
-        private void HandleCollision(int i, Vector2 normal, ACollider2DComponent other, int j, GameTime gameTime, bool shouldCalculate)
+        private void HandleCollision(int i, Vector2 normal, AColliderComponent other, int j, GameTime gameTime, bool shouldCalculate)
         {
             if (shouldCalculate == false)
             {
@@ -117,15 +117,13 @@ namespace Tide.Core
         {
             for (int i = 0; i < impulses.Count; i++)
             {
-                Vector3 pos = transforms.positions[i];
+                Vector2 pos = transforms.positions[i];
                 pos.X += impulses[i].X;
-                pos.Z += impulses[i].Y;
+                pos.Y += impulses[i].Y;
                 pos.X += velocities[i].X * (float)gameTime.ElapsedGameTime.TotalSeconds;
-                pos.Z += velocities[i].Y * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                pos.Y += velocities[i].Y * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
                 impulses[i] = Vector2.Zero;
-                //velocities[i] = Vector2.Zero;
-
                 transforms.positions[i] = pos;
             }
         }

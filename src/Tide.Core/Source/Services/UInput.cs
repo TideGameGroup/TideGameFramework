@@ -62,6 +62,7 @@ namespace Tide.Core
         public Buttons button;
         public Keys key;
         public EMouseButtons mouseButton;
+        public IVirtualInputEvent custom;
 
         public FBinding(Keys key, string bound)
         {
@@ -70,6 +71,7 @@ namespace Tide.Core
 
             button = Buttons.A;
             mouseButton = EMouseButtons.None;
+            custom = null;
         }
 
         public FBinding(Buttons button, string bound)
@@ -79,6 +81,7 @@ namespace Tide.Core
 
             key = Keys.None;
             mouseButton = EMouseButtons.None;
+            custom = null;
         }
 
         public FBinding(EMouseButtons mouseButton, string bound)
@@ -88,6 +91,17 @@ namespace Tide.Core
 
             key = Keys.None;
             button = Buttons.A;
+            custom = null;
+        }
+
+        public FBinding(IVirtualInputEvent custom, string bound)
+        {
+            this.custom = custom;
+            this.bound = bound;
+
+            key = Keys.None;
+            button = Buttons.A;
+            mouseButton = EMouseButtons.None;
         }
     }
 
@@ -98,9 +112,11 @@ namespace Tide.Core
         private readonly Dictionary<string, List<AxisDelegate>> axisEvents = new Dictionary<string, List<AxisDelegate>>();
 
         // per frame binding events
-        private readonly List<FBinding> keyBindings = new List<FBinding>();
+        public readonly List<FBinding> keyBindings = new List<FBinding>();
         private readonly HashSet<string> keyStatus = new HashSet<string>();
 
+        private List<IVirtualInputEvent> virtualInputState = new List<IVirtualInputEvent>();
+        private List<IVirtualInputEvent> priorVirtualInputState = new List<IVirtualInputEvent>();
         private KeyboardState priorKeyboardState;
         private MouseState priorMouseState;
 
@@ -113,41 +129,6 @@ namespace Tide.Core
 
             priorMouseState = Mouse.GetState();
             priorKeyboardState = Keyboard.GetState();
-
-            keyBindings.Add(new FBinding(EMouseButtons.LeftButton, "primary"));
-            keyBindings.Add(new FBinding(EMouseButtons.RightButton, "secondary"));
-            keyBindings.Add(new FBinding(EMouseButtons.MiddleButton, "tertiary"));
-
-            keyBindings.Add(new FBinding(Keys.W, "up"));
-            keyBindings.Add(new FBinding(Keys.A, "left"));
-            keyBindings.Add(new FBinding(Keys.S, "down"));
-            keyBindings.Add(new FBinding(Keys.D, "right"));
-            keyBindings.Add(new FBinding(EMouseButtons.ScrollDown, "scrollup"));
-            keyBindings.Add(new FBinding(EMouseButtons.ScrollUp, "scrolldown"));
-
-            keyBindings.Add(new FBinding(Keys.Q, "Q"));
-            keyBindings.Add(new FBinding(Keys.E, "E"));
-            keyBindings.Add(new FBinding(Keys.F, "focus"));
-            keyBindings.Add(new FBinding(Keys.Z, "z"));
-
-            keyBindings.Add(new FBinding(Keys.Up, "uparrow"));
-            keyBindings.Add(new FBinding(Keys.Down, "downarrow"));
-            keyBindings.Add(new FBinding(Keys.Left, "leftarrow"));
-            keyBindings.Add(new FBinding(Keys.Right, "rightarrow"));
-
-            keyBindings.Add(new FBinding(Keys.D1, "1"));
-            keyBindings.Add(new FBinding(Keys.D2, "2"));
-            keyBindings.Add(new FBinding(Keys.D3, "3"));
-            keyBindings.Add(new FBinding(Keys.D4, "4"));
-            keyBindings.Add(new FBinding(Keys.D5, "5"));
-            keyBindings.Add(new FBinding(Keys.D6, "6"));
-            keyBindings.Add(new FBinding(Keys.D7, "7"));
-
-            keyBindings.Add(new FBinding(Keys.Escape, "escape"));
-            keyBindings.Add(new FBinding(Keys.Back, "back"));
-
-            keyBindings.Add(new FBinding(Keys.LeftShift, "mod1"));
-            keyBindings.Add(new FBinding(Keys.LeftControl, "mod2"));
         }
 
         public Vector2 MousePosition { get; private set; } = Vector2.Zero;
@@ -185,6 +166,11 @@ namespace Tide.Core
         public bool PollActionBinding(string action)
         {
             return keyStatus.Contains(action);
+        }
+
+        public void PressVirtualInput(IVirtualInputEvent evt)
+        {
+            virtualInputState.Add(evt);
         }
 
         public void RemoveAction(FActionHandle handle)
@@ -307,8 +293,24 @@ namespace Tide.Core
                 {
                 }
             }
+
+            // custom bindings //
+            foreach (var binding in keyBindings)
+            {
+                if (binding.custom != null)
+                {
+                    bool isPressed = virtualInputState.Exists((item) => item.GetType() == binding.custom.GetType());
+                    bool wasPressed = priorVirtualInputState.Exists((item) => item.GetType() == binding.custom.GetType());
+                    string key = binding.bound + GetKeyInputSuffix(isPressed, wasPressed);
+                    InvokeKey(key);
+                }
+            }
+
             priorMouseState = currentMouseState;
             priorKeyboardState = currentKeyboardState;
+            priorVirtualInputState.Clear();
+            priorVirtualInputState.AddRange(virtualInputState);
+            virtualInputState.Clear();
         }
     }
 }

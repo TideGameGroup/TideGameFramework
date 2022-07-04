@@ -26,6 +26,7 @@ namespace Tide.Core
         public OnGraphEvent OnUnregisterChildComponent { get; set; }
         public OnEvent OnRegisterComponent { get; set; }
         public OnEvent OnUnregisterComponent { get; set; }
+        public USerialisationComponent SerialisationComponent { get; set;  }
 
         /// <summary>
         /// This function is syntactic sugar for checking passed values are non-null

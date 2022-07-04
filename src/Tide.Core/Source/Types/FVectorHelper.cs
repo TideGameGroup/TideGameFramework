@@ -8,12 +8,12 @@ namespace Tide.Core
     {
         public static Vector2 ToVector2(Vector3 vec)
         {
-            return new Vector2(vec.X, vec.Z);
+            return new Vector2(vec.X, vec.Y);
         }
 
         public static Vector3 ToVector3(Vector2 vec)
         {
-            return new Vector3(vec.X, 0f, vec.Y);
+            return new Vector3(vec.X, vec.Y, 0f);
         }
     }
 }

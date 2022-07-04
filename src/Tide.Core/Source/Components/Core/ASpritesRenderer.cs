@@ -6,7 +6,7 @@ using Tide.XMLSchema;
 
 namespace Tide.Core
 {
-    public class ASpritesRenderer : UComponent, IDrawableComponent2D, ISerialisableComponent
+    public class ASpritesRenderer : UComponent, IDrawableComponent, ISerialisableComponent
     {
         private readonly Dictionary<string, FAnimationData> animations = new Dictionary<string, FAnimationData>();
         private readonly List<bool> bIsFinished = new List<bool>();
@@ -22,7 +22,7 @@ namespace Tide.Core
         private readonly List<Rectangle> sources = new List<Rectangle>();
         private readonly List<int> startFrames = new List<int>();
         private readonly List<string> texIDs = new List<string>();
-        private readonly ATransform2D transforms;
+        private readonly ATransform transforms;
         private readonly List<int> widths = new List<int>();
 
         // flags
@@ -30,7 +30,7 @@ namespace Tide.Core
 
         public float globalScale = 1.0f;
 
-        public ASpritesRenderer(ATransform2D transforms)
+        public ASpritesRenderer(ATransform transforms)
         {
             this.transforms = transforms;
         }
@@ -123,17 +123,18 @@ namespace Tide.Core
             }
         }
 
-        public void Draw2D(UView3D view, SpriteBatch spriteBatch, GameTime gameTime)
+        public void Draw2D(UViewport view, SpriteBatch spriteBatch, GameTime gameTime)
         {
             for (int i = 0; i < transforms.Count; i++)
             {
                 if (texIDs[i] == "" || !bShouldDraw[i]) { continue; }
 
-                Texture2D tex;
-                if (!nameTextureMap.TryGetValue(texIDs[i], out tex))
+                if (!nameTextureMap.TryGetValue(texIDs[i], out Texture2D tex))
                 {
                     continue;
                 }
+
+                Rectangle source = sources[i];
 
                 int frame = startFrames[i] + (int)(elapsedTimes[i] * frameRates[i]);
 
@@ -155,27 +156,20 @@ namespace Tide.Core
                 elapsedTimes[i] = elapsedTimes[i] + (float)gameTime.ElapsedGameTime.TotalSeconds;
                 int x = frame % widths[i];
                 int y = frame / widths[i];
-                Rectangle source = sources[i];
-                Rectangle centre = new Rectangle(0, 0, source.Width, source.Height);
-                Rectangle offset = source;
 
-                offset.Offset(source.Width * x, source.Height * y);
-
-                bool inFrustum;
-                Vector2 pos = view.WorldToScreen(transforms.positions[i], out inFrustum);
-
-                if (!inFrustum) { continue; }
+                Rectangle offsetSource = source;
+                offsetSource.Offset(source.Width * x, source.Height * y);
 
                 spriteBatch.Draw(
                     tex,
-                    pos,
-                    offset, //spriteTexture.Bounds,
+                    transforms.positions[i] * new Vector2(1f, -1f),
+                    offsetSource, //spriteTexture.Bounds,
                     colors[i],
                     bViewAlignedSprites ? 0 : transforms.angles[i],
-                    centre.Center.ToVector2(),
-                    globalScale * scales[i],
+                    Vector2.Zero, //tex.Bounds.Center.ToVector2(),
+                    1f,
                     SpriteEffects.None,
-                    0
+                    0f
                 );
             }
         }
@@ -221,25 +215,6 @@ namespace Tide.Core
             if (serialisedScriptPath == "") { return; }
 
             FSprites spriteData = content.Load<FSprites>(serialisedScriptPath);
-
-            /*
-            foreach (var collectionName in spriteData.animations)
-            {
-                FSpriteAnimations collection = content.Content.Load<FSpriteAnimations>(collectionName);
-
-                for (int i = 0; i < collection.textures.Count; i++)
-                {
-                    AddSpriteAnimation(
-                        collection.names[i],
-                        collection.frames[i],
-                        collection.widths[i],
-                        content.Content.Load<Texture2D>(collection.textures[i]),
-                        collection.sources[i],
-                        collection.loops[i]
-                        );
-                }
-            }
-            */
 
             for (int i = 0; i < spriteData.names.Length; i++)
             {

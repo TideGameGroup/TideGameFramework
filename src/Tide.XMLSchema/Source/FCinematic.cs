@@ -16,6 +16,6 @@ namespace Tide.XMLSchema
         public bindingType[] bindingType;
         public string[] bindings;
         public string[][] highlights;
-        public Vector3[][] positions;
+        public Vector2[][] positions;
     }
 }

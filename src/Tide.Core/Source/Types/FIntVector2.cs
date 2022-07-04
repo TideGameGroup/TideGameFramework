@@ -17,7 +17,7 @@ namespace Tide.Core
         public FIntVector2(Vector3 vector3)
         {
             x = (int)MathF.Round(vector3.X);
-            y = (int)MathF.Round(vector3.Z);
+            y = (int)MathF.Round(vector3.Y);
         }
 
         public FIntVector2(Vector2 vector2)
@@ -30,7 +30,7 @@ namespace Tide.Core
         { return new Vector2(x, y); }
 
         public Vector3 AsVector3()
-        { return new Vector3(x, 0, y); }
+        { return new Vector3(x, y, 0); }
 
         public bool IsZero()
         { return x == 0 && y == 0; }

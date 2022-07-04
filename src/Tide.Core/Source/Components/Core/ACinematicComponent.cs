@@ -19,7 +19,7 @@ namespace Tide.Core
         public List<bindingType> bindingTypes          = new List<bindingType>();
         public List<string> bindings                   = new List<string>();
         public List<List<string>> highlights           = new List<List<string>>();
-        public List<List<Vector3>> positions           = new List<List<Vector3>>();
+        public List<List<Vector2>> positions           = new List<List<Vector2>>();
 
         protected string currentFunction = "";
         protected int currentPage  = -1;
@@ -208,7 +208,7 @@ namespace Tide.Core
         /// <summary>
 
         private string currentCinematic = "";
-
+        public string CachedHash { get; set; }
         public void TryLoadCinematic(UContentManager content, string serialisedScriptPath)
         {
             if (currentPage > -1 && currentCinematic == serialisedScriptPath)
@@ -253,7 +253,7 @@ namespace Tide.Core
 
             foreach (var array in cinematic.positions)
             {
-                positions.Add(new List<Vector3>(array));
+                positions.Add(new List<Vector2>(array));
             }
 
             CinematicCanvas.bIsActive = true;

@@ -10,7 +10,7 @@ namespace Tide.Core
 
         public string Serialise(string path, ref Dictionary<string, ISerialisedInstanceData> serialisedSet);
 
-        public static string GetSerialisableID(object obj, string path, ref Dictionary<string, ISerialisedInstanceData> serialisedSet)
+        public static string GetSerialisableID(ISerialisableComponent obj, string path, ref Dictionary<string, ISerialisedInstanceData> serialisedSet)
         {
             int intPID = path.GetHashCode();
             int intID = obj.GetHashCode();

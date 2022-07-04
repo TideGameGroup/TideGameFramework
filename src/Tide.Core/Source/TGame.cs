@@ -9,13 +9,15 @@ namespace Tide.Core
     {
         private Stopwatch drawStopwatch = null;
         private SpriteFont font;
-        private int height = 720;
-        private int width = 1280;
+        public int height = 720;
+        public int width = 1280;
         private RasterizerState rasterizerState;
         private RasterizerState rasterizerUIState;
         private Stopwatch updateStopwatch = null;
-        protected RenderTarget2D PostProcessTarget;
-        protected RenderTarget2D RenderTarget;
+
+        //protected RenderTarget2D PostProcessTarget;
+        //protected RenderTarget2D RenderTarget;
+
         protected UStatistics statistics = null;
         public bool bDrawStats = true;
         public bool bFixedTimestep = true;
@@ -29,22 +31,24 @@ namespace Tide.Core
 
         public TGame()
         {
+            Content.RootDirectory = "Content";
+            IsMouseVisible = false;
+
             GraphicsDeviceManager = new GraphicsDeviceManager(this)
             {
                 SynchronizeWithVerticalRetrace = bVsync
             };
-            Window.ClientSizeChanged += new EventHandler<EventArgs>(OnResize);
             IsFixedTimeStep = bFixedTimestep;
-            Window.AllowUserResizing = bAllowUserResizing;
         }
 
         protected UContentManager ContentManager { get; private set; }
         protected GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
         protected UPostProcessStack PostProcessStack { get; private set; }
-        protected UComponentGraph ScriptGraph { get; private set; }
+        protected UComponentGraph ComponentGraph { get; private set; }
         protected USettings Settings { get; private set; }
         protected SpriteBatch SpriteBatch { get; private set; }
-        public UView3D View3D { get; set; }
+        public UViewport View { get; set; }
+        public UWindow WindowManager { get; set; }
 
         [Conditional("DEBUG")]
         private void DrawStats(GameTime gameTime)
@@ -84,57 +88,14 @@ namespace Tide.Core
             SpriteBatch.End();
         }
 
-        private void RecreateRenderTarget()
-        {
-            PresentationParameters parameters = GraphicsDevice.PresentationParameters;
-            SurfaceFormat format = parameters.BackBufferFormat;
-            RenderTarget = new RenderTarget2D(GraphicsDevice,
-                parameters.BackBufferWidth,
-                parameters.BackBufferHeight,
-                false,
-                format,
-                parameters.DepthStencilFormat,
-                parameters.MultiSampleCount,
-                RenderTargetUsage.DiscardContents
-                );
-
-            PostProcessTarget = new RenderTarget2D(GraphicsDevice,
-                 parameters.BackBufferWidth,
-                 parameters.BackBufferHeight,
-                 false,
-                 format,
-                 parameters.DepthStencilFormat,
-                 parameters.MultiSampleCount,
-                 RenderTargetUsage.DiscardContents
-                 );
-        }
-
-        private void SetFullscreen()
-        {
-            GraphicsDeviceManager.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-            GraphicsDeviceManager.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
-            GraphicsDeviceManager.HardwareModeSwitch = true;
-            GraphicsDeviceManager.IsFullScreen = true;
-            GraphicsDeviceManager.ApplyChanges();
-            RecreateRenderTarget();
-        }
-
-        private void UnsetFullscreen()
-        {
-            GraphicsDeviceManager.PreferredBackBufferWidth = width;
-            GraphicsDeviceManager.PreferredBackBufferHeight = height;
-            GraphicsDeviceManager.IsFullScreen = false;
-            GraphicsDeviceManager.ApplyChanges();
-            RecreateRenderTarget();
-        }
-
         protected override void Draw(GameTime gameTime)
         {
             drawStopwatch.Restart();
-
-            GraphicsDevice.SetRenderTarget(RenderTarget);
+            GraphicsDevice.SetRenderTarget(WindowManager.RenderTarget.RenderTarget);
             GraphicsDevice.Clear(clearColor);
 
+            // background
+            /*
             SpriteBatch.Begin(
                 SpriteSortMode.Deferred,
                 BlendState.AlphaBlend,
@@ -146,23 +107,38 @@ namespace Tide.Core
                 SpriteBatch.Draw(backgroundTexture, GraphicsDevice.Viewport.Bounds, Color.White);
             }
 
-            foreach (UComponent script in ScriptGraph)
+            SpriteBatch.End();
+            */
+
+            // 2d pass
+            SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp,
+                null, null, null, View.ViewProjectionMatrix);
+
+            foreach (UComponent script in ComponentGraph)
             {
-                if (script is IDrawableComponent2D && script.bIsVisible)
+                if (script is IDrawableComponent && script.bIsVisible)
                 {
-                    ((IDrawableComponent2D)script).Draw2D(View3D, SpriteBatch, gameTime);
+                    ((IDrawableComponent)script).Draw2D(View, SpriteBatch, gameTime);
                 }
             }
 
-            OnDraw2D(View3D, SpriteBatch, gameTime);
+            OnDraw2D(View, SpriteBatch, gameTime);
 
-            foreach (UComponent script in ScriptGraph)
+            SpriteBatch.End();
+
+            // ui pass
+            SpriteBatch.Begin( SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp,
+                null, null, null, null);
+
+            foreach (UComponent script in ComponentGraph)
             {
                 if (script is IDrawableCanvasScript && script.bIsVisible)
                 {
-                    ((IDrawableCanvasScript)script).DrawUI(View3D, SpriteBatch, gameTime);
+                    ((IDrawableCanvasScript)script).DrawUI(View, SpriteBatch, gameTime);
                 }
             }
+
+            OnDrawUI(View, SpriteBatch, gameTime);
 
             if (overlayTexture != null)
             {
@@ -173,8 +149,8 @@ namespace Tide.Core
 
             base.Draw(gameTime);
 
-            PostProcessStack.DrawPostProcess(RenderTarget, RenderTarget, SpriteBatch, gameTime);
-            DrawToBackBuffer(RenderTarget);
+            //PostProcessStack.DrawPostProcess(RenderTarget, RenderTarget, SpriteBatch, gameTime);
+            DrawToBackBuffer(WindowManager.RenderTarget.RenderTarget);
 
             // stats
             drawStopwatch.Stop();
@@ -192,33 +168,33 @@ namespace Tide.Core
             rasterizerUIState = new RasterizerState() { ScissorTestEnable = true };
             statistics = new UStatistics();
 
-            View3D = new UView3D(GraphicsDevice.Viewport);
-            ScriptGraph = new UComponentGraph();
+            View = new UViewport(GraphicsDevice.Viewport);
+
+            ComponentGraph = new UComponentGraph();
             PostProcessStack = new UPostProcessStack(ContentManager, GraphicsDevice);
             Settings = new USettings();
 
-            ScriptGraph.RegisterScript(PostProcessStack);
-            ScriptGraph.RegisterScript(Settings);
-            ScriptGraph.RegisterScript(statistics);
+            FWindowConstructorArgs windowConstructorArgs =
+                new FWindowConstructorArgs
+                {
+                    bFullscreen = Settings["fullscreen"].b,
+                    graphicsDeviceManager = GraphicsDeviceManager,
+                    view2D = View,
+                    window = Window
+                };
 
-            settingChangedEvent fullscreenEvent = new settingChangedEvent(() =>
-            {
-                SetFullscreen(Settings["fullscreen"].b);
-            });
-            Settings.SetOnChangedCallback("fullscreen", fullscreenEvent);
+            WindowManager = new UWindow(windowConstructorArgs);
 
-            if (!Settings["fullscreen"].b)
-            {
-                GraphicsDeviceManager.PreferredBackBufferWidth = width;
-                GraphicsDeviceManager.PreferredBackBufferHeight = height;
-                GraphicsDeviceManager.ApplyChanges();
-                RecalculateViewMatrix(width, height);
-                RecreateRenderTarget();
-            }
-            else
-            {
-                SetFullscreen(true);
-            }
+            ComponentGraph.RegisterScript(PostProcessStack);
+            ComponentGraph.RegisterScript(Settings);
+            ComponentGraph.RegisterScript(statistics);
+            ComponentGraph.RegisterScript(WindowManager);
+
+            Settings.SetOnChangedCallback("fullscreen", () =>
+                {
+                    WindowManager.SetFullscreen(Settings["fullscreen"].b);
+                }
+            );
         }
 
         protected override void LoadContent()
@@ -230,29 +206,14 @@ namespace Tide.Core
             overlayTexture = ContentManager.Load<Texture2D>("Vignette");
         }
 
-        protected virtual void OnDraw2D(UView3D view3D, SpriteBatch spriteBatch, GameTime gameTime)
+        protected virtual void OnDraw2D(UViewport view2D, SpriteBatch spriteBatch, GameTime gameTime)
         { }
 
-        protected virtual void OnResize(object _, EventArgs e)
-        {
-            OnResize(Window.ClientBounds.Width, Window.ClientBounds.Height);
-        }
-
-        protected virtual void OnResize(int preferredWidth, int preferredHeight)
-        {
-            RecalculateViewMatrix(preferredWidth, preferredHeight);
-            RecreateRenderTarget();
-        }
+        protected virtual void OnDrawUI(UViewport view2D, SpriteBatch spriteBatch, GameTime gameTime)
+        { }
 
         protected virtual void OnUpdate(GameTime gameTime)
         { }
-
-        protected virtual void RecalculateViewMatrix(int preferredWidth, int preferredHeight)
-        {
-            View3D.viewport.Width = preferredWidth;
-            View3D.viewport.Height = preferredHeight;
-            View3D.BuildMatrices();
-        }
 
         protected override void Update(GameTime gameTime)
         {
@@ -260,7 +221,7 @@ namespace Tide.Core
             
             PhysicsUpdate(gameTime);
 
-            foreach (UComponent script in ScriptGraph)
+            foreach (UComponent script in ComponentGraph)
             {
                 if (script is IUpdateComponent && script.bIsActive)
                 {
@@ -279,7 +240,7 @@ namespace Tide.Core
                 gameTime.ElapsedGameTime / numPhysicsSubsteps
                 );
 
-            foreach (UComponent script in ScriptGraph)
+            foreach (UComponent script in ComponentGraph)
             {
                 if (script is IPhysicsComponent && script.bIsActive)
                 {
@@ -291,7 +252,7 @@ namespace Tide.Core
             {
                 stepTime.TotalGameTime += elapsedStepTime * (n + 1);
 
-                foreach (UComponent script in ScriptGraph)
+                foreach (UComponent script in ComponentGraph)
                 {
                     if (script is IPhysicsComponent && script.bIsActive)
                     {
@@ -299,7 +260,7 @@ namespace Tide.Core
                     }
                 }
 
-                foreach (UComponent script in ScriptGraph)
+                foreach (UComponent script in ComponentGraph)
                 {
                     if (script is IPhysicsComponent && script.bIsActive)
                     {
@@ -308,24 +269,12 @@ namespace Tide.Core
                 }
             }
 
-            foreach (UComponent script in ScriptGraph)
+            foreach (UComponent script in ComponentGraph)
             {
                 if (script is IPhysicsComponent && script.bIsActive)
                 {
                     ((IPhysicsComponent)script).PostPhysics(gameTime);
                 }
-            }
-        }
-
-        public void SetFullscreen(bool set)
-        {
-            if (set)
-            {
-                SetFullscreen();
-            }
-            else
-            {
-                UnsetFullscreen();
             }
         }
     }

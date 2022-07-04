@@ -7,24 +7,24 @@ using Tide.XMLSchema;
 namespace Tide.Core
 {
     //todo replace Iscript2 with root component
-    using CollisionCallback = Action<int, Vector2, ACollider2DComponent, int, GameTime, bool>;
+    using CollisionCallback = Action<int, Vector2, AColliderComponent, int, GameTime, bool>;
 
 
-    public class ACollider2DComponent : UComponent, IPhysicsComponent, ISerialisableComponent
+    public class AColliderComponent : UComponent, IPhysicsComponent, ISerialisableComponent
     {
         private readonly List<ECollider2DType> colliderTypes = new List<ECollider2DType>();
         private readonly List<uint> layers = new List<uint>();
         private readonly List<uint> masks = new List<uint>();
         private readonly List<ShapeUnion> shapes = new List<ShapeUnion>();
-        private readonly ATransform2D transforms;
+        private readonly ATransform transforms;
         private readonly List<CollisionCallback> collisionCallbacks = new List<CollisionCallback>();
         protected readonly List<bool> bEnabled = new List<bool>();
         public uint layer = 0;
         public uint mask = 0;
-        public AKinematic2DComponent kinematic2DComponent;
-        public ARigidbody2DComponent rigidbody2DComponent;
+        public AKinematicComponent kinematic2DComponent;
+        public ARigidbodyComponent rigidbody2DComponent;
 
-        public ACollider2DComponent(ATransform2D transforms)
+        public AColliderComponent(ATransform transforms)
         {
             this.transforms = transforms;
             AllowInternalCollisions = false;
@@ -34,7 +34,7 @@ namespace Tide.Core
         public bool AllowInternalCollisions { get; set; }
         public int Count => shapes.Count;
 
-        internal static bool AABBAABBCollision(FAABB a, Vector3 aP, FAABB b, Vector3 bP, out Vector2 normal)
+        internal static bool AABBAABBCollision(FAABB a, Vector2 aP, FAABB b, Vector2 bP, out Vector2 normal)
         {
             bool bCollides = false;
             Vector2 _hitA = Vector2.Zero;
@@ -45,7 +45,7 @@ namespace Tide.Core
 
             if (xOverlap > 0)
             {
-                float ny = bP.Z - aP.Z;
+                float ny = bP.Y - aP.Y;
                 float yExtent = a.yExtent + b.yExtent;
                 float yOverlap = yExtent - Math.Abs(ny);
 
@@ -68,11 +68,11 @@ namespace Tide.Core
             return bCollides;
         }
 
-        internal static bool AABBCircleCollision(FAABB a, Vector3 aP, FCircle b, Vector3 bP, out Vector2 normal)
+        internal static bool AABBCircleCollision(FAABB a, Vector2 aP, FCircle b, Vector2 bP, out Vector2 normal)
         {
             normal = Vector2.Zero;
-            Vector2 ap2 = new Vector2(aP.X, aP.Z);
-            Vector2 bp2 = new Vector2(bP.X, bP.Z);
+            Vector2 ap2 = new Vector2(aP.X, aP.Y);
+            Vector2 bp2 = new Vector2(bP.X, bP.Y);
 
             Vector2 dist = bp2 - ap2;
             dist.X = Math.Clamp(dist.X, -a.xExtent, a.xExtent);
@@ -81,31 +81,30 @@ namespace Tide.Core
             Vector2 diff = bp2 - closest;
 
             float len = diff.Length();
-            bool collides = len < b.radius;
+            bool collides = len != 0 && len < b.radius;
 
             if (collides)
             {
                 float overlap = Math.Abs(b.radius - len);
-                //float overlap = Math.Abs(len - b.radius);
                 diff.Normalize();
                 normal = diff * overlap;
             }
             return collides;
         }
 
-        internal static bool AABBConeCollision(FAABB a, Vector3 aP, FCone cone, Vector3 bP, out Vector2 normal)
+        internal static bool AABBConeCollision(FAABB a, Vector2 aP, FCone cone, Vector2 bP, out Vector2 normal)
         {
             normal = Vector2.Zero;
             return false;
         }
 
-        internal static bool AABBRectangleCollision(FAABB a, Vector3 aP, FAABB b, Vector3 bP, out Vector2 normal)
+        internal static bool AABBRectangleCollision(FAABB a, Vector2 aP, FAABB b, Vector2 bP, out Vector2 normal)
         {
             normal = Vector2.Zero;
             return false;
         }
 
-        internal static bool CalculateCollisionsBetweenColliderComponents(ACollider2DComponent iCollider, ACollider2DComponent jCollider, GameTime gameTime)
+        internal static bool CalculateCollisionsBetweenColliderComponents(AColliderComponent iCollider, AColliderComponent jCollider, GameTime gameTime)
         {
             for (int i = 0; i < iCollider.Count; i++) // maybe multithread
             {
@@ -144,10 +143,10 @@ namespace Tide.Core
             return true;
         }
 
-        internal static bool CircleCircleCollision(FCircle a, Vector3 aP, FCircle b, Vector3 bP, out Vector2 normal)
+        internal static bool CircleCircleCollision(FCircle a, Vector2 aP, FCircle b, Vector2 bP, out Vector2 normal)
         {
             float fRadiiSum = a.radius + b.radius;
-            Vector2 dir = FVectorHelper.ToVector2(aP - bP);
+            Vector2 dir = aP - bP;
             float fDist = MathF.Sqrt(Vector2.Dot(dir, dir));
 
             normal = -Vector2.Normalize(dir) * (fDist - fRadiiSum);
@@ -155,25 +154,25 @@ namespace Tide.Core
             return fDist < fRadiiSum;
         }
 
-        internal static bool ConeConeCollision(FCone a, Vector3 aP, float aA, FCone b, Vector3 bP, float bA)
+        internal static bool ConeConeCollision(FCone a, Vector2 aP, float aA, FCone b, Vector2 bP, float bA)
         {
             return false;
         }
 
-        internal static bool ConeRectangleCollision(FCone c, Vector3 cP, float cA, FRectangle a, Vector3 aP, float aA)
+        internal static bool ConeRectangleCollision(FCone c, Vector2 cP, float cA, FRectangle a, Vector2 aP, float aA)
         {
             return false;
         }
 
         //https://bartwronski.com/2017/04/13/cull-that-cone/
-        internal static bool ConeSphereCollision(FCone c, Vector3 cP, float cA, FCircle b, Vector3 bP)
+        internal static bool ConeSphereCollision(FCone c, Vector2 cP, float cA, FCircle b, Vector2 bP)
         {
             float coneForward = cA;
             float coneAngle = c.angle;
 
-            Vector3 vecD = bP - cP;
-            float fDistSqr = Vector3.Dot(vecD, vecD);
-            float V1len = Vector3.Dot(vecD, new Vector3(MathF.Sin(coneForward), MathF.Cos(coneForward), 0.0f));
+            Vector2 vecD = bP - cP;
+            float fDistSqr = Vector2.Dot(vecD, vecD);
+            float V1len = Vector2.Dot(vecD, new Vector2(MathF.Sin(coneForward), MathF.Cos(coneForward)));
             float distanceClosestPoint = MathF.Cos(coneAngle) * MathF.Sqrt(fDistSqr - V1len * V1len) - V1len * MathF.Sin(coneAngle);
 
             float rad = b.radius;
@@ -184,25 +183,25 @@ namespace Tide.Core
             return !(angleCull || frontCull || backCull);
         }
 
-        internal static GridCell GetCell(Vector3 position)
+        internal static GridCell GetCell(Vector2 position)
         {
             GridCell newCell;
             newCell.X = (int)Math.Floor(position.X / GridSize);
-            newCell.Y = (int)Math.Floor(position.Z / GridSize);
+            newCell.Y = (int)Math.Floor(position.Y / GridSize);
             return newCell;
         }
 
-        internal static bool RectangleRectangleCollision(FRectangle a, Vector3 aP, float aA, FRectangle b, Vector3 bP, float bA)
+        internal static bool RectangleRectangleCollision(FRectangle a, Vector2 aP, float aA, FRectangle b, Vector2 bP, float bA)
         {
             return false;
         }
 
-        internal static bool RectangleSphereCollision(FRectangle a, Vector3 aP, float aA, FCircle b, Vector3 bP)
+        internal static bool RectangleSphereCollision(FRectangle a, Vector2 aP, float aA, FCircle b, Vector2 bP)
         {
             return false;
         }
 
-        internal static bool StaticBroadPhase(ACollider2DComponent iCollider, int i, ACollider2DComponent jCollider, int j)
+        internal static bool StaticBroadPhase(AColliderComponent iCollider, int i, AColliderComponent jCollider, int j)
         {
             GridCell a = GetCell(iCollider.transforms.positions[i]);
             GridCell b = GetCell(jCollider.transforms.positions[j]);
@@ -213,7 +212,7 @@ namespace Tide.Core
             return cellDeltaX < 2 && cellDeltaY < 2;
         }
 
-        internal static bool StaticNarrowPhase(ACollider2DComponent iCollider, int i, ACollider2DComponent jCollider, int j, out Vector2 normal)
+        internal static bool StaticNarrowPhase(AColliderComponent iCollider, int i, AColliderComponent jCollider, int j, out Vector2 normal)
         {
             bool collision = false;
 
@@ -328,7 +327,7 @@ namespace Tide.Core
 
         public static void StaticTickImplementation(UComponentGraph ComponentGraph, GameTime gameTime)
         {
-            List<ACollider2DComponent> StaticColliders = ComponentGraph.FindAll<ACollider2DComponent>();
+            List<AColliderComponent> StaticColliders = ComponentGraph.FindAll<AColliderComponent>();
 
             // iterate over colliders and calculate collisions
             for (int i = 0; i < StaticColliders.Count; i++)
@@ -451,7 +450,7 @@ namespace Tide.Core
 
         public void CollisionUpdate(GameTime gameTime)
         {
-            if (this == ScriptGraph.Find<ACollider2DComponent>())
+            if (this == ScriptGraph.Find<AColliderComponent>())
             {
                 StaticTickImplementation(ScriptGraph, gameTime);
             }
@@ -477,7 +476,7 @@ namespace Tide.Core
         {
             if (serialisedDataPath != null && serialisedDataPath != "")
             {
-                FCollider2D loaded = content.Load<FCollider2D>(serialisedDataPath);
+                FCollider loaded = content.Load<FCollider>(serialisedDataPath);
 
                 for (int i = 0; i < loaded.colliderTypes.Length; i++)
                 {
@@ -490,7 +489,7 @@ namespace Tide.Core
         {
             string ID = ISerialisableComponent.GetSerialisableID(this, path, ref serialisedSet);
 
-            serialisedSet.Add(ID, new FCollider2D
+            serialisedSet.Add(ID, new FCollider
             {
                 colliderTypes = colliderTypes.ToArray(),
                 layers = layers.ToArray(),

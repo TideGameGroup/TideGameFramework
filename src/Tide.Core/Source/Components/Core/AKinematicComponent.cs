@@ -6,19 +6,19 @@ namespace Tide.Core
 {
     public struct FKinematic2DComponentContructorArgs
     {
-        public ACollider2DComponent collider2DComponent;
-        public ATransform2D transforms;
+        public AColliderComponent collider2DComponent;
+        public ATransform transforms;
     }
 
-    public class AKinematic2DComponent : UComponent, IPhysicsComponent, ISerialisableComponent
+    public class AKinematicComponent : UComponent, IPhysicsComponent, ISerialisableComponent
     {
-        private readonly ACollider2DComponent collider2DComponent;
-        private readonly ATransform2D transforms;
+        private readonly AColliderComponent collider2DComponent;
+        private readonly ATransform transforms;
 
         private List<bool> bIsFixed = new List<bool>();
         private List<Vector2> impulses = new List<Vector2>();
 
-        public AKinematic2DComponent(FKinematic2DComponentContructorArgs args)
+        public AKinematicComponent(FKinematic2DComponentContructorArgs args)
         {
             TrySetDefault(args.transforms, out transforms);
             TrySetDefault(args.collider2DComponent, out collider2DComponent);
@@ -29,7 +29,7 @@ namespace Tide.Core
 
         public int Count => transforms.Count;
 
-        private void HandleCollision(int i, Vector2 normal, ACollider2DComponent other, int j, GameTime gameTime, bool shouldCalculate)
+        private void HandleCollision(int i, Vector2 normal, AColliderComponent other, int j, GameTime gameTime, bool shouldCalculate)
         {
             if (bIsFixed[i] == false)
             {
@@ -74,9 +74,9 @@ namespace Tide.Core
         {
             for (int i = 0; i < impulses.Count; i++)
             {
-                Vector3 pos = transforms.positions[i];
+                Vector2 pos = transforms.positions[i];
                 pos.X += impulses[i].X;
-                pos.Z += impulses[i].Y;
+                pos.Y += impulses[i].Y;
                 impulses[i] = Vector2.Zero;
                 transforms.positions[i] = pos;
             }

@@ -6,6 +6,6 @@ namespace Tide.Core
 {
     public interface IDrawableCanvasScript
     {
-        public void DrawUI(UView3D view3D, SpriteBatch spriteBatch, GameTime gameTime);
+        public void DrawUI(UViewport view2D, SpriteBatch spriteBatch, GameTime gameTime);
     }
 }

@@ -500,7 +500,7 @@ namespace Tide.Core
         }
 
         // draw interface
-        public void DrawUI(UView3D view3D, SpriteBatch spriteBatch, GameTime gameTime)
+        public void DrawUI(UViewport view2D, SpriteBatch spriteBatch, GameTime gameTime)
         {
             int currentParent = 0;
 

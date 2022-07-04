@@ -80,7 +80,7 @@ namespace Tide.XMLSchema
         ERECTANGLE
     }
 
-    public struct FCollider2D : ISerialisedInstanceData
+    public struct FCollider : ISerialisedInstanceData
     {
         public ECollider2DType[] colliderTypes;
         public uint[] layers;

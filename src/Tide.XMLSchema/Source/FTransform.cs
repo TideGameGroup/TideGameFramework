@@ -3,12 +3,10 @@ using System.Collections.Generic;
 
 namespace Tide.XMLSchema
 {
-    public struct FTransform2D : ISerialisedInstanceData
+    public struct FTransform : ISerialisedInstanceData
     {
-        public Vector3[]    positions;
+        public Vector2[]    positions;
         public float[]      angles;
         public float[]      scales;
-
-        public string Type => "Tide.Core.ATransform2D";
     }
 }
