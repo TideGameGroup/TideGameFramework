@@ -1,2 +1,10 @@
+![CoverImage](./media/Tide.png)
+
 # TideGameFramework
-Tide is a game framework built atop Monogame. 
+
+Tide is a Data-oriented, 2D game framework built atop Monogame.
+
+# Building
+
+# Updating
+

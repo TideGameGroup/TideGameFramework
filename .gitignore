@@ -59,7 +59,7 @@ dkms.conf
 /src/Tide.Core/obj
 /src/.vs
 .vs
-
-
 /src/Tide.Tools/bin
 /src/Tide.Tools/obj
+/src/Tide.Reflection/obj
+/src/Tide.Reflection/obj/Debug
