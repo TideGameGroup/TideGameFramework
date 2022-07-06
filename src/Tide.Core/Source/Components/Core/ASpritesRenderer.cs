@@ -125,6 +125,9 @@ namespace Tide.Core
 
         public void Draw2D(UViewport view, SpriteBatch spriteBatch, GameTime gameTime)
         {
+            float ymod = view.position.Y + view.Scale / 2;
+            float yalpha = 1 / view.Scale;
+
             for (int i = 0; i < transforms.Count; i++)
             {
                 if (texIDs[i] == "" || !bShouldDraw[i]) { continue; }
@@ -170,7 +173,7 @@ namespace Tide.Core
                     centre.Center.ToVector2(),
                     1f,
                     SpriteEffects.None,
-                    0f
+                    0f //(transforms.positions[i].Y + ymod) * yalpha
                 );
             }
         }
