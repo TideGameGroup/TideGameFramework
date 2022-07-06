@@ -123,7 +123,7 @@ namespace Tide.Core
             }
         }
 
-        public void Draw2D(UViewport view, SpriteBatch spriteBatch, GameTime gameTime)
+        public void Draw2D(UView view, SpriteBatch spriteBatch, GameTime gameTime)
         {
             for (int i = 0; i < transforms.Count; i++)
             {

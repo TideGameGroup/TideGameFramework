@@ -6,6 +6,6 @@ namespace Tide.Core
 {
     public interface IDrawableComponent
     {
-        public void Draw2D(UViewport view2D, SpriteBatch spriteBatch, GameTime gameTime);
+        public void Draw2D(UView view2D, SpriteBatch spriteBatch, GameTime gameTime);
     }
 }

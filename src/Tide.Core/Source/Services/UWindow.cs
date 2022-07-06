@@ -8,14 +8,14 @@ namespace Tide.Core
     {
         public bool bFullscreen;
         public GraphicsDeviceManager graphicsDeviceManager;
-        public UViewport view2D;
+        public UView view2D;
         public GameWindow window;
     }
 
     public class UWindow : UComponent
     {
         private readonly GraphicsDeviceManager graphicsDeviceManager;
-        private readonly UViewport view2D;
+        private readonly UView view2D;
         private readonly GameWindow window;
 
         public UWindow(FWindowConstructorArgs args)

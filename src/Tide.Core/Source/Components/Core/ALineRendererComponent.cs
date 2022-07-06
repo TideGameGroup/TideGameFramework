@@ -19,7 +19,7 @@ namespace Tide.Core
 
         public int Count => points.Count;
 
-        public void DrawLine(SpriteBatch spriteBatch, Vector2 origin, Vector2 destination, Color color, UViewport view2D)
+        public void DrawLine(SpriteBatch spriteBatch, Vector2 origin, Vector2 destination, Color color, UView view2D)
         {
             Vector2 origin2d = view2D.WorldToScreen(origin, out _);
             Vector2 destin2d = view2D.WorldToScreen(destination, out _);
@@ -49,7 +49,7 @@ namespace Tide.Core
             return points.Count - 1;
         }
 
-        public void Draw2D(UViewport view2D, SpriteBatch spriteBatch, GameTime gameTime)
+        public void Draw2D(UView view2D, SpriteBatch spriteBatch, GameTime gameTime)
         {
             for (int l = 0; l < points.Count; l++)
             {

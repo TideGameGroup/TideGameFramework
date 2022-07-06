@@ -15,9 +15,6 @@ namespace Tide.Core
         private RasterizerState rasterizerUIState;
         private Stopwatch updateStopwatch = null;
 
-        //protected RenderTarget2D PostProcessTarget;
-        //protected RenderTarget2D RenderTarget;
-
         protected UStatistics statistics = null;
         public bool bDrawStats = true;
         public bool bFixedTimestep = true;
@@ -26,8 +23,8 @@ namespace Tide.Core
         public Color clearColor = Color.AntiqueWhite;
         public int numPhysicsSubsteps = 2;
 
-        private Texture2D backgroundTexture;
-        private Texture2D overlayTexture;
+        public Texture2D backgroundTexture;
+        public Texture2D overlayTexture;
 
         public TGame()
         {
@@ -47,7 +44,7 @@ namespace Tide.Core
         protected UComponentGraph ComponentGraph { get; private set; }
         protected USettings Settings { get; private set; }
         protected SpriteBatch SpriteBatch { get; private set; }
-        public UViewport View { get; set; }
+        public UView View { get; set; }
         public UWindow WindowManager { get; set; }
 
         [Conditional("DEBUG")]
@@ -95,7 +92,7 @@ namespace Tide.Core
             GraphicsDevice.Clear(clearColor);
 
             // background
-            /*
+            
             SpriteBatch.Begin(
                 SpriteSortMode.Deferred,
                 BlendState.AlphaBlend,
@@ -108,7 +105,6 @@ namespace Tide.Core
             }
 
             SpriteBatch.End();
-            */
 
             // 2d pass
             SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp,
@@ -168,7 +164,7 @@ namespace Tide.Core
             rasterizerUIState = new RasterizerState() { ScissorTestEnable = true };
             statistics = new UStatistics();
 
-            View = new UViewport(GraphicsDevice.Viewport);
+            View = new UView(GraphicsDevice.Viewport);
 
             ComponentGraph = new UComponentGraph();
             PostProcessStack = new UPostProcessStack(ContentManager, GraphicsDevice);
@@ -206,10 +202,10 @@ namespace Tide.Core
             overlayTexture = ContentManager.Load<Texture2D>("Vignette");
         }
 
-        protected virtual void OnDraw2D(UViewport view2D, SpriteBatch spriteBatch, GameTime gameTime)
+        protected virtual void OnDraw2D(UView view2D, SpriteBatch spriteBatch, GameTime gameTime)
         { }
 
-        protected virtual void OnDrawUI(UViewport view2D, SpriteBatch spriteBatch, GameTime gameTime)
+        protected virtual void OnDrawUI(UView view2D, SpriteBatch spriteBatch, GameTime gameTime)
         { }
 
         protected virtual void OnUpdate(GameTime gameTime)

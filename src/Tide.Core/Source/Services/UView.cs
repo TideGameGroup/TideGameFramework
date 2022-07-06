@@ -1,15 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace Tide.Core
 {
-    public class UViewport : IViewComponent
+    public class UView : IViewComponent
     {
         public Vector2 position;
         public Matrix ProjectionInverse;
         public Viewport viewport;
 
-        public UViewport(Viewport viewport)
+        public UView(Viewport viewport)
         {
             position = Vector2.Zero;
             Scale = 1440f;
@@ -80,6 +81,12 @@ namespace Tide.Core
             InFrustum = true; // in frustum?
             //InFrustum = comp.Z >= 0 && comp.Z <= 1.0f; // in frustum?
             return Vector2.Transform(world, ViewProjectionMatrix);
+        }
+
+        public void Translate(Vector2 vector2)
+        {
+            position += vector2;
+            BuildViewMatrix();
         }
     }
 }
