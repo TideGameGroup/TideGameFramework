@@ -21,8 +21,8 @@ namespace Tide.Core
 
         public void DrawLine(SpriteBatch spriteBatch, Vector2 origin, Vector2 destination, Color color, UView view2D)
         {
-            Vector2 origin2d = view2D.WorldToScreen(origin, out _);
-            Vector2 destin2d = view2D.WorldToScreen(destination, out _);
+            Vector2 origin2d = origin * new Vector2(1f, -1f);
+            Vector2 destin2d = destination * new Vector2(1f, -1f);
 
             float dist = Vector2.Distance(origin2d, destin2d);
             float angle = (float)Math.Atan2(destin2d.Y - origin2d.Y, destin2d.X - origin2d.X);
