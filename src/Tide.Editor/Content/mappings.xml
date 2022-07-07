@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<XnaContent xmlns:ns="Microsoft.Xna.Framework">
+  <Asset Type="Tide.XMLSchema.FContentMappings">
+	  <names>
+		  <Item>BaseUI</Item>
+		</names>
+		<paths>
+		  <Item>Textures\BaseUI</Item>
+		</paths>
+	</Asset>
+</XnaContent>

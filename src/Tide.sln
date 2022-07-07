@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tide.XMLSchema", "Tide.XMLS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tide.Tools", "Tide.Tools\Tide.Tools.csproj", "{46BC4A67-47F6-4ADF-9498-80DC48BE5EC7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tide.Reflection", "Tide.Reflection\Tide.Reflection.csproj", "{655DC22C-F03C-4D08-BD18-AD12E0A1E0BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tide.Reflection", "Tide.Reflection\Tide.Reflection.csproj", "{655DC22C-F03C-4D08-BD18-AD12E0A1E0BD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tide.Editor", "Tide.Editor\Tide.Editor.csproj", "{AAB76104-8943-440B-95E4-810518534E95}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{655DC22C-F03C-4D08-BD18-AD12E0A1E0BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{655DC22C-F03C-4D08-BD18-AD12E0A1E0BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{655DC22C-F03C-4D08-BD18-AD12E0A1E0BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAB76104-8943-440B-95E4-810518534E95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAB76104-8943-440B-95E4-810518534E95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAB76104-8943-440B-95E4-810518534E95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAB76104-8943-440B-95E4-810518534E95}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
