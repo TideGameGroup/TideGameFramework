@@ -29,7 +29,29 @@ namespace Tide.Core
         {
             InputComponent = new AInputComponent(input);
 
-            CinematicCanvas = new ACanvasComponent(content, this.InputComponent, content.Load<FCanvas>("Cinematic"), EFocus.Cinematic | EFocus.GameUI);
+            FCanvasComponentConstructorArgs canvasArgs =
+                new FCanvasComponentConstructorArgs
+                {
+                    audio = null,
+                    canvas = content.Load<FCanvas>("Cinematic"),
+                    content = content,
+                    focus = EFocus.Cinematic | EFocus.GameUI,
+                    input = InputComponent,
+                    scale = 1f
+                };
+
+            CinematicCanvas = new ACanvasComponent(canvasArgs);
+
+            FCanvasDrawComponentConstructorArgs canvasRenderArgs =
+                new FCanvasDrawComponentConstructorArgs
+                {
+                    component = CinematicCanvas,
+                    content = content,
+                    input = InputComponent
+                };
+
+            CinematicCanvasRenderer = new ACanvasDrawComponent(canvasRenderArgs);
+
             canvases.Add("self", CinematicCanvas);
 
             currentPage = page;
@@ -46,6 +68,7 @@ namespace Tide.Core
         public string CachedHash { get; set; }
 
         public ACanvasComponent CinematicCanvas { get; private set; }
+        public ACanvasDrawComponent CinematicCanvasRenderer { get; private set; }
         public AInputComponent InputComponent { get; private set; }
 
         private void BindCinematic(int page, double time)
@@ -148,6 +171,31 @@ namespace Tide.Core
             return currentPage != -1 && currentPage < bLocksInput.Count;
         }
 
+        public void RegisterCanvas(string name, ACanvasComponent canvas)
+        {
+            canvases.TryAdd(name, canvas);
+        }
+
+        public void RegisterCanvases(Dictionary<string, ACanvasComponent> dict)
+        {
+            foreach (string key in dict.Keys)
+            {
+                RegisterCanvas(key, dict[key]);
+            }
+        }
+
+        public void RegisterFunction(string name, CinematicDelegate func)
+        {
+            functions.TryAdd(name, func);
+        }
+
+        public void UnregisterCanvas(string name)
+        {
+            canvases.Remove(name);
+        }
+
+        #region ISerialisableComponent
+
         public void Load(UContentManager content, string serialisedScriptPath)
         {
             if (serialisedScriptPath == "" || serialisedScriptPath == null)
@@ -155,6 +203,7 @@ namespace Tide.Core
                 bIsActive = false;
                 bIsVisible = false;
                 UnregisterChildComponent(CinematicCanvas);
+                UnregisterChildComponent(CinematicCanvasRenderer);
                 return;
             }
 
@@ -186,24 +235,6 @@ namespace Tide.Core
             CinematicCanvas.SetWidgetText("text", texts[currentPage]);
         }
 
-        public void RegisterCanvas(string name, ACanvasComponent canvas)
-        {
-            canvases.TryAdd(name, canvas);
-        }
-
-        public void RegisterCanvases(Dictionary<string, ACanvasComponent> dict)
-        {
-            foreach (string key in dict.Keys)
-            {
-                RegisterCanvas(key, dict[key]);
-            }
-        }
-
-        public void RegisterFunction(string name, CinematicDelegate func)
-        {
-            functions.TryAdd(name, func);
-        }
-
         public string Serialise(string path, ref Dictionary<string, ISerialisedInstanceData> serialisedSet)
         {
             string ID = ISerialisableComponent.GetSerialisableID(this, path, ref serialisedSet);
@@ -226,20 +257,21 @@ namespace Tide.Core
                 currentPage = 0;
                 deferredPage = 0;
                 RegisterChildComponent(CinematicCanvas);
+                RegisterChildComponent(CinematicCanvasRenderer);
                 BindCinematic(currentPage, 0.0);
             }
             else
             {
                 Load(content, serialisedScriptPath);
                 RegisterChildComponent(CinematicCanvas);
+                RegisterChildComponent(CinematicCanvasRenderer);
                 currentCinematic = serialisedScriptPath;
             }
         }
 
-        public void UnregisterCanvas(string name)
-        {
-            canvases.Remove(name);
-        }
+        #endregion ISerialisableComponent
+
+        #region IUpdateComponent
 
         public void Update(GameTime gameTime)
         {
@@ -277,5 +309,7 @@ namespace Tide.Core
                 functions[currentFunction].Invoke(gameTime);
             }
         }
+
+        #endregion IUpdateComponent
     }
 }
