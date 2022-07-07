@@ -44,6 +44,8 @@ namespace Tide.Core
         protected UComponentGraph ComponentGraph { get; private set; }
         protected USettings Settings { get; private set; }
         protected SpriteBatch SpriteBatch { get; private set; }
+        protected UAudio Audio { get; private set; }
+        protected UInput Input { get; private set; }
         public UView View { get; set; }
         public UWindow WindowManager { get; set; }
 
@@ -163,6 +165,8 @@ namespace Tide.Core
             rasterizerState = new RasterizerState() { ScissorTestEnable = false };
             rasterizerUIState = new RasterizerState() { ScissorTestEnable = true };
             statistics = new UStatistics();
+            Audio = new UAudio(ContentManager, Settings);
+            Input = new UInput(statistics);
 
             View = new UView(GraphicsDevice.Viewport);
 
@@ -181,10 +185,12 @@ namespace Tide.Core
 
             WindowManager = new UWindow(windowConstructorArgs);
 
-            ComponentGraph.RegisterScript(PostProcessStack);
-            ComponentGraph.RegisterScript(Settings);
-            ComponentGraph.RegisterScript(statistics);
-            ComponentGraph.RegisterScript(WindowManager);
+            ComponentGraph.Add(PostProcessStack);
+            ComponentGraph.Add(Settings);
+            ComponentGraph.Add(statistics);
+            ComponentGraph.Add(WindowManager);
+            ComponentGraph.Add(Audio);
+            ComponentGraph.Add(Input);
 
             Settings.SetOnChangedCallback("fullscreen", () =>
                 {
@@ -197,9 +203,6 @@ namespace Tide.Core
         {
             ContentManager = new UContentManager(Content, GraphicsDevice);
             font = ContentManager.Load<SpriteFont>("Arial");
-
-            backgroundTexture = ContentManager.Load<Texture2D>("back");
-            overlayTexture = ContentManager.Load<Texture2D>("Vignette");
         }
 
         protected virtual void OnDraw2D(UView view2D, SpriteBatch spriteBatch, GameTime gameTime)
