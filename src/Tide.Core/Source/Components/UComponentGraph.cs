@@ -111,7 +111,7 @@ namespace Tide.Core
             return _GetScriptsRecursive(RootScript).GetEnumerator();
         }
 
-        public UComponent RegisterScript(UComponent script, UComponent parent = null, int at = -1)
+        public UComponent Add(UComponent script, UComponent parent = null, int at = -1)
         {
             if (parent == null)
             {
