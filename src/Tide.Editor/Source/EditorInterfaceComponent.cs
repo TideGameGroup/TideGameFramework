@@ -1,4 +1,5 @@
-﻿using Tide.Core;
+﻿using Microsoft.Xna.Framework;
+using Tide.Core;
 using Tide.Tools;
 using Tide.XMLSchema;
 
@@ -8,6 +9,7 @@ namespace Tide.Editor
     {
         public UInput input;
         public UContentManager content;
+        public GameWindow window;
     }
 
     public class UEditorInterface : UComponent
@@ -29,7 +31,8 @@ namespace Tide.Editor
                     content = content,
                     focus = EFocus.Cinematic | EFocus.GameUI,
                     input = InputComponent,
-                    scale = 1f
+                    scale = 1f,
+                    window = args.window
                 };
 
             EditorCanvasComponent = new ACanvasComponent(canvasArgs);

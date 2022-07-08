@@ -15,6 +15,7 @@ namespace Tide.Core
         public EFocus focus;
         public AInputComponent input;
         public float scale;
+        public GameWindow window;
     }
 
     public class ACanvasComponent : UComponent, IUpdateComponent
@@ -86,6 +87,20 @@ namespace Tide.Core
                     AInputComponent.PopFocus(focus);
                 }
             };
+
+            if (args.window != null)
+            {
+                args.window.TextInput += handleTextInput;
+            }
+        }
+
+        private void handleTextInput(object sender, TextInputEventArgs e)
+        {
+            if (focusedWidget == -1) { return; }
+            if (FTextField.HandleTextInput(cache.canvas, focusedWidget, e))
+            {
+                focusedWidget = -1;
+            }
         }
 
         public bool IsEnabled { get; set; }

@@ -28,7 +28,8 @@ namespace Tide.Editor
                 new FEditorInterfaceConstructorArgs
                 {
                     input = Input,
-                    content = ContentManager
+                    content = ContentManager,
+                    window = Window
                 };
 
             EditorInterfaceComponent = new UEditorInterface(interfaceArgs);

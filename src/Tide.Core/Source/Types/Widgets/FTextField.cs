@@ -1,10 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Microsoft.Xna.Framework.Input;
 using Tide.XMLSchema;
 
-namespace Tide.Core.Source.Types.Widgets
+namespace Tide.Core
 {
 
     // https://docs.monogame.net/api/Microsoft.Xna.Framework.GameWindow.html
@@ -16,6 +14,30 @@ namespace Tide.Core.Source.Types.Widgets
 
         }
 
+        public static bool HandleTextInput(FCanvas canvas, int i, TextInputEventArgs args)
+        {
+            switch (args.Key)
+            {
+                case Keys.Escape:
+                    return true;
 
+                case Keys.Enter:
+                    canvas.texts[i] += '\n';
+                    break;
+
+                case Keys.Back:
+                    if (canvas.texts[i].Length > 0)
+                    {
+                        canvas.texts[i] = canvas.texts[i].Remove(canvas.texts[i].Length - 1);
+                    }
+                    break;
+
+                default:
+                    canvas.texts[i] += args.Character;
+                    break;
+            }
+
+            return false;
+        }
     }
 }
