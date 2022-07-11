@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ namespace Tide.Core
     public class UContentManager
     {
         Dictionary<string, string> pathMappings = new Dictionary<string, string>();
+        public static Texture2D nullTexture;
 
         public UContentManager(ContentManager contentManager, GraphicsDevice graphicsDevice)
         {
@@ -22,6 +24,9 @@ namespace Tide.Core
                 string name = mappings.names[i];
                 pathMappings[name] = mappings.paths[i];
             }
+
+            nullTexture = new Texture2D(GraphicsDevice, 1, 1);
+            nullTexture.SetData(new Color[] { Color.DeepPink });
         }
 
         public ContentManager Content { get; private set; }

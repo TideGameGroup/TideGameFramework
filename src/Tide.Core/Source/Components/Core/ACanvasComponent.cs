@@ -304,6 +304,9 @@ namespace Tide.Core
             switch (cache.canvas.widgetTypes[i])
             {
                 case EWidgetType.text:
+                    DoHover(gameTime, frameHoveredWidgets, i);
+                    break;
+
                 case EWidgetType.panel:
                     break;
 

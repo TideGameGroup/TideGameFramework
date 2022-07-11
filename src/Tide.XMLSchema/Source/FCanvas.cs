@@ -67,8 +67,8 @@ namespace Tide.XMLSchema
                 textures = new string[textures.Length],
                 texts = new string[texts.Length],
                 tooltips = new string[tooltips.Length],
-                hoverSounds = new string[tooltips.Length],
-                clickSounds = new string[tooltips.Length],
+                hoverSounds = new string[hoverSounds.Length],
+                clickSounds = new string[clickSounds.Length],
                 rectangles = new Rectangle[rectangles.Length],
                 alignments = new EWidgetAlignment[alignments.Length],
                 sources = new Rectangle[sources.Length],
@@ -93,6 +93,30 @@ namespace Tide.XMLSchema
             highlightColors.CopyTo(deepCopy.highlightColors, 0);
             widgetTypes.CopyTo(deepCopy.widgetTypes, 0);
 
+            return deepCopy;
+        }
+
+        public static FCanvas Empty(string ID = "", int size = 1)
+        {
+            FCanvas deepCopy = new FCanvas
+            {
+                ID = ID,
+                anchors = new EWidgetAnchor[size],
+                parents = new int[size],
+                fonts = new string[size],
+                IDs = new string[size],
+                textures = new string[size],
+                texts = new string[size],
+                tooltips = new string[size],
+                hoverSounds = new string[size],
+                clickSounds = new string[size],
+                rectangles = new Rectangle[size],
+                alignments = new EWidgetAlignment[size],
+                sources = new Rectangle[size],
+                colors = new Color[size],
+                highlightColors = new Color[size],
+                widgetTypes = new EWidgetType[size]
+            };
             return deepCopy;
         }
     }

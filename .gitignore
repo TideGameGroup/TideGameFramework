@@ -69,3 +69,4 @@ dkms.conf
 /src/Tide.Editor/bin
 /src/Tide.Editor/Content/obj
 /src/Tide.Editor/Content/bin
+*.xnb
