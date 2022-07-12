@@ -58,8 +58,8 @@ namespace Tide.Tools
 
         public void Add()
         {
-            DynamicAdd(alignments, EWidgetAlignment.Centre);
-            DynamicAdd(anchors, EWidgetAnchor.C);
+            DynamicAdd(alignments, EWidgetAlignment.Left);
+            DynamicAdd(anchors, EWidgetAnchor.NW);
             DynamicAdd(clickSounds, "");
             DynamicAdd(colors, Color.LightGray);
             DynamicAdd(fonts, "Arial");
@@ -78,8 +78,8 @@ namespace Tide.Tools
 
         public void Add(
             string ID,
-            EWidgetAlignment alignment = EWidgetAlignment.Centre, 
-            EWidgetAnchor anchor = EWidgetAnchor.C,
+            EWidgetAlignment alignment = EWidgetAlignment.Left, 
+            EWidgetAnchor anchor = EWidgetAnchor.NW,
             string clickSound = "",
             Color color = default,
             string font = "Arial",
@@ -133,42 +133,6 @@ namespace Tide.Tools
                 tooltips = tooltips.ToArray(),
                 widgetTypes = widgetTypes.ToArray()
             };
-        }
-
-        public FCanvas AsTree()
-        {
-            return new FCanvas
-            {
-                ID = ID,
-                root = root,
-                alignments = alignments.ToArray(),
-                anchors = anchors.ToArray(),
-                clickSounds = clickSounds.ToArray(),
-                colors = colors.ToArray(),
-                fonts = fonts.ToArray(),
-                highlightColors = highlightColors.ToArray(),
-                hoverSounds = hoverSounds.ToArray(),
-                IDs = IDs.ToArray(),
-                parents = parents.ToArray(),
-                rectangles = rectangles.ToArray(),
-                sources = sources.ToArray(),
-                texts = texts.ToArray(),
-                textures = textures.ToArray(),
-                tooltips = tooltips.ToArray(),
-                widgetTypes = widgetTypes.ToArray()
-            };
-        }
-
-        public FCanvas AsAOS()
-        {
-            FDynamicCanvas newCanvas = new FDynamicCanvas("AOSTree");
-
-            for (int i = 0; i < alignments.Count; i++)
-            {
-
-            }
-
-            return newCanvas.AsCanvas();
         }
 
         public void RemoveAt(int i)

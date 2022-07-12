@@ -48,9 +48,20 @@ namespace Tide.Editor
 
             EditorDrawComponent = new ACanvasDrawComponent(canvasRenderArgs);
 
+            EditorTreeCanvasComponentConstructorArgs treeArgs =
+                new EditorTreeCanvasComponentConstructorArgs
+                {
+                    content = content,
+                    input = args.input,
+                    window = args.window
+                };
+
+            EditorTreeCanvasComponent = new EditorTreeCanvasComponent(treeArgs);
+
             RegisterChildComponent(InputComponent);
             RegisterChildComponent(EditorCanvasComponent);
             RegisterChildComponent(EditorDrawComponent);
+            RegisterChildComponent(EditorTreeCanvasComponent);
 
             SetupBindings(EditorCanvasComponent);
         }
@@ -60,6 +71,7 @@ namespace Tide.Editor
         public ACanvasComponent EditorCanvasComponent { get; private set; }
         public ACanvasDrawComponent EditorDrawComponent { get; private set; }
         public AInputComponent InputComponent { get; private set; }
+        public EditorTreeCanvasComponent EditorTreeCanvasComponent { get; private set; }
 
         private string OpenFileDialog()
         {
@@ -107,6 +119,8 @@ namespace Tide.Editor
                     };
 
                 ActiveDrawComponent = new ACanvasDrawComponent(canvasRenderArgs);
+
+                EditorTreeCanvasComponent.GenerateTree(canvas);
             }
         }
 
