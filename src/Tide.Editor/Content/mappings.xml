@@ -3,9 +3,13 @@
   <Asset Type="Tide.XMLSchema.FContentMappings">
 	  <names>
 		  <Item>BaseUI</Item>
+			<Item>Icons</Item>
+			<Item>UI</Item>
 		</names>
 		<paths>
 		  <Item>Textures\BaseUI</Item>
+			<Item>Textures\Icons</Item>
+			<Item>UIs\UI</Item>
 		</paths>
 	</Asset>
 </XnaContent>

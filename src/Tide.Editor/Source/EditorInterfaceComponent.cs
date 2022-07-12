@@ -1,16 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
+using System.Windows.Forms;
 using Tide.Core;
 using Tide.Tools;
 using Tide.XMLSchema;
-using System.Windows.Forms;
 
 namespace Tide.Editor
 {
     public struct FEditorInterfaceConstructorArgs
     {
-        public UInput input;
         public UContentManager content;
+        public UInput input;
         public GameWindow window;
     }
 
@@ -29,7 +28,7 @@ namespace Tide.Editor
                 new FCanvasComponentConstructorArgs
                 {
                     audio = null,
-                    canvas = GenerateBaseCanvas(),
+                    canvas = content.Load<FCanvas>("UI"),
                     content = content,
                     focus = EFocus.Cinematic | EFocus.GameUI,
                     input = InputComponent,
@@ -56,51 +55,11 @@ namespace Tide.Editor
             SetupBindings(EditorCanvasComponent);
         }
 
-        public AInputComponent InputComponent { get; private set; }
-        public ACanvasComponent EditorCanvasComponent { get; private set; }
-        public ACanvasDrawComponent EditorDrawComponent { get; private set; }
         public ACanvasComponent ActiveCanvasComponent { get; private set; }
         public ACanvasDrawComponent ActiveDrawComponent { get; private set; }
-
-        public static FCanvas GenerateBaseCanvas()
-        {
-            FCanvas canvas = new FCanvas
-            {
-                ID = "UExportToolsCanvas",
-                anchors = new EWidgetAnchor[1] { EWidgetAnchor.C },
-                clickSounds = new string[1] { "" },
-                parents = new int[1] { -1 },
-                fonts = new string[1] { "Arial" },
-                IDs = new string[1] { "open" },
-                hoverSounds = new string[1] { "" },
-                textures = new string[1] { "" },
-                texts = new string[1] { "textfield" },
-                tooltips = new string[1] { "" },
-                rectangles = new Rectangle[1] { new Rectangle(-100, -30, 100, 30) },
-                alignments = new EWidgetAlignment[1] { EWidgetAlignment.Left },
-                sources = new Rectangle[1] { new Rectangle(0, 0, 1, 1) },
-                colors = new Color[1] { Color.Gray },
-                highlightColors = new Color[1] { Color.White },
-                widgetTypes = new EWidgetType[1] { EWidgetType.button },
-            };
-
-            return canvas;
-        }
-        public void SetupBindings(ACanvasComponent canvas)
-        {
-            canvas.BindAction("open.OnReleased", (gt) => { OpenUIFile(); });
-        }
-
-        public void Update(GameTime gameTime)
-        {
-            if (ActiveCanvasComponent != null)
-            {
-                RegisterChildComponent(ActiveCanvasComponent);
-                RegisterChildComponent(ActiveDrawComponent);
-
-                ActiveCanvasComponent = null;
-            }
-        }
+        public ACanvasComponent EditorCanvasComponent { get; private set; }
+        public ACanvasDrawComponent EditorDrawComponent { get; private set; }
+        public AInputComponent InputComponent { get; private set; }
 
         private string OpenFileDialog()
         {
@@ -130,11 +89,14 @@ namespace Tide.Editor
                     content = content,
                     focus = EFocus.Game,
                     input = InputComponent,
-                    scale = 1f,
+                    scale = 0.5f,
                     window = null
                 };
 
                 ActiveCanvasComponent = new ACanvasComponent(canvasArgs);
+
+                Rectangle bounds = content.GraphicsDevice.Viewport.Bounds;
+                ActiveCanvasComponent.cache.canvas.root = new Rectangle(bounds.Width / 2, 32, 0, 0);
 
                 FCanvasDrawComponentConstructorArgs canvasRenderArgs =
                     new FCanvasDrawComponentConstructorArgs
@@ -145,6 +107,22 @@ namespace Tide.Editor
                     };
 
                 ActiveDrawComponent = new ACanvasDrawComponent(canvasRenderArgs);
+            }
+        }
+
+        public void SetupBindings(ACanvasComponent canvas)
+        {
+            canvas.BindAction("open.OnReleased", (gt) => { OpenUIFile(); });
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            if (ActiveCanvasComponent != null)
+            {
+                RegisterChildComponent(ActiveCanvasComponent);
+                RegisterChildComponent(ActiveDrawComponent);
+
+                ActiveCanvasComponent = null;
             }
         }
     }

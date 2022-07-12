@@ -47,6 +47,7 @@ namespace Tide.XMLSchema
         public string[] IDs;
         public int[] parents;
         public Rectangle[] rectangles;
+        public Rectangle root;
         public Rectangle[] sources;
         public string[] texts;
         public string[] textures;
@@ -54,6 +55,31 @@ namespace Tide.XMLSchema
         public EWidgetType[] widgetTypes;
 
         public string Type => "Tide.ACanvas";
+
+        public static FCanvas Empty(string ID = "", int size = 1)
+        {
+            FCanvas deepCopy = new FCanvas
+            {
+                ID = ID,
+                anchors = new EWidgetAnchor[size],
+                parents = new int[size],
+                fonts = new string[size],
+                IDs = new string[size],
+                textures = new string[size],
+                texts = new string[size],
+                tooltips = new string[size],
+                hoverSounds = new string[size],
+                clickSounds = new string[size],
+                rectangles = new Rectangle[size],
+                root = Rectangle.Empty,
+                alignments = new EWidgetAlignment[size],
+                sources = new Rectangle[size],
+                colors = new Color[size],
+                highlightColors = new Color[size],
+                widgetTypes = new EWidgetType[size]
+            };
+            return deepCopy;
+        }
 
         public FCanvas DeepCopy()
         {
@@ -70,6 +96,7 @@ namespace Tide.XMLSchema
                 hoverSounds = new string[hoverSounds.Length],
                 clickSounds = new string[clickSounds.Length],
                 rectangles = new Rectangle[rectangles.Length],
+                root = Rectangle.Empty,
                 alignments = new EWidgetAlignment[alignments.Length],
                 sources = new Rectangle[sources.Length],
                 colors = new Color[colors.Length],
@@ -87,36 +114,13 @@ namespace Tide.XMLSchema
             clickSounds.CopyTo(deepCopy.clickSounds, 0);
             tooltips.CopyTo(deepCopy.tooltips, 0);
             rectangles.CopyTo(deepCopy.rectangles, 0);
+            deepCopy.root = root;
             alignments.CopyTo(deepCopy.alignments, 0);
             sources.CopyTo(deepCopy.sources, 0);
             colors.CopyTo(deepCopy.colors, 0);
             highlightColors.CopyTo(deepCopy.highlightColors, 0);
             widgetTypes.CopyTo(deepCopy.widgetTypes, 0);
 
-            return deepCopy;
-        }
-
-        public static FCanvas Empty(string ID = "", int size = 1)
-        {
-            FCanvas deepCopy = new FCanvas
-            {
-                ID = ID,
-                anchors = new EWidgetAnchor[size],
-                parents = new int[size],
-                fonts = new string[size],
-                IDs = new string[size],
-                textures = new string[size],
-                texts = new string[size],
-                tooltips = new string[size],
-                hoverSounds = new string[size],
-                clickSounds = new string[size],
-                rectangles = new Rectangle[size],
-                alignments = new EWidgetAlignment[size],
-                sources = new Rectangle[size],
-                colors = new Color[size],
-                highlightColors = new Color[size],
-                widgetTypes = new EWidgetType[size]
-            };
             return deepCopy;
         }
     }

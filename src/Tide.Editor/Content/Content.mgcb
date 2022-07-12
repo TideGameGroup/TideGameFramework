@@ -38,3 +38,20 @@
 /processorParam:TextureFormat=Color
 /build:Textures/BaseUI.png
 
+#begin Textures/Icons.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/Icons.png
+
+#begin UIs/UI.xml
+/importer:XmlImporter
+/processor:PassThroughProcessor
+/build:UIs/UI.xml
+

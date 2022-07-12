@@ -134,7 +134,9 @@ namespace Tide.Core
         {
             if (i == -1)
             {
-                return content.GraphicsDevice.Viewport.Bounds;
+                Rectangle rect = content.GraphicsDevice.Viewport.Bounds;
+                rect.Offset(canvas.root.Location);
+                return rect;
             }
 
             Rectangle parentRect = GetRectangle(canvas, canvas.parents[i]);

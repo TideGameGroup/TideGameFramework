@@ -15,10 +15,10 @@ namespace Tide.Core
     {
         private readonly UContentManager content;
 
-        public readonly FCanvas canvas;
         public readonly Dictionary<string, SpriteFont> fontCache = new Dictionary<string, SpriteFont>();
         public readonly Dictionary<string, Texture2D> textureCache = new Dictionary<string, Texture2D>();
         public readonly Dictionary<string, FCanvas> tooltipCache = new Dictionary<string, FCanvas>();
+        public FCanvas canvas;
 
         public FCanvasCache(FCanvasCacheConstructorArgs args)
         {

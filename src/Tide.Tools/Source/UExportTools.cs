@@ -17,12 +17,12 @@ namespace Tide.Tools
         {
             string path = Path.Combine(folder, string.Format("{0}.xml", Id));
 
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true;
-            using (XmlWriter writer = XmlWriter.Create(path, settings))
+            XmlWriterSettings settings = new XmlWriterSettings
             {
-                IntermediateSerializer.Serialize(writer, data, null);
-            }
+                Indent = true
+            };
+            using XmlWriter writer = XmlWriter.Create(path, settings);
+            IntermediateSerializer.Serialize(writer, data, null);
         }
 
         public static void ExportSerialisedSet(string path, ref Dictionary<string, ISerialisedInstanceData> serialisedSet)

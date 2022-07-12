@@ -41,9 +41,6 @@
     <ProjectReference Include="..\Tide.Tools\Tide.Tools.csproj" />
     <ProjectReference Include="..\Tide.XMLSchema\Tide.XMLSchema.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Content\UIs\" />
-  </ItemGroup>
   <Target Name="BeforeContent" BeforeTargets="RunContentBuilder">
     <Exec Command="$(ProjectDir)Content\map.py" />
   </Target>
