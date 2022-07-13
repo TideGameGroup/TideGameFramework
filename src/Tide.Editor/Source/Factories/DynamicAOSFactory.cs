@@ -21,9 +21,6 @@ namespace Tide.Editor
 
             for (int i = 0; i < canvas.alignments.Count; i++)
             {
-                // use a single struct factory to build a single struct canvas
-                // add to dynamic canvas
-
                 newCanvas.Add(
                     "button" + i.ToString(), 
                     rectangle: new Rectangle(0, i * 32, 100, 16),
@@ -32,6 +29,10 @@ namespace Tide.Editor
                     color: Color.White,
                     highlightColor: Color.White
                     );
+
+
+                // use a single struct factory to build a single struct canvas
+                // add to dynamic canvas
             }
         }
 

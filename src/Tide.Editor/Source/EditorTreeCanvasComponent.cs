@@ -13,7 +13,8 @@ namespace Tide.Editor
     {
         ETREE,
         ESOA,
-        EAOS
+        EAOS,
+        ESINGLE
     }
 
     public struct EditorTreeCanvasComponentConstructorArgs
@@ -36,7 +37,7 @@ namespace Tide.Editor
             TrySetDefault(args.content, out content);
             TrySetDefault(args.window, out window);
 
-            canvasType = ETreeCanvasType.EAOS;
+            canvasType = ETreeCanvasType.ESINGLE;
 
             InputComponent = new AInputComponent(args.input);
             RegisterChildComponent(InputComponent);
@@ -64,7 +65,9 @@ namespace Tide.Editor
                 case ETreeCanvasType.EAOS:
                     factory = new DynamicAOSFactory(DynamicCanvas);
                     break;
-
+                case ETreeCanvasType.ESINGLE:
+                    factory = new DynamicSingleStructFactory(DynamicCanvas, 0);
+                    break;
                 case ETreeCanvasType.ETREE:
                     break;
                 case ETreeCanvasType.ESOA:
@@ -73,7 +76,6 @@ namespace Tide.Editor
                     break;
             }
         }
-
 
         public void RebuildTree(FCanvas canvas)
         {
