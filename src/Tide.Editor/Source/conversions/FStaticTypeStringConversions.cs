@@ -16,9 +16,20 @@ namespace Tide.Editor
         {
             return rectangle.X.ToString() + " "
                 + rectangle.Y.ToString() + " "
-                + rectangle.Width + " "
-                + rectangle.Height;
+                + rectangle.Width.ToString() + " "
+                + rectangle.Height.ToString();
         }
 
+        public static string[] RectangleToStringArray(Rectangle rectangle)
+        {
+            string[] rtn = { 
+                rectangle.X.ToString(),
+                rectangle.Y.ToString(),
+                rectangle.Width.ToString(),
+                rectangle.Height.ToString()
+            };
+
+            return rtn;
+        }
     }
 }
