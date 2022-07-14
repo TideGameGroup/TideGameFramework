@@ -32,6 +32,11 @@ namespace Tide.Editor
             OnDynamicCanvasUpdated.Invoke();
         }
 
+        public void Rebuild()
+        {
+            OnDynamicCanvasSet.Invoke();
+        }
+
         public void Set(FDynamicCanvas dynamicCanvas)
         {
             DynamicCanvas = dynamicCanvas;

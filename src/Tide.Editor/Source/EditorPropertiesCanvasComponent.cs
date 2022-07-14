@@ -28,7 +28,7 @@ namespace Tide.Editor
             TrySetDefault(args.window, out window);
             TrySetDefault(args.dynamicCanvasComponent, out dynamicCanvasComponent);
 
-            dynamicCanvasComponent.OnDynamicCanvasUpdated += () => { CanvasComponent.cache.canvas = dynamicCanvasComponent.DynamicCanvas.AsCanvas(); };
+            //dynamicCanvasComponent.OnDynamicCanvasUpdated += () => { CanvasComponent.cache.canvas = dynamicCanvasComponent.DynamicCanvas.AsCanvas(); };
             dynamicCanvasComponent.OnDynamicCanvasSet += () => { RebuildCanvas(); };
             dynamicCanvasComponent.OnSelectionUpdated += () => { RebuildCanvas(); };
         }
@@ -73,11 +73,18 @@ namespace Tide.Editor
 
         private void SetupBindings(ACanvasComponent canvas)
         {
-            /*
             canvas.BindAction("ID_field.OnTextEntered", (gt) => {
-                DynamicCanvas.IDs[treeCanvasComponent.selectedWidget] = DynamicCanvas.texts[treeCanvasComponent.selectedWidget];
+                dynamicCanvasComponent.DynamicCanvas.IDs[dynamicCanvasComponent.selection] =
+                CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["ID_field"]];
+                dynamicCanvasComponent.Rebuild();
             });
-            */
+
+            canvas.BindAction("text_field.OnTextEntered", (gt) => {
+                dynamicCanvasComponent.DynamicCanvas.texts[dynamicCanvasComponent.selection] =
+                CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["text_field"]];
+                dynamicCanvasComponent.Refresh();
+            });
+
         }
 
         public void RebuildCanvas()

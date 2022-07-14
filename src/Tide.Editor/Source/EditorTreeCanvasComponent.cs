@@ -38,7 +38,7 @@ namespace Tide.Editor
 
             canvasType = ETreeCanvasType.EAOS;
 
-            dynamicCanvasComponent.OnDynamicCanvasUpdated += () => { CanvasComponent.cache.canvas = dynamicCanvasComponent.DynamicCanvas.AsCanvas(); };
+            //dynamicCanvasComponent.OnDynamicCanvasUpdated += () => { CanvasComponent.cache.canvas = dynamicCanvasComponent.DynamicCanvas.AsCanvas(); };
             dynamicCanvasComponent.OnDynamicCanvasSet += () => { RebuildCanvas(); };
             //dynamicCanvasComponent.OnSelectionUpdated += () => { RebuildCanvas(); };
         }
