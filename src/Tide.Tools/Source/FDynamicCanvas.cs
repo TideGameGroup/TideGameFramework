@@ -51,6 +51,8 @@ namespace Tide.Tools
             widgetTypes = new List<EWidgetType>(canvas.widgetTypes);
         }
 
+        public int Count => IDs.Count;
+
         public void DynamicAdd<T>(List<T> L, T _default)
         {
             L.Add(L.Count > 0 ? L[^1] : _default);

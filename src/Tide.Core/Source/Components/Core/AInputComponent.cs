@@ -106,10 +106,7 @@ namespace Tide.Core
 
         public void OnUnregisterScript()
         {
-            foreach (FActionHandle handle in actionHandles)
-            {
-                UnbindAction(handle);
-            }
+            ClearBindings();
         }
 
         public bool PollActionBinding(string action)
@@ -120,6 +117,14 @@ namespace Tide.Core
         public void UnbindAction(FActionHandle handle)
         {
             Handler.RemoveAction(handle);
+        }
+
+        public void ClearBindings()
+        {
+            foreach (FActionHandle handle in actionHandles)
+            {
+                UnbindAction(handle);
+            }
         }
     }
 }

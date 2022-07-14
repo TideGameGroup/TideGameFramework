@@ -74,10 +74,11 @@ namespace Tide.Editor
                     rectangle: new Rectangle(4, 4 + n * 20, 100, 20),
                     source: new Rectangle(0, 0, 16, 16),
                     texture: "Icons",
-                    color: Color.Black,
-                    highlightColor: Color.Black,
+                    color: Color.DarkSlateGray,
+                    highlightColor: Color.DarkSlateGray,
                     widgetType: EWidgetType.text,
-                    text: ID + ":"
+                    text: ID + ":",
+                    font: "consolas"
                     );
 
             newCanvas.Add(
@@ -89,7 +90,8 @@ namespace Tide.Editor
                 text: default_text,
                 color: Color.WhiteSmoke,
                 highlightColor: Color.White,
-                widgetType: EWidgetType.textfield
+                widgetType: EWidgetType.textfield,
+                font: "consolas"
                 );
         }
 
@@ -101,26 +103,28 @@ namespace Tide.Editor
                     rectangle: new Rectangle(4, 4 + n * 20, 100, 20),
                     source: new Rectangle(0, 0, 16, 16),
                     texture: "Icons",
-                    color: Color.Black,
-                    highlightColor: Color.Black,
+                    color: Color.DarkSlateGray,
+                    highlightColor: Color.DarkSlateGray,
                     widgetType: EWidgetType.text,
-                    text: ID + ":"
+                    text: ID + ":",
+                    font: "consolas"
                     );
 
             for (int i = 0; i < 4; i++)
             {
 
                 newCanvas.Add(
-                        ID + "_" + labels[i] + "_label",
-                        parent: 1,
-                        rectangle: new Rectangle(109 + i * 70, 4 + n * 20, 35, 20),
-                        source: new Rectangle(0, 0, 16, 16),
-                        texture: "Icons",
-                        color: Color.Black,
-                        highlightColor: Color.Black,
-                        widgetType: EWidgetType.text,
-                        text: labels[i]
-                        );
+                    ID + "_" + labels[i] + "_label",
+                    parent: 1,
+                    rectangle: new Rectangle(109 + i * 70, 4 + n * 20, 35, 20),
+                    source: new Rectangle(0, 0, 16, 16),
+                    texture: "Icons",
+                    color: Color.DarkSlateGray,
+                    highlightColor: Color.DarkSlateGray,
+                    widgetType: EWidgetType.text,
+                    text: labels[i],
+                    font: "consolas"
+                    );
 
                 newCanvas.Add(
                     ID + "_" + labels[i] + "_field",
@@ -131,7 +135,8 @@ namespace Tide.Editor
                     text: default_texts[i],
                     color: Color.WhiteSmoke,
                     highlightColor: Color.White,
-                    widgetType: EWidgetType.textfield
+                    widgetType: EWidgetType.textfield,
+                    font: "consolas"
                     );
             }
         }

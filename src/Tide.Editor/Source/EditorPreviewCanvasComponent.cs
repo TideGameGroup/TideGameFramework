@@ -1,36 +1,36 @@
 ﻿using Microsoft.Xna.Framework;
 using Tide.Core;
-using Tide.Tools;
 using Tide.XMLSchema;
 
 namespace Tide.Editor
 {
-    public struct EditorPropertiesCanvasComponentConstructorArgs
+    public struct EditorPreviewCanvasComponentConstructorArgs
     {
         public UContentManager content;
-        public EditorDynamicCanvasComponent dynamicCanvasComponent;
         public AInputComponent input;
         public GameWindow window;
+        public EditorDynamicCanvasComponent dynamicCanvasComponent;
     }
 
-    public class EditorPropertiesCanvasComponent : UComponent, IUpdateComponent
+    public class EditorPreviewCanvasComponent : UComponent, IUpdateComponent
     {
         private readonly UContentManager content;
         private readonly AInputComponent input;
         private readonly GameWindow window;
-        private ITreeCanvasFactory factory = null;
+        private bool rebuild = false;
+
         public EditorDynamicCanvasComponent dynamicCanvasComponent;
 
-        public EditorPropertiesCanvasComponent(EditorPropertiesCanvasComponentConstructorArgs args)
+        public EditorPreviewCanvasComponent(EditorPreviewCanvasComponentConstructorArgs args)
         {
             TrySetDefault(args.content, out content);
+            TrySetDefault(args.dynamicCanvasComponent, out dynamicCanvasComponent);
             TrySetDefault(args.input, out input);
             TrySetDefault(args.window, out window);
-            TrySetDefault(args.dynamicCanvasComponent, out dynamicCanvasComponent);
 
             dynamicCanvasComponent.OnDynamicCanvasUpdated += () => { CanvasComponent.cache.canvas = dynamicCanvasComponent.DynamicCanvas.AsCanvas(); };
             dynamicCanvasComponent.OnDynamicCanvasSet += () => { RebuildCanvas(); };
-            dynamicCanvasComponent.OnSelectionUpdated += () => { RebuildCanvas(); };
+            //dynamicCanvasComponent.OnSelectionUpdated += () => { RebuildCanvas(); };
         }
 
         public ACanvasComponent CanvasComponent { get; private set; }
@@ -67,30 +67,19 @@ namespace Tide.Editor
 
             RegisterChildComponent(CanvasComponent);
             RegisterChildComponent(DrawComponent);
-
-            SetupBindings(CanvasComponent);
-        }
-
-        private void SetupBindings(ACanvasComponent canvas)
-        {
-            /*
-            canvas.BindAction("ID_field.OnTextEntered", (gt) => {
-                DynamicCanvas.IDs[treeCanvasComponent.selectedWidget] = DynamicCanvas.texts[treeCanvasComponent.selectedWidget];
-            });
-            */
         }
 
         public void RebuildCanvas()
         {
-            factory = new DynamicSingleStructFactory(dynamicCanvasComponent.DynamicCanvas, dynamicCanvasComponent.selection);
+            rebuild = true;
         }
 
         public void Update(GameTime gameTime)
         {
-            if (factory != null)
+            if (rebuild)
             {
-                RebuildCanvasComponents(factory.GetCanvas());
-                factory = null;
+                RebuildCanvasComponents(dynamicCanvasComponent.DynamicCanvas.AsCanvas());
+                rebuild = false;
             }
         }
     }

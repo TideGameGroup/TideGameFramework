@@ -1,14 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Tide.Core;
-using Tide.Tools;
 using Tide.XMLSchema;
 
 namespace Tide.Editor
 {
-
     public enum ETreeCanvasType
     {
         ETREE,
@@ -20,64 +15,38 @@ namespace Tide.Editor
     public struct EditorTreeCanvasComponentConstructorArgs
     {
         public UContentManager content;
-        public UInput input;
+        public EditorDynamicCanvasComponent dynamicCanvasComponent;
+        public AInputComponent input;
         public GameWindow window;
     }
 
-    public class EditorTreeCanvasComponent : UComponent , IUpdateComponent
+    public class EditorTreeCanvasComponent : UComponent, IUpdateComponent
     {
         private readonly UContentManager content;
+        private readonly AInputComponent input;
         private readonly GameWindow window;
-        private ITreeCanvasFactory factory = null;
         private ETreeCanvasType canvasType;
+        private ITreeCanvasFactory factory = null;
+        public EditorDynamicCanvasComponent dynamicCanvasComponent;
 
         public EditorTreeCanvasComponent(EditorTreeCanvasComponentConstructorArgs args)
         {
-            NullCheck(args.input);
             TrySetDefault(args.content, out content);
+            TrySetDefault(args.dynamicCanvasComponent, out dynamicCanvasComponent);
+            TrySetDefault(args.input, out input);
             TrySetDefault(args.window, out window);
 
-            canvasType = ETreeCanvasType.ESINGLE;
+            canvasType = ETreeCanvasType.EAOS;
 
-            InputComponent = new AInputComponent(args.input);
-            RegisterChildComponent(InputComponent);
+            dynamicCanvasComponent.OnDynamicCanvasUpdated += () => { CanvasComponent.cache.canvas = dynamicCanvasComponent.DynamicCanvas.AsCanvas(); };
+            dynamicCanvasComponent.OnDynamicCanvasSet += () => { RebuildCanvas(); };
+            //dynamicCanvasComponent.OnSelectionUpdated += () => { RebuildCanvas(); };
         }
 
-        public FDynamicCanvas DynamicCanvas { get; private set; }
         public ACanvasComponent CanvasComponent { get; private set; }
         public ACanvasDrawComponent DrawComponent { get; private set; }
-        public AInputComponent InputComponent { get; private set; }
 
-        public void GenerateTree()
-        {
-            GenerateTree(DynamicCanvas);
-        }
-        public void GenerateTree(FCanvas canvas)
-        {
-            GenerateTree(new FDynamicCanvas(canvas));
-        }
-
-        public void GenerateTree(FDynamicCanvas dynamicCanvas)
-        {
-            DynamicCanvas = dynamicCanvas;
-            switch (canvasType)
-            {
-                case ETreeCanvasType.EAOS:
-                    factory = new DynamicAOSFactory(DynamicCanvas);
-                    break;
-                case ETreeCanvasType.ESINGLE:
-                    factory = new DynamicSingleStructFactory(DynamicCanvas, 0);
-                    break;
-                case ETreeCanvasType.ETREE:
-                    break;
-                case ETreeCanvasType.ESOA:
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        public void RebuildTree(FCanvas canvas)
+        private void RebuildCanvasComponents(FCanvas canvas)
         {
             UnregisterChildComponent(CanvasComponent);
             UnregisterChildComponent(DrawComponent);
@@ -89,7 +58,7 @@ namespace Tide.Editor
                     canvas = canvas,
                     content = content,
                     focus = EFocus.Cinematic | EFocus.GameUI,
-                    input = InputComponent,
+                    input = input,
                     scale = 1f,
                     window = window
                 };
@@ -101,20 +70,56 @@ namespace Tide.Editor
                 {
                     component = CanvasComponent,
                     content = content,
-                    input = InputComponent
+                    input = input
                 };
 
             DrawComponent = new ACanvasDrawComponent(canvasRenderArgs);
 
             RegisterChildComponent(CanvasComponent);
             RegisterChildComponent(DrawComponent);
+            SetupBindings();
+        }
+
+        private void SetupBindings()
+        {
+            for (int i = 0; i < dynamicCanvasComponent.DynamicCanvas.Count; i++)
+            {
+                int l = i;
+                CanvasComponent.BindAction("button" + i.ToString() + ".OnPressed", (gt) =>
+                {
+                    dynamicCanvasComponent.SetSelection(l);
+                });
+            }
+        }
+
+        public void RebuildCanvas()
+        {
+            switch (canvasType)
+            {
+                case ETreeCanvasType.EAOS:
+                    factory = new DynamicAOSFactory(dynamicCanvasComponent.DynamicCanvas);
+                    break;
+
+                case ETreeCanvasType.ESINGLE:
+                    factory = new DynamicSingleStructFactory(dynamicCanvasComponent.DynamicCanvas, 0);
+                    break;
+
+                case ETreeCanvasType.ETREE:
+                    break;
+
+                case ETreeCanvasType.ESOA:
+                    break;
+
+                default:
+                    break;
+            }
         }
 
         public void Update(GameTime gameTime)
         {
             if (factory != null)
             {
-                RebuildTree(factory.GetCanvas());
+                RebuildCanvasComponents(factory.GetCanvas());
                 factory = null;
             }
         }

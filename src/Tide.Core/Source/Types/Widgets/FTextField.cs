@@ -22,8 +22,8 @@ namespace Tide.Core
                     return true;
 
                 case Keys.Enter:
-                    canvas.texts[i] += '\n';
-                    break;
+                    return true;
+                    //canvas.texts[i] += '\n';
 
                 case Keys.Back:
                     if (canvas.texts[i].Length > 0)

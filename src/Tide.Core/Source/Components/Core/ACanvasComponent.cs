@@ -29,9 +29,9 @@ namespace Tide.Core
         public readonly FCanvasCache cache;
         public readonly FCanvasGraph graph;
         public readonly Dictionary<int, double> highlightedWidgets = new Dictionary<int, double>();
-        public int focusedWidget = -1;
         public readonly List<FSetting> values = new List<FSetting>();
         public string clickSound = "tick";
+        public int focusedWidget = -1;
         public Dictionary<int, double> hoveredWidgets = new Dictionary<int, double>();
         public string hoverSound = "blip";
 
@@ -70,12 +70,15 @@ namespace Tide.Core
 
             if (input != null)
             {
-                input.BindRawAction("primary.Pressed", (GameTime gt) => {
-                    suffix = ".Pressed";});
+                input.BindRawAction("primary.Pressed", (GameTime gt) =>
+                {
+                    suffix = ".Pressed";
+                });
                 input.BindRawAction("primary.OnPressed", (GameTime gt) => { suffix = ".OnPressed"; focusedWidget = -1; });
                 input.BindRawAction("primary.Released", (GameTime gt) => { suffix = ".Released"; });
-                input.BindRawAction("primary.OnReleased", (GameTime gt) => { 
-                    suffix = ".OnReleased"; 
+                input.BindRawAction("primary.OnReleased", (GameTime gt) =>
+                {
+                    suffix = ".OnReleased";
                 });
             }
 
@@ -94,16 +97,8 @@ namespace Tide.Core
             }
         }
 
-        private void handleTextInput(object sender, TextInputEventArgs e)
-        {
-            if (focusedWidget == -1) { return; }
-            if (FTextField.HandleTextInput(cache.canvas, focusedWidget, e))
-            {
-                focusedWidget = -1;
-            }
-        }
-
         public bool IsEnabled { get; set; }
+
         public bool IsHovered { get => bIsHovered; }
 
         private void DoHover(GameTime gameTime, Dictionary<int, double> frameHoveredWidgets, int i)
@@ -153,11 +148,27 @@ namespace Tide.Core
             return false;
         }
 
+        private void handleTextInput(object sender, TextInputEventArgs e)
+        {
+            if (focusedWidget == -1) { return; }
+            if (FTextField.HandleTextInput(cache.canvas, focusedWidget, e))
+            {
+                string key = cache.canvas.IDs[focusedWidget] + ".OnTextEntered";
+                InvokeBindings(null, focusedWidget, key);
+                focusedWidget = -1;
+            }
+        }
+
         private void InvokeBindings(GameTime gameTime, int i)
+        {
+            string key = cache.canvas.IDs[i] + suffix;
+            InvokeBindings(gameTime, i, key);
+        }
+
+        private void InvokeBindings(GameTime gameTime, int i, string key)
         {
             if (IsEnabled && input.CheckValidToTrigger(focus))
             {
-                string key = cache.canvas.IDs[i] + suffix;
                 if (bindings.ContainsKey(key))
                 {
                     foreach (var binding in bindings[key])
@@ -225,78 +236,6 @@ namespace Tide.Core
         public FSetting GetWidgetValue(int i)
         {
             return values[i];
-        }
-
-        public void HighlightWidget(string widget, double time)
-        {
-            if (!graph.widgetNameIndexMap.ContainsKey(widget)) { return; }
-            int i = graph.widgetNameIndexMap[widget];
-            HighlightWidget(i, time);
-        }
-
-        public void HighlightWidget(int i, double time)
-        {
-            highlightedWidgets.Add(i, time);
-        }
-
-        public void SetTooltipText(string toolTip, string widget, string text)
-        {
-            if (cache.tooltipCache.ContainsKey(toolTip))
-            {
-                FCanvas toolTipCanvas = cache.tooltipCache[toolTip];
-
-                for (int i = 0; i < toolTipCanvas.IDs.Length; i++)
-                {
-                    if (cache.tooltipCache[toolTip].IDs[i] == widget)
-                    {
-                        toolTipCanvas.texts[i] = text;
-                    }
-                }
-            }
-        }
-
-        public void SetWidgetText(string widget, string value)
-        {
-            if (!graph.widgetNameIndexMap.ContainsKey(widget)) { return; }
-            int i = graph.widgetNameIndexMap[widget];
-            SetWidgetText(i, value);
-        }
-
-        public void SetWidgetText(int i, string value)
-        {
-            cache.canvas.texts[i] = value;
-        }
-
-        public void SetWidgetValue(string widget, FSetting value)
-        {
-            if (!graph.widgetNameIndexMap.ContainsKey(widget)) { return; }
-            int i = graph.widgetNameIndexMap[widget];
-            SetWidgetValue(i, value);
-        }
-
-        public void SetWidgetValue(int i, FSetting value)
-        {
-            values[i] = value;
-        }
-
-        public void UnbindAction(string action, WidgetDelegate callback)
-        {
-            if (bindings.ContainsKey(action))
-            {
-                bindings[action].Remove(callback);
-            }
-        }
-
-        public void UnHighlightWidget(string widget)
-        {
-            if (!graph.widgetNameIndexMap.ContainsKey(widget)) { return; }
-            int i = graph.widgetNameIndexMap[widget];
-            UnHighlightWidget(i);
-        }
-
-        public void UnHighlightWidget(int i)
-        {
-            highlightedWidgets.Remove(i);
         }
 
         public void HandleOnHover(int i, Dictionary<int, double> frameHoveredWidgets, Rectangle rect, GameTime gameTime)
@@ -369,6 +308,18 @@ namespace Tide.Core
             }
         }
 
+        public void HighlightWidget(string widget, double time)
+        {
+            if (!graph.widgetNameIndexMap.ContainsKey(widget)) { return; }
+            int i = graph.widgetNameIndexMap[widget];
+            HighlightWidget(i, time);
+        }
+
+        public void HighlightWidget(int i, double time)
+        {
+            highlightedWidgets.Add(i, time);
+        }
+
         public bool IsWidgetHovered(int i, ref Rectangle rect)
         {
             Rectangle scissor = graph.GetRectangle(cache.canvas, cache.canvas.parents[i]);
@@ -379,6 +330,66 @@ namespace Tide.Core
             if (!rect.Contains(input.MousePosition)) { return false; }
 
             return true;
+        }
+
+        public void SetTooltipText(string toolTip, string widget, string text)
+        {
+            if (cache.tooltipCache.ContainsKey(toolTip))
+            {
+                FCanvas toolTipCanvas = cache.tooltipCache[toolTip];
+
+                for (int i = 0; i < toolTipCanvas.IDs.Length; i++)
+                {
+                    if (cache.tooltipCache[toolTip].IDs[i] == widget)
+                    {
+                        toolTipCanvas.texts[i] = text;
+                    }
+                }
+            }
+        }
+
+        public void SetWidgetText(string widget, string value)
+        {
+            if (!graph.widgetNameIndexMap.ContainsKey(widget)) { return; }
+            int i = graph.widgetNameIndexMap[widget];
+            SetWidgetText(i, value);
+        }
+
+        public void SetWidgetText(int i, string value)
+        {
+            cache.canvas.texts[i] = value;
+        }
+
+        public void SetWidgetValue(string widget, FSetting value)
+        {
+            if (!graph.widgetNameIndexMap.ContainsKey(widget)) { return; }
+            int i = graph.widgetNameIndexMap[widget];
+            SetWidgetValue(i, value);
+        }
+
+        public void SetWidgetValue(int i, FSetting value)
+        {
+            values[i] = value;
+        }
+
+        public void UnbindAction(string action, WidgetDelegate callback)
+        {
+            if (bindings.ContainsKey(action))
+            {
+                bindings[action].Remove(callback);
+            }
+        }
+
+        public void UnHighlightWidget(string widget)
+        {
+            if (!graph.widgetNameIndexMap.ContainsKey(widget)) { return; }
+            int i = graph.widgetNameIndexMap[widget];
+            UnHighlightWidget(i);
+        }
+
+        public void UnHighlightWidget(int i)
+        {
+            highlightedWidgets.Remove(i);
         }
 
         public void Update(GameTime gameTime)

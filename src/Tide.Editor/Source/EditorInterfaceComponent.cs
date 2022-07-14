@@ -24,6 +24,7 @@ namespace Tide.Editor
 
             InputComponent = new AInputComponent(args.input);
 
+            // top bar
             FCanvasComponentConstructorArgs canvasArgs =
                 new FCanvasComponentConstructorArgs
                 {
@@ -38,6 +39,7 @@ namespace Tide.Editor
 
             EditorCanvasComponent = new ACanvasComponent(canvasArgs);
 
+            // top bar draw
             FCanvasDrawComponentConstructorArgs canvasRenderArgs =
                 new FCanvasDrawComponentConstructorArgs
                 {
@@ -48,30 +50,66 @@ namespace Tide.Editor
 
             EditorDrawComponent = new ACanvasDrawComponent(canvasRenderArgs);
 
+            // dynamic canvas
+
+            DynamicCanvasComponent = new EditorDynamicCanvasComponent();
+
+            // tree canvas
             EditorTreeCanvasComponentConstructorArgs treeArgs =
                 new EditorTreeCanvasComponentConstructorArgs
                 {
                     content = content,
-                    input = args.input,
-                    window = args.window
+                    input = InputComponent,
+                    window = args.window,
+                    dynamicCanvasComponent = DynamicCanvasComponent
                 };
 
-            EditorTreeCanvasComponent = new EditorTreeCanvasComponent(treeArgs);
+            TreeCanvasComponent = new EditorTreeCanvasComponent(treeArgs);
+
+            // property canvas
+            EditorPropertiesCanvasComponentConstructorArgs propertiesArgs =
+                new EditorPropertiesCanvasComponentConstructorArgs
+                {
+                    content = content,
+                    input = InputComponent,
+                    window = args.window,
+                    dynamicCanvasComponent = DynamicCanvasComponent
+                };
+
+            PropertiesCanvasComponent = new EditorPropertiesCanvasComponent(propertiesArgs);
+
+            // preview canvas
+            EditorPreviewCanvasComponentConstructorArgs previewArgs =
+                new EditorPreviewCanvasComponentConstructorArgs
+                {
+                    content = content,
+                    input = InputComponent,
+                    window = args.window,
+                    dynamicCanvasComponent = DynamicCanvasComponent
+                };
+
+            PreviewCanvasComponent = new EditorPreviewCanvasComponent(previewArgs);
 
             RegisterChildComponent(InputComponent);
             RegisterChildComponent(EditorCanvasComponent);
             RegisterChildComponent(EditorDrawComponent);
-            RegisterChildComponent(EditorTreeCanvasComponent);
+            RegisterChildComponent(DynamicCanvasComponent);
+            RegisterChildComponent(PreviewCanvasComponent);
+            RegisterChildComponent(TreeCanvasComponent);
+            RegisterChildComponent(PropertiesCanvasComponent);
 
             SetupBindings(EditorCanvasComponent);
         }
 
-        public ACanvasComponent ActiveCanvasComponent { get; private set; }
-        public ACanvasDrawComponent ActiveDrawComponent { get; private set; }
         public ACanvasComponent EditorCanvasComponent { get; private set; }
         public ACanvasDrawComponent EditorDrawComponent { get; private set; }
         public AInputComponent InputComponent { get; private set; }
-        public EditorTreeCanvasComponent EditorTreeCanvasComponent { get; private set; }
+
+        // panels
+        public EditorDynamicCanvasComponent DynamicCanvasComponent { get; private set; }
+        public EditorTreeCanvasComponent TreeCanvasComponent { get; private set; }
+        public EditorPropertiesCanvasComponent PropertiesCanvasComponent { get; private set; }
+        public EditorPreviewCanvasComponent PreviewCanvasComponent { get; private set; }
 
         private string OpenFileDialog()
         {
@@ -84,43 +122,15 @@ namespace Tide.Editor
             return filePath;
         }
 
+        private FCanvas? _newcanvas = null;
+
         private void OpenUIFile()
         {
             string filePath = OpenFileDialog();
             if (filePath != "")
             {
                 string projectDir = ProjectSourcePath.Path + "Content";
-
-                UImportTools.ImportSerialisedData(projectDir, filePath, out FCanvas canvas);
-
-                FCanvasComponentConstructorArgs canvasArgs =
-                new FCanvasComponentConstructorArgs
-                {
-                    audio = null,
-                    canvas = canvas,
-                    content = content,
-                    focus = EFocus.Game,
-                    input = InputComponent,
-                    scale = 0.5f,
-                    window = null
-                };
-
-                ActiveCanvasComponent = new ACanvasComponent(canvasArgs);
-
-                Rectangle bounds = content.GraphicsDevice.Viewport.Bounds;
-                ActiveCanvasComponent.cache.canvas.root = new Rectangle(bounds.Width / 2, 32, 0, 0);
-
-                FCanvasDrawComponentConstructorArgs canvasRenderArgs =
-                    new FCanvasDrawComponentConstructorArgs
-                    {
-                        component = ActiveCanvasComponent,
-                        content = content,
-                        input = InputComponent
-                    };
-
-                ActiveDrawComponent = new ACanvasDrawComponent(canvasRenderArgs);
-
-                EditorTreeCanvasComponent.GenerateTree(canvas);
+                UImportTools.ImportSerialisedData(projectDir, filePath, out _newcanvas);
             }
         }
 
@@ -131,12 +141,12 @@ namespace Tide.Editor
 
         public void Update(GameTime gameTime)
         {
-            if (ActiveCanvasComponent != null)
+            if (_newcanvas != null)
             {
-                RegisterChildComponent(ActiveCanvasComponent);
-                RegisterChildComponent(ActiveDrawComponent);
-
-                ActiveCanvasComponent = null;
+                InputComponent.ClearBindings();
+                DynamicCanvasComponent.Set(new FDynamicCanvas((FCanvas)_newcanvas));
+                SetupBindings(EditorCanvasComponent);
+                _newcanvas = null;
             }
         }
     }
