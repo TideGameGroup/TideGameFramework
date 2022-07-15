@@ -31,25 +31,7 @@ namespace Tide.Editor
             newCanvas = new FDynamicCanvas("Tree");
             newCanvas.root = new Rectangle(0, 24, 0, 0);
 
-            newCanvas.Add(
-                    "tree_panel_1",
-                    anchor: EWidgetAnchor.NW,
-                    rectangle: new Rectangle(0, 0, 400, height - 400 - 16),
-                    source: new Rectangle(240, 0, 16, 16),
-                    texture: "Icons",
-                    color: Color.DarkGray,
-                    highlightColor: Color.DarkGray
-                    );
-
-            newCanvas.Add(
-                    "tree_panel_2",
-                    parent: 0,
-                    rectangle: new Rectangle(1, 1, 398, height - 398 - 16),
-                    source: new Rectangle(240, 0, 16, 16),
-                    texture: "Icons",
-                    color: Color.LightGray,
-                    highlightColor: Color.LightGray
-                    );
+            ITreeCanvasFactory.AddTreePanel(newCanvas, height);
 
             int place = 0;
             DrawTree(canvas, NewNode(canvas, -1, 0), ref place);

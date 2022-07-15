@@ -18,8 +18,9 @@ namespace Tide.Tools
 
         public static bool ImportSerialisedData<T>(string projectDir, string filename, out T ProcessedContent)
         {
+            string tempDir = Path.Combine(projectDir, "tempBin");
             ProcessedContent = default;
-            PipelineManager PM = new PipelineManager(projectDir, projectDir + "\\tempBin", "Path\\tempBin");
+            PipelineManager PM = new PipelineManager(projectDir, tempDir, "Path\\tempBin");
 
             bool Worked = false;
             while (!Worked)
@@ -28,7 +29,6 @@ namespace Tide.Tools
                     var BuiltContent = PM.BuildContent(filename);
                     ProcessedContent = (T)PM.ProcessContent(BuiltContent);
                     Worked = true;
-                    File.Delete(projectDir + "\\tempBin\\" + filename.TrimEnd(".xml".ToCharArray()) + ".xnb");
                 }
                 catch (InvalidContentException E)
                 {
@@ -48,6 +48,7 @@ namespace Tide.Tools
                     continue;
                 }
 
+            Directory.Delete(tempDir, true);
             return Worked;
         }
     }

@@ -1,7 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<XnaContent xmlns:ns="Microsoft.Xna.Framework">
-  <Asset Type="Tide.XMLSchema.FCanvas">
+<XnaContent xmlns:XMLSchema="Tide.XMLSchema">
+  <Asset Type="XMLSchema:FCanvas">
     <alignments>
+      <Item>L</Item>
+      <Item>L</Item>
+      <Item>L</Item>
       <Item>L</Item>
       <Item>L</Item>
       <Item>L</Item>
@@ -16,6 +19,9 @@
       <Item>NW</Item>
       <Item>NW</Item>
       <Item>NW</Item>
+      <Item>NW</Item>
+      <Item>NW</Item>
+      <Item>NW</Item>
     </anchors>
     <clickSounds>
       <Item></Item>
@@ -24,15 +30,11 @@
       <Item></Item>
       <Item></Item>
       <Item></Item>
+      <Item></Item>
+      <Item></Item>
+      <Item></Item>
     </clickSounds>
-    <colors>
-      FFf3f6f4
-      FFf3f6f4
-      FFf3f6f4
-      FFf3f6f4
-      FFf3f6f4
-      FFf3f6f4
-    </colors>
+    <colors>FFF3F6F4 FFF3F6F4 FFF3F6F4 FFF3F6F4 FFF3F6F4 FFF3F6F4 FFF3F6F4 FFF3F6F4 FFF3F6F4</colors>
     <fonts>
       <Item>Arial</Item>
       <Item>Arial</Item>
@@ -40,16 +42,15 @@
       <Item>Arial</Item>
       <Item>Arial</Item>
       <Item>Arial</Item>
+      <Item>Arial</Item>
+      <Item>Arial</Item>
+      <Item>Arial</Item>
     </fonts>
-    <highlightColors>
-      FFf3f6f4
-      FFfafafa
-      FFfafafa
-      FFfafafa
-      FFfafafa
-      FFfafafa
-    </highlightColors>
+    <highlightColors>FFF3F6F4 FFFAFAFA FFFAFAFA FFFAFAFA FFFAFAFA FFFAFAFA FFFAFAFA FFFAFAFA FFFAFAFA</highlightColors>
     <hoverSounds>
+      <Item></Item>
+      <Item></Item>
+      <Item></Item>
       <Item></Item>
       <Item></Item>
       <Item></Item>
@@ -65,26 +66,18 @@
       <Item>saveas</Item>
       <Item>new</Item>
       <Item>undo</Item>
+      <Item>newimage</Item>
+      <Item>newfont</Item>
+      <Item>newfont-copy</Item>
     </IDs>
-    <parents>-1 -1 -1 -1 -1 -1</parents>
-    <rectangles>
-      0 0 5000 24
-      10 4 16 16
-      34 4 16 16
-      58 4 16 16
-      82 4 16 16
-      106 4 16 16
-    </rectangles>
+    <parents>-1 -1 -1 -1 -1 -1 -1 -1 -1</parents>
+    <rectangles>0 0 5000 24 10 4 16 16 34 4 16 16 58 4 16 16 82 4 16 16 106 4 16 16 180 4 16 16 204 4 16 16 148 4 4 16</rectangles>
     <root>0 0 0 0</root>
-    <sources>
-      240 0 16 16
-      0 0 16 16
-      16 0 16 16
-      144 0 16 16
-      48 0 16 16
-      80 0 16 16
-    </sources>
+    <sources>240 0 16 16 0 0 16 16 16 0 16 16 144 0 16 16 48 0 16 16 80 0 16 16 0 32 16 16 32 32 16 16 64 96 16 16</sources>
     <texts>
+      <Item></Item>
+      <Item></Item>
+      <Item></Item>
       <Item></Item>
       <Item></Item>
       <Item></Item>
@@ -99,6 +92,9 @@
       <Item>Icons</Item>
       <Item>Icons</Item>
       <Item>Icons</Item>
+      <Item>Icons</Item>
+      <Item>Icons</Item>
+      <Item>Icons</Item>
     </textures>
     <tooltips>
       <Item></Item>
@@ -107,14 +103,20 @@
       <Item></Item>
       <Item></Item>
       <Item></Item>
+      <Item></Item>
+      <Item></Item>
+      <Item></Item>
     </tooltips>
     <widgetTypes>
-      <Item>panel</Item>
-      <Item>button</Item>
-      <Item>button</Item>
-      <Item>button</Item>
-      <Item>button</Item>
-      <Item>button</Item>
+      <Item>PANEL</Item>
+      <Item>BUTTON</Item>
+      <Item>BUTTON</Item>
+      <Item>BUTTON</Item>
+      <Item>BUTTON</Item>
+      <Item>BUTTON</Item>
+      <Item>BUTTON</Item>
+      <Item>BUTTON</Item>
+      <Item>PANEL</Item>
     </widgetTypes>
   </Asset>
 </XnaContent>

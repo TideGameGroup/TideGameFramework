@@ -28,7 +28,7 @@ namespace Tide.Editor
             TrySetDefault(args.input, out input);
             TrySetDefault(args.window, out window);
 
-            dynamicCanvasComponent.OnDynamicCanvasUpdated += () => 
+            dynamicCanvasComponent.OnDynamicCanvasUpdated += () =>
             { 
                 CanvasComponent.cache.canvas = dynamicCanvasComponent.DynamicCanvas.AsCanvas();
                 CanvasComponent.cache.canvas.root = new Rectangle(400, 24, 1280, 720);

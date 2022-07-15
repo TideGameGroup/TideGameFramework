@@ -9,7 +9,8 @@ namespace Tide.Editor
         ETREE,
         ESOA,
         EAOS,
-        ESINGLE
+        ESINGLE,
+        ELIBRARY
     }
 
     public struct EditorTreeCanvasComponentConstructorArgs
@@ -85,6 +86,18 @@ namespace Tide.Editor
 
         private void SetupBindings()
         {
+            CanvasComponent.BindAction("tree_button.OnPressed", (gt) =>
+            {
+                canvasType = ETreeCanvasType.ETREE;
+                dynamicCanvasComponent.Rebuild();
+            });
+
+            CanvasComponent.BindAction("library_button.OnPressed", (gt) =>
+            {
+                canvasType = ETreeCanvasType.ELIBRARY;
+                dynamicCanvasComponent.Rebuild();
+            });
+
             CanvasComponent.BindAction("button_add-1.OnPressed", (gt) =>
             {
                 dynamicCanvasComponent.DynamicCanvas.Add("widget1");
@@ -143,6 +156,10 @@ namespace Tide.Editor
 
                 case ETreeCanvasType.ESOA:
                     factory = new DynamicSOAFactory(dynamicCanvasComponent.DynamicCanvas);
+                    break;
+
+                case ETreeCanvasType.ELIBRARY:
+                    factory = new DynamicLibraryFactory(content, window.ClientBounds.Height);
                     break;
 
                 default:

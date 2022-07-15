@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XnaContent xmlns:XMLSchema="Tide.XMLSchema">
+  <Asset Type="XMLSchema:FCanvas">
+    <alignments>
+      <Item>L</Item>
+      <Item>L</Item>
+      <Item>L</Item>
+    </alignments>
+    <anchors>
+      <Item>NW</Item>
+      <Item>NW</Item>
+      <Item>NW</Item>
+    </anchors>
+    <clickSounds>
+      <Item></Item>
+      <Item></Item>
+      <Item></Item>
+    </clickSounds>
+    <colors>FFFFFFFF FFFFFFFF FFFFFFFF</colors>
+    <fonts>
+      <Item>Arial</Item>
+      <Item>Arial</Item>
+      <Item>Arial</Item>
+    </fonts>
+    <highlightColors>FFFFFFFF FFFFFFFF FFFFFFFF</highlightColors>
+    <hoverSounds>
+      <Item></Item>
+      <Item></Item>
+      <Item></Item>
+    </hoverSounds>
+    <ID>new_canvas</ID>
+    <IDs>
+      <Item>zoom</Item>
+      <Item>button1</Item>
+      <Item>button2</Item>
+    </IDs>
+    <parents>-1 -1 -1</parents>
+    <rectangles>8 8 16 128 32 16 56 18 100 16 56 18</rectangles>
+    <root>0 0 0 0</root>
+    <sources>64 80 16 16 240 0 16 16 240 0 16 16</sources>
+    <texts>
+      <Item></Item>
+      <Item>1280</Item>
+      <Item>720</Item>
+    </texts>
+    <textures>
+      <Item>Icons</Item>
+      <Item>Icons</Item>
+      <Item>Icons</Item>
+    </textures>
+    <tooltips>
+      <Item></Item>
+      <Item></Item>
+      <Item></Item>
+    </tooltips>
+    <widgetTypes>
+      <Item>SCROLLBAR</Item>
+      <Item>TEXTFIELD</Item>
+      <Item>TEXTFIELD</Item>
+    </widgetTypes>
+  </Asset>
+</XnaContent>
