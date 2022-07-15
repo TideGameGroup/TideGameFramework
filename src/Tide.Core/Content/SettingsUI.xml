@@ -80,6 +80,14 @@
       <Item></Item>
       <Item></Item>
     </tooltips>
+    <tooltiptexts>
+      <Item></Item>
+      <Item></Item>
+      <Item></Item>
+      <Item></Item>
+      <Item></Item>
+      <Item></Item>
+    </tooltiptexts>
     <widgetTypes>
       <Item>TEXT</Item>
       <Item>SLIDER</Item>

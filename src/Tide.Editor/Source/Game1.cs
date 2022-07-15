@@ -12,7 +12,7 @@ namespace Tide.Editor
         public Game1()
         {
             IsMouseVisible = true;
-            clearColor = Color.LightGray;
+            clearColor = Color.DarkGray;
         }
 
         public UEditorInterface EditorInterfaceComponent { get; private set; }

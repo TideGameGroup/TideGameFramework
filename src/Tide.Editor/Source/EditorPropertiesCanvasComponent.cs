@@ -183,7 +183,7 @@ namespace Tide.Editor
             });
 
             canvas.BindAction("font_field.OnTextEntered", (gt) => {
-                if (parser.GetFieldValue("text_field", out string field_value))
+                if (parser.GetFieldValue("font_field", out string field_value))
                 {
                     dynamicCanvasComponent.DynamicCanvas.fonts[dynamicCanvasComponent.selection] = field_value;
                 }

@@ -315,8 +315,17 @@ namespace Tide.Core
                 if (input != null && cache.tooltipCache.ContainsKey(cache.canvas.tooltips[i]))
                 {
                     FCanvas canvasData = cache.tooltipCache[cache.canvas.tooltips[i]];
-                    canvasData.rectangles[0].X = (int)input.MousePosition.X;
-                    canvasData.rectangles[0].Y = (int)input.MousePosition.Y;
+                    canvasData.root.X = (int)input.MousePosition.X;
+                    canvasData.root.Y = (int)input.MousePosition.Y;
+
+                    for (int t = 0; t < canvasData.IDs.Length; t++)
+                    {
+                        if (canvasData.IDs[t] == "tooltip_text")
+                        {
+                            canvasData.texts[t] = cache.canvas.tooltiptexts[i];
+                            cache.tooltipCache[cache.canvas.tooltips[i]] = canvasData;
+                        }
+                    }
 
                     DrawCanvas(canvasData, spriteBatch, gameTime);
                 }

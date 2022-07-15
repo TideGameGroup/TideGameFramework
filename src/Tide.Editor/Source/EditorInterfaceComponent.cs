@@ -1,4 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
+using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
+using Microsoft.Xna.Framework.Graphics;
+using System.IO;
 using System.Windows.Forms;
 using Tide.Core;
 using Tide.Tools;
@@ -145,6 +149,55 @@ namespace Tide.Editor
             }
         }
 
+        private void OpenTextureFile()
+        {
+            string filePath = OpenFileDialog();
+            if (filePath != "")
+            {
+                string filename = Path.GetFileNameWithoutExtension(filePath);
+                content.DynamicLibrary[filename] = Texture2D.FromFile(content.GraphicsDevice, filePath);
+            }
+        }
+        private void OpenFontFile()
+        {
+            if (OpenFile(out SpriteFontContent file, out string filePath))
+            {
+                string filename = Path.GetFileNameWithoutExtension(filePath);
+
+                var mipchain = file.Texture.Faces[0][0];
+
+                Texture2D texture = new Texture2D(content.GraphicsDevice, mipchain.Width, mipchain.Height, false, SurfaceFormat.Alpha8);
+                Rectangle bounds = new Rectangle(0, 0, mipchain.Width, mipchain.Height);
+                byte[] data = mipchain.GetPixelData();
+                texture.SetData(0, bounds, data, 0, mipchain.Width * mipchain.Height);
+
+                SpriteFont spriteFont = new SpriteFont
+                    (
+                    texture,
+                    file.Glyphs,
+                    file.Cropping,
+                    file.CharacterMap,
+                    file.VerticalLineSpacing,
+                    file.HorizontalSpacing,
+                    file.Kerning,
+                    file.DefaultCharacter
+                    );
+                content.DynamicLibrary[filename] = spriteFont;
+            }
+        }
+
+        private bool OpenFile<T>(out T file, out string filePath)
+        {
+            filePath = OpenFileDialog();
+            if (filePath != "")
+            {
+                string projectDir = ProjectSourcePath.Path + "Content";
+                return UImportTools.ImportSerialisedData(projectDir, filePath, out file);
+            }
+            file = default;
+            return false;
+        }
+
         private void SaveFile()
         {
             if (DynamicCanvasComponent.DynamicCanvas == null) { return; }
@@ -176,7 +229,10 @@ namespace Tide.Editor
             component.BindAction("save.OnReleased", (gt) => { SaveFile(); });
             component.BindAction("saveas.OnReleased", (gt) => { SaveFileAs(); });
             component.BindAction("new.OnReleased", (gt) => { DynamicCanvasComponent.New(); });
-            component.BindAction("undo.OnReleased", (gt) => { });
+            component.BindAction("undo.OnReleased", (gt) => { DynamicCanvasComponent.Undo(); });
+            component.BindAction("redo.OnReleased", (gt) => { DynamicCanvasComponent.Redo(); });
+            component.BindAction("newimage.OnReleased", (gt) => { OpenTextureFile(); });
+            component.BindAction("newfont.OnReleased", (gt) => { OpenFontFile(); });
         }
 
         public void Update(GameTime gameTime)

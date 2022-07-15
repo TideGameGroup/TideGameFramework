@@ -57,8 +57,18 @@
 /processorParam:TextureFormat=Color
 /build:Textures/Icons.png
 
+#begin UIs/Tooltip.xml
+/importer:XmlImporter
+/processor:PassThroughProcessor
+/build:UIs/Tooltip.xml
+
 #begin UIs/UI.xml
 /importer:XmlImporter
 /processor:PassThroughProcessor
 /build:UIs/UI.xml
+
+#begin UIs/Zoom.xml
+/importer:XmlImporter
+/processor:PassThroughProcessor
+/build:UIs/Zoom.xml
 

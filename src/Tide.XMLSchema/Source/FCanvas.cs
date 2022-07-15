@@ -52,6 +52,7 @@ namespace Tide.XMLSchema
         public string[] texts;
         public string[] textures;
         public string[] tooltips;
+        public string[] tooltiptexts;
         public EWidgetType[] widgetTypes;
 
         public string Type => "Tide.ACanvas";
@@ -68,6 +69,7 @@ namespace Tide.XMLSchema
                 textures = new string[size],
                 texts = new string[size],
                 tooltips = new string[size],
+                tooltiptexts = new string[size],
                 hoverSounds = new string[size],
                 clickSounds = new string[size],
                 rectangles = new Rectangle[size],
@@ -93,6 +95,7 @@ namespace Tide.XMLSchema
                 textures = new string[textures.Length],
                 texts = new string[texts.Length],
                 tooltips = new string[tooltips.Length],
+                tooltiptexts = new string[tooltiptexts.Length],
                 hoverSounds = new string[hoverSounds.Length],
                 clickSounds = new string[clickSounds.Length],
                 rectangles = new Rectangle[rectangles.Length],
@@ -113,6 +116,7 @@ namespace Tide.XMLSchema
             hoverSounds.CopyTo(deepCopy.hoverSounds, 0);
             clickSounds.CopyTo(deepCopy.clickSounds, 0);
             tooltips.CopyTo(deepCopy.tooltips, 0);
+            tooltiptexts.CopyTo(deepCopy.tooltiptexts, 0);
             rectangles.CopyTo(deepCopy.rectangles, 0);
             deepCopy.root = root;
             alignments.CopyTo(deepCopy.alignments, 0);

@@ -4,12 +4,16 @@
 	  <names>
 		  <Item>BaseUI</Item>
 			<Item>Icons</Item>
+			<Item>Tooltip</Item>
 			<Item>UI</Item>
+			<Item>Zoom</Item>
 		</names>
 		<paths>
 		  <Item>Textures\BaseUI</Item>
 			<Item>Textures\Icons</Item>
+			<Item>UIs\Tooltip</Item>
 			<Item>UIs\UI</Item>
+			<Item>UIs\Zoom</Item>
 		</paths>
 	</Asset>
 </XnaContent>

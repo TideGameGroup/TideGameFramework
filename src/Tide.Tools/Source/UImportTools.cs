@@ -23,32 +23,22 @@ namespace Tide.Tools
             PipelineManager PM = new PipelineManager(projectDir, tempDir, "Path\\tempBin");
 
             bool Worked = false;
-            while (!Worked)
-                try
-                {
-                    var BuiltContent = PM.BuildContent(filename);
-                    ProcessedContent = (T)PM.ProcessContent(BuiltContent);
-                    Worked = true;
-                }
-                catch (InvalidContentException E)
-                {
-                    Debug.Write("CompilerException");
-                    Debug.Write(E.Message);
-                    Worked = true;
-                }
-                catch (IOException E)
-                {
-                    Debug.Write("Most likely a leftover file when exiting. Check .\\tempBin");
-                    Debug.Write(E.Message);
-                    continue;
-                }
-                catch (Exception E)
-                {
-                    Debug.Write(E.Message);
-                    continue;
-                }
+            try
+            {
+                var BuiltContent = PM.BuildContent(filename);
+                ProcessedContent = (T)PM.ProcessContent(BuiltContent);
+                Worked = true;
+            }
+            catch (Exception E)
+            {
+                Debug.Write(E.Message);
+            }
 
-            Directory.Delete(tempDir, true);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, true);
+            }
+
             return Worked;
         }
     }

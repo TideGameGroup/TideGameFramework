@@ -47,13 +47,17 @@ namespace Tide.Editor
                 AddAttributeWidget(0, "ID", canvas.IDs[i]);
                 AddAttributeWidget(1, "parent", canvas.parents[i].ToString());
 
-                AddAttributeWidget(2, "widgettype", canvas.widgetTypes[i].ToString());
+                AddAttributeWidget(2, "widgettype", canvas.widgetTypes[i].ToString(),
+                    "valid values:\nPANEL\nBUTTON\nTEXT\nSLIDER\nTICKBOX\nSCROLLBAR\nTEXTFIELD");
+
                 AddAttributeWidget(3, "texture", canvas.textures[i]);
                 AddAttribute4Widget(4, "position", FStaticTypeStringConversions.RectangleToStringArray(canvas.rectangles[i]), rectlabels);
                 AddAttribute4Widget(5, "source", FStaticTypeStringConversions.RectangleToStringArray(canvas.sources[i]), rectlabels);
 
-                AddAttributeWidget(6, "alignment", canvas.alignments[i].ToString());
-                AddAttributeWidget(7, "anchor", canvas.anchors[i].ToString());
+                AddAttributeWidget(6, "alignment", canvas.alignments[i].ToString(),
+                    "valid values:\nC\nL\nR");
+                AddAttributeWidget(7, "anchor", canvas.anchors[i].ToString(),
+                    "valid values:\nN\nNE\nE\nSE\nS\nSW\nW\nNW\nC");
 
                 AddAttributeWidget(8, "text", canvas.texts[i]);
                 AddAttributeWidget(9, "font", canvas.fonts[i]);
@@ -67,7 +71,7 @@ namespace Tide.Editor
             }
         }
 
-        public void AddAttributeWidget(int n, string ID, string default_text)
+        public void AddAttributeWidget(int n, string ID, string default_text, string tooltiptext = "")
         {
             newCanvas.Add(
                     ID + "_label",
@@ -92,7 +96,9 @@ namespace Tide.Editor
                 color: Color.WhiteSmoke,
                 highlightColor: Color.White,
                 widgetType: EWidgetType.TEXTFIELD,
-                font: "consolas"
+                font: "consolas",
+                tooltip: tooltiptext != "" ? "Tooltip" : "",
+                tooltiptext: tooltiptext
                 );
         }
 

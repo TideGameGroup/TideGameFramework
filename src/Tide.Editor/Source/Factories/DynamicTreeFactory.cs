@@ -85,7 +85,7 @@ namespace Tide.Editor
                 {
                     newCanvas.Add(
                         "button_delete" + tree.index.ToString(),
-                        rectangle: new Rectangle(384, 24 + placeoffset, 16, 16),
+                        rectangle: new Rectangle(380, 24 + placeoffset, 16, 16),
                         source: new Rectangle(64, 0, 16, 16),
                         texture: "Icons",
                         color: Color.LightGray,
