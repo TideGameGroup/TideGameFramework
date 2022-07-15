@@ -33,7 +33,4 @@
     <ProjectReference Include="..\Tide.Tools\Tide.Tools.csproj" />
     <ProjectReference Include="..\Tide.XMLSchema\Tide.XMLSchema.csproj" />
   </ItemGroup>
-  <Target Name="BeforeContent" BeforeTargets="RunContentBuilder">
-    <Exec Command="$(ProjectDir)Content\map.py" />
-  </Target>
 </Project>
