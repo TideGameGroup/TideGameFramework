@@ -97,18 +97,18 @@ namespace Tide.Core
 
             float width = rect.Width;
 
-            if (canvas.widgetTypes[i] == EWidgetType.text)
+            if (canvas.widgetTypes[i] == EWidgetType.TEXT)
             {
                 width = cache.fontCache[canvas.fonts[i]].MeasureString(canvas.texts[i]).X;
             }
 
             switch (canvas.alignments[i])
             {
-                case EWidgetAlignment.Centre:
+                case EWidgetAlignment.C:
                     rect.Offset(new Vector2(-width / 2, 0.0f));
                     break;
 
-                case EWidgetAlignment.Right:
+                case EWidgetAlignment.R:
                     rect.Offset(new Vector2(-width, 0.0f));
                     break;
 
@@ -134,7 +134,7 @@ namespace Tide.Core
         {
             if (i == -1)
             {
-                Rectangle rect = content.GraphicsDevice.Viewport.Bounds;
+                Rectangle rect = GetMinRectangle(content.GraphicsDevice.Viewport.Bounds, canvas.root);
                 rect.Offset(canvas.root.Location);
                 return rect;
             }

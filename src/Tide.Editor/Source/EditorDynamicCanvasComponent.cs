@@ -48,5 +48,10 @@ namespace Tide.Editor
             selection = i;
             OnSelectionUpdated.Invoke();
         }
+
+        internal void New()
+        {
+            Set(new FDynamicCanvas("new_canvas"));
+        }
     }
 }

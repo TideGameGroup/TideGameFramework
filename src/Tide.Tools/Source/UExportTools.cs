@@ -11,18 +11,23 @@ namespace Tide.Tools
 {
     public class UExportTools : UComponent
     {
-        public UExportTools(){}
+        public UExportTools()
+        { }
 
-        public static void ExportSerialisedInstanceData(string folder, string Id, ISerialisedInstanceData data)
+        public static void ExportSerialisedInstanceData(string path, ISerialisedInstanceData data)
         {
-            string path = Path.Combine(folder, string.Format("{0}.xml", Id));
-
             XmlWriterSettings settings = new XmlWriterSettings
             {
                 Indent = true
             };
             using XmlWriter writer = XmlWriter.Create(path, settings);
             IntermediateSerializer.Serialize(writer, data, null);
+        }
+
+        public static void ExportSerialisedInstanceData(string folder, string Id, ISerialisedInstanceData data)
+        {
+            string path = Path.Combine(folder, string.Format("{0}.xml", Id));
+            ExportSerialisedInstanceData(path, data);
         }
 
         public static void ExportSerialisedSet(string path, ref Dictionary<string, ISerialisedInstanceData> serialisedSet)
@@ -69,11 +74,11 @@ namespace Tide.Tools
                 texts = new string[1] { "textfield" },
                 tooltips = new string[1] { "" },
                 rectangles = new Rectangle[1] { new Rectangle(-100, -30, 100, 30) },
-                alignments = new EWidgetAlignment[1] { EWidgetAlignment.Left },
+                alignments = new EWidgetAlignment[1] { EWidgetAlignment.L },
                 sources = new Rectangle[1] { new Rectangle(0, 0, 1, 1) },
                 colors = new Color[1] { Color.Gray },
                 highlightColors = new Color[1] { Color.White },
-                widgetTypes = new EWidgetType[1] { EWidgetType.textfield },
+                widgetTypes = new EWidgetType[1] { EWidgetType.TEXTFIELD },
             };
 
             return canvas;

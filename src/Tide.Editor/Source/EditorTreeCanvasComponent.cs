@@ -36,11 +36,14 @@ namespace Tide.Editor
             TrySetDefault(args.input, out input);
             TrySetDefault(args.window, out window);
 
-            canvasType = ETreeCanvasType.EAOS;
-
-            //dynamicCanvasComponent.OnDynamicCanvasUpdated += () => { CanvasComponent.cache.canvas = dynamicCanvasComponent.DynamicCanvas.AsCanvas(); };
+            canvasType = ETreeCanvasType.ETREE;
             dynamicCanvasComponent.OnDynamicCanvasSet += () => { RebuildCanvas(); };
-            //dynamicCanvasComponent.OnSelectionUpdated += () => { RebuildCanvas(); };
+            window.ClientSizeChanged += Window_ClientSizeChanged;
+        }
+
+        private void Window_ClientSizeChanged(object sender, System.EventArgs e)
+        {
+            RebuildCanvas();
         }
 
         public ACanvasComponent CanvasComponent { get; private set; }
@@ -82,6 +85,13 @@ namespace Tide.Editor
 
         private void SetupBindings()
         {
+            CanvasComponent.BindAction("button_add-1.OnPressed", (gt) =>
+            {
+                dynamicCanvasComponent.DynamicCanvas.Add("widget1");
+                dynamicCanvasComponent.SetSelection(0);
+                dynamicCanvasComponent.Rebuild();
+            });
+
             for (int i = 0; i < dynamicCanvasComponent.DynamicCanvas.Count; i++)
             {
                 int l = i;
@@ -89,11 +99,34 @@ namespace Tide.Editor
                 {
                     dynamicCanvasComponent.SetSelection(l);
                 });
+
+                CanvasComponent.BindAction("button_add" + i.ToString() + ".OnPressed", (gt) =>
+                {
+                    int n = dynamicCanvasComponent.DynamicCanvas.Add(l);
+                    dynamicCanvasComponent.SetSelection(n);
+                    dynamicCanvasComponent.Rebuild();
+                });
+
+                CanvasComponent.BindAction("button_duplicate" + i.ToString() + ".OnPressed", (gt) =>
+                {
+                    int n = dynamicCanvasComponent.DynamicCanvas.Duplicate(l);
+                    dynamicCanvasComponent.SetSelection(n);
+                    dynamicCanvasComponent.Rebuild();
+                });
+
+                CanvasComponent.BindAction("button_delete" + i.ToString() + ".OnPressed", (gt) =>
+                {
+                    dynamicCanvasComponent.DynamicCanvas.RemoveAt(l);
+                    dynamicCanvasComponent.SetSelection(0);
+                    dynamicCanvasComponent.Rebuild();
+                });
             }
         }
 
         public void RebuildCanvas()
         {
+            if (dynamicCanvasComponent.DynamicCanvas == null) { return; }
+
             switch (canvasType)
             {
                 case ETreeCanvasType.EAOS:
@@ -105,9 +138,11 @@ namespace Tide.Editor
                     break;
 
                 case ETreeCanvasType.ETREE:
+                    factory = new DynamicTreeFactory(dynamicCanvasComponent.DynamicCanvas, window.ClientBounds.Height);
                     break;
 
                 case ETreeCanvasType.ESOA:
+                    factory = new DynamicSOAFactory(dynamicCanvasComponent.DynamicCanvas);
                     break;
 
                 default:

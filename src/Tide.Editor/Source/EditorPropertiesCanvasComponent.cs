@@ -75,186 +75,152 @@ namespace Tide.Editor
 
         private void SetupBindings(ACanvasComponent canvas)
         {
-            List<string> str_errors = new List<string>
-            {
-                "invalid value",
-                "value cannot be null or whitespace",
-                "duplicate IDs are not allowed",
+            FPropertiesParser parser = new FPropertiesParser(CanvasComponent, dynamicCanvasComponent);
+
+            CanvasComponent.OnWidgetUnFocused += (i) => {
+                dynamicCanvasComponent.Rebuild();
             };
 
-            bool IsInvalid(string str, out string error)
-            {
-                error = "";
-
-                if (str_errors.Contains(str))
-                {
-                    error = str_errors[0];
-                    return true;
-                }
-
-                if (string.IsNullOrWhiteSpace(str))
-                {
-                    error = str_errors[1];
-                    return true;
-                }
-
-                return false;
-            }
-
-            bool GetFieldValue(string field, out string field_value)
-            {
-                field_value = CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap[field]];
-
-                if (IsInvalid(field_value, out string err))
-                {
-                    CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap[field]] = err;
-                    return false;
-                }
-                return true;
-            }
-
             canvas.BindAction("ID_field.OnTextEntered", (gt) => {
-                if (GetFieldValue("ID_field", out string field_value))
+                if (parser.GetFieldValue("ID_field", out string field_value))
                 {
-                    for (int i = 0; i < dynamicCanvasComponent.DynamicCanvas.Count; i++)
+                    if (parser.IsValidID(field_value, out int index))
                     {
-                        if (dynamicCanvasComponent.DynamicCanvas.IDs[i] == field_value)
-                        {
-                            CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["ID_field"]] = str_errors[2];
-                            return;
-                        }
+                        //CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["ID_field"]] = FPropertiesParser.str_errors[2];
+                        return;
                     }
-
                     dynamicCanvasComponent.DynamicCanvas.IDs[dynamicCanvasComponent.selection] = field_value;
-                    dynamicCanvasComponent.Rebuild();
                 }
             });
 
             canvas.BindAction("parent_field.OnTextEntered", (gt) => {
-                string field_value = CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["parent_field"]];
-
-                if (int.TryParse(field_value, out int parentindex))
+                if (parser.GetFieldValue("parent_field", out string field_value))
                 {
-                    if (parentindex >= -1 && parentindex < dynamicCanvasComponent.DynamicCanvas.Count)
+                    if (int.TryParse(field_value, out int parentindex) && parser.IsInRange(parentindex, true))
                     {
                         dynamicCanvasComponent.DynamicCanvas.parents[dynamicCanvasComponent.selection] = parentindex;
-                        dynamicCanvasComponent.Rebuild();
                         return;
                     }
-                }
-                else
-                {
-                    for (int i = 0; i < dynamicCanvasComponent.DynamicCanvas.Count; i++)
+                    else
                     {
-                        if (dynamicCanvasComponent.DynamicCanvas.IDs[i] == field_value)
+                        if (parser.IsValidID(field_value, out int index))
                         {
-                            dynamicCanvasComponent.DynamicCanvas.parents[dynamicCanvasComponent.selection] = i;
-                            dynamicCanvasComponent.Rebuild();
+                            dynamicCanvasComponent.DynamicCanvas.parents[dynamicCanvasComponent.selection] = index;
                             return;
                         }
                     }
+                    //CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["parent_field"]] = FPropertiesParser.str_errors[3];
                 }
-
-                CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["parent_field"]] = "invalid value";
             });
 
-            canvas.BindAction("position_field.OnTextEntered", (gt) => {
-                //dynamicCanvasComponent.DynamicCanvas.IDs[dynamicCanvasComponent.selection] =
-                //CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["position_field"]];
-                dynamicCanvasComponent.Refresh();
+            canvas.BindAction("widgettype_field.OnTextEntered", (gt) => {
+                if (parser.GetFieldValue("widgettype_field", out string field_value))
+                {
+                    field_value = field_value.ToUpper();
+                    if (Enum.TryParse(field_value, out EWidgetType wtype))
+                    {
+                        dynamicCanvasComponent.DynamicCanvas.widgetTypes[dynamicCanvasComponent.selection] = wtype;
+                    }
+                    else
+                    {
+                        //CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["widgettype_field"]] = FPropertiesParser.str_errors[7];
+                    }
+                }
             });
+
+            canvas.BindAction("position_X_field.OnTextEntered", (gt) => { parser.HandleRectangleField("position", ref dynamicCanvasComponent.DynamicCanvas.rectangles); });
+            canvas.BindAction("position_Y_field.OnTextEntered", (gt) => { parser.HandleRectangleField("position", ref dynamicCanvasComponent.DynamicCanvas.rectangles); });
+            canvas.BindAction("position_W_field.OnTextEntered", (gt) => { parser.HandleRectangleField("position", ref dynamicCanvasComponent.DynamicCanvas.rectangles); });
+            canvas.BindAction("position_H_field.OnTextEntered", (gt) => { parser.HandleRectangleField("position", ref dynamicCanvasComponent.DynamicCanvas.rectangles); });
 
             canvas.BindAction("texture_field.OnTextEntered", (gt) => {
-                dynamicCanvasComponent.DynamicCanvas.textures[dynamicCanvasComponent.selection] =
-                CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["texture_field"]];
-
-                // check font is loaded otherwise set to default
-
-                dynamicCanvasComponent.Rebuild();
+                if (parser.GetFieldValue("texture_field", out string field_value))
+                {
+                    dynamicCanvasComponent.DynamicCanvas.textures[dynamicCanvasComponent.selection] = field_value;
+                }
             });
 
-            canvas.BindAction("source_field.OnTextEntered", (gt) => {
-                //dynamicCanvasComponent.DynamicCanvas.texts[dynamicCanvasComponent.selection] =
-                //CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["source_field"]];
-                dynamicCanvasComponent.Refresh();
-            });
+            canvas.BindAction("source_X_field.OnTextEntered", (gt) => { parser.HandleRectangleField("source", ref dynamicCanvasComponent.DynamicCanvas.sources); });
+            canvas.BindAction("source_Y_field.OnTextEntered", (gt) => { parser.HandleRectangleField("source", ref dynamicCanvasComponent.DynamicCanvas.sources); });
+            canvas.BindAction("source_W_field.OnTextEntered", (gt) => { parser.HandleRectangleField("source", ref dynamicCanvasComponent.DynamicCanvas.sources); });
+            canvas.BindAction("source_H_field.OnTextEntered", (gt) => { parser.HandleRectangleField("source", ref dynamicCanvasComponent.DynamicCanvas.sources); });
 
             canvas.BindAction("alignment_field.OnTextEntered", (gt) => {
-                string field_value = CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["alignment_field"]];
-
-                if (Enum.TryParse(field_value, out EWidgetAlignment alignment))
+                if (parser.GetFieldValue("alignment_field", out string field_value))
                 {
-                    dynamicCanvasComponent.DynamicCanvas.alignments[dynamicCanvasComponent.selection] = alignment;
-                    dynamicCanvasComponent.Refresh();
-                }
-                else
-                {
-                    CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["alignment_field"]] = "invalid value";
+                    field_value = field_value.ToUpper();
+                    if (Enum.TryParse(field_value, out EWidgetAlignment alignment))
+                    {
+                        dynamicCanvasComponent.DynamicCanvas.alignments[dynamicCanvasComponent.selection] = alignment;
+                    }
+                    else
+                    {
+                        //CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["alignment_field"]] = FPropertiesParser.str_errors[0];
+                    }
                 }
             });
 
             canvas.BindAction("anchor_field.OnTextEntered", (gt) => {
-                string field_value = CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["anchor_field"]];
-
-                if (Enum.TryParse(field_value, out EWidgetAnchor anchor))
+                if (parser.GetFieldValue("anchor_field", out string field_value))
                 {
-                    dynamicCanvasComponent.DynamicCanvas.anchors[dynamicCanvasComponent.selection] = anchor;
-                    dynamicCanvasComponent.Refresh();
-                }
-                else
-                {
-                    CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["anchor_field"]] = "invalid value";
+                    field_value = field_value.ToUpper();
+                    if (Enum.TryParse(field_value, out EWidgetAnchor anchor))
+                    {
+                        dynamicCanvasComponent.DynamicCanvas.anchors[dynamicCanvasComponent.selection] = anchor;
+                    }
+                    else
+                    {
+                        //CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["anchor_field"]] = FPropertiesParser.str_errors[0];
+                    }
                 }
             });
 
             canvas.BindAction("text_field.OnTextEntered", (gt) => {
-                dynamicCanvasComponent.DynamicCanvas.texts[dynamicCanvasComponent.selection] =
-                CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["text_field"]];
-                dynamicCanvasComponent.Refresh();
+                if (parser.GetFieldValue("text_field", out string field_value))
+                {
+                    dynamicCanvasComponent.DynamicCanvas.texts[dynamicCanvasComponent.selection] = field_value;
+                }
             });
 
             canvas.BindAction("font_field.OnTextEntered", (gt) => {
-                dynamicCanvasComponent.DynamicCanvas.fonts[dynamicCanvasComponent.selection] =
-                CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["font_field"]];
-
-                // check font is loaded - if not use arial
-
-                dynamicCanvasComponent.Rebuild();
+                if (parser.GetFieldValue("text_field", out string field_value))
+                {
+                    dynamicCanvasComponent.DynamicCanvas.fonts[dynamicCanvasComponent.selection] = field_value;
+                }
             });
 
-            canvas.BindAction("color_field.OnTextEntered", (gt) => {
-                //dynamicCanvasComponent.DynamicCanvas.texts[dynamicCanvasComponent.selection] =
-                //CanvasComponent.cache.canvas.colors[CanvasComponent.graph.widgetNameIndexMap["color_field"]];
-                dynamicCanvasComponent.Refresh();
-            });
+            canvas.BindAction("color_R_field.OnTextEntered", (gt) => { parser.HandleColorField("color", ref dynamicCanvasComponent.DynamicCanvas.colors); });
+            canvas.BindAction("color_G_field.OnTextEntered", (gt) => { parser.HandleColorField("color", ref dynamicCanvasComponent.DynamicCanvas.colors); });
+            canvas.BindAction("color_B_field.OnTextEntered", (gt) => { parser.HandleColorField("color", ref dynamicCanvasComponent.DynamicCanvas.colors); });
+            canvas.BindAction("color_A_field.OnTextEntered", (gt) => { parser.HandleColorField("color", ref dynamicCanvasComponent.DynamicCanvas.colors); });
 
-            canvas.BindAction("highlightcolor_field.OnTextEntered", (gt) => {
-                //dynamicCanvasComponent.DynamicCanvas.texts[dynamicCanvasComponent.selection] =
-                //CanvasComponent.cache.canvas.colors[CanvasComponent.graph.widgetNameIndexMap["color_field"]];
-                dynamicCanvasComponent.Refresh();
-            });
+            canvas.BindAction("highlightcolor_R_field.OnTextEntered", (gt) => { parser.HandleColorField("highlightcolor", ref dynamicCanvasComponent.DynamicCanvas.highlightColors); });
+            canvas.BindAction("highlightcolor_G_field.OnTextEntered", (gt) => { parser.HandleColorField("highlightcolor", ref dynamicCanvasComponent.DynamicCanvas.highlightColors); });
+            canvas.BindAction("highlightcolor_B_field.OnTextEntered", (gt) => { parser.HandleColorField("highlightcolor", ref dynamicCanvasComponent.DynamicCanvas.highlightColors); });
+            canvas.BindAction("highlightcolor_A_field.OnTextEntered", (gt) => { parser.HandleColorField("highlightcolor", ref dynamicCanvasComponent.DynamicCanvas.highlightColors); });
 
             canvas.BindAction("clicksound_field.OnTextEntered", (gt) => {
-                dynamicCanvasComponent.DynamicCanvas.clickSounds[dynamicCanvasComponent.selection] =
-                CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["clicksound_field"]];
-                dynamicCanvasComponent.Rebuild();
+                if (parser.GetFieldValue("clicksound_field", out string field_value))
+                {
+                    dynamicCanvasComponent.DynamicCanvas.clickSounds[dynamicCanvasComponent.selection] = field_value;
+                }
             });
 
             canvas.BindAction("hoversound_field.OnTextEntered", (gt) => {
-                dynamicCanvasComponent.DynamicCanvas.hoverSounds[dynamicCanvasComponent.selection] =
-                CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["hoversound_field"]];
-                dynamicCanvasComponent.Rebuild();
+                if (parser.GetFieldValue("hoversound_field", out string field_value))
+                {
+                    dynamicCanvasComponent.DynamicCanvas.hoverSounds[dynamicCanvasComponent.selection] = field_value;
+                }
             });
 
             canvas.BindAction("tooltip_field.OnTextEntered", (gt) => {
-                dynamicCanvasComponent.DynamicCanvas.hoverSounds[dynamicCanvasComponent.selection] =
-                CanvasComponent.cache.canvas.texts[CanvasComponent.graph.widgetNameIndexMap["hoversound_field"]];
-                dynamicCanvasComponent.Rebuild();
+                if (parser.GetFieldValue("tooltip_field", out string field_value))
+                {
+                    dynamicCanvasComponent.DynamicCanvas.tooltips[dynamicCanvasComponent.selection] = field_value;
+                }
             });
 
-
-            // todo tooltip text 
-
+            // todo tooltip text
         }
 
         public void RebuildCanvas()

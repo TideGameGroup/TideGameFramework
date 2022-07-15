@@ -48,29 +48,29 @@ namespace Tide.Core
                 // draw by type
                 switch (canvas.widgetTypes[i])
                 {
-                    case EWidgetType.text:
+                    case EWidgetType.TEXT:
                         DrawTextWidget(canvas, spriteBatch, i, rect, gameTime);
                         break;
 
-                    case EWidgetType.panel:
-                    case EWidgetType.button:
-                    case EWidgetType.label:
+                    case EWidgetType.PANEL:
+                    case EWidgetType.BUTTON:
+                    case EWidgetType.LABEL:
                         DrawPanelWidget(canvas, spriteBatch, i, rect, gameTime);
                         break;
 
-                    case EWidgetType.slider:
+                    case EWidgetType.SLIDER:
                         DrawSliderWidget(canvas, spriteBatch, i, rect, gameTime);
                         break;
 
-                    case EWidgetType.tickbox:
+                    case EWidgetType.TICKBOX:
                         DrawTickBoxWidget(canvas, spriteBatch, i, rect, gameTime);
                         break;
 
-                    case EWidgetType.scrollbar:
+                    case EWidgetType.SCROLLBAR:
                         DrawScrollBarWidget(canvas, spriteBatch, i, rect, gameTime);
                         break;
 
-                    case EWidgetType.textfield:
+                    case EWidgetType.TEXTFIELD:
                         DrawTextFieldWidget(canvas, spriteBatch, i, rect, gameTime);
                         break;
 

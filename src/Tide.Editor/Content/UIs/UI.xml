@@ -2,12 +2,12 @@
 <XnaContent xmlns:ns="Microsoft.Xna.Framework">
   <Asset Type="Tide.XMLSchema.FCanvas">
     <alignments>
-      <Item>Left</Item>
-      <Item>Left</Item>
-      <Item>Left</Item>
-      <Item>Left</Item>
-      <Item>Left</Item>
-      <Item>Left</Item>
+      <Item>L</Item>
+      <Item>L</Item>
+      <Item>L</Item>
+      <Item>L</Item>
+      <Item>L</Item>
+      <Item>L</Item>
     </alignments>
     <anchors>
       <Item>NW</Item>
@@ -62,9 +62,9 @@
       <Item>panel</Item>
       <Item>open</Item>
       <Item>save</Item>
+      <Item>saveas</Item>
       <Item>new</Item>
       <Item>undo</Item>
-      <Item>delete</Item>
     </IDs>
     <parents>-1 -1 -1 -1 -1 -1</parents>
     <rectangles>
@@ -80,9 +80,9 @@
       240 0 16 16
       0 0 16 16
       16 0 16 16
+      144 0 16 16
       48 0 16 16
       80 0 16 16
-      64 0 16 16
     </sources>
     <texts>
       <Item></Item>

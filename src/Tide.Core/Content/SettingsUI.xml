@@ -1,12 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<XnaContent xmlns:ns="Microsoft.Xna.Framework">
-  <Asset Type="Tide.XMLSchema.FCanvas">
+<XnaContent xmlns:XMLSchema="Tide.XMLSchema">
+  <Asset Type="XMLSchema:FCanvas">
     <alignments>
-      <Item>Right</Item>
-      <Item>Left</Item>
-      <Item>Right</Item>
-      <Item>Left</Item>
-      <Item>Left</Item>
+      <Item>R</Item>
+      <Item>L</Item>
+      <Item>R</Item>
+      <Item>L</Item>
+      <Item>L</Item>
+      <Item>L</Item>
     </alignments>
     <anchors>
       <Item>C</Item>
@@ -14,6 +15,7 @@
       <Item>C</Item>
       <Item>C</Item>
       <Item>C</Item>
+      <Item>NW</Item>
     </anchors>
     <clickSounds>
       <Item></Item>
@@ -21,29 +23,20 @@
       <Item></Item>
       <Item></Item>
       <Item></Item>
+      <Item></Item>
     </clickSounds>
-    <colors>
-      FF000000
-      FFB6B2A5
-      FF000000
-      FFB6B2A5
-      FFB6B2A5
-    </colors>
+    <colors>FF000000 FFB6B2A5 FF000000 FFB6B2A5 FFB6B2A5 00000000</colors>
     <fonts>
       <Item>Arial</Item>
       <Item>Arial</Item>
       <Item>Arial</Item>
       <Item>Arial</Item>
       <Item>Arial</Item>
+      <Item>Arial</Item>
     </fonts>
-    <highlightColors>
-      FFfafafa
-      FFfafafa
-      FFfafafa
-      FFfafafa
-      FFfafafa
-    </highlightColors>
+    <highlightColors>FFFAFAFA FFFAFAFA FFFAFAFA FFFAFAFA FFFAFAFA 00000000</highlightColors>
     <hoverSounds>
+      <Item></Item>
       <Item></Item>
       <Item></Item>
       <Item></Item>
@@ -57,27 +50,17 @@
       <Item>text2</Item>
       <Item>tickbox1</Item>
       <Item>button1</Item>
+      <Item>widget2</Item>
     </IDs>
-    <parents>-1 -1 -1 -1 -1</parents>
-    <rectangles>
-      -64 40 256 32
-      0 32 128 32
-      -64 104 32 32
-      0 96 32 32
-      256 256 32 32
-    </rectangles>
+    <parents>-1 -1 -1 -1 -1 -1</parents>
+    <rectangles>-64 40 256 32 0 32 128 32 -64 104 32 32 0 96 32 32 256 256 32 32 0 0 0 0</rectangles>
     <root>0 0 0 0</root>
-    <sources>
-      0 0 0 0
-      64 32 32 32
-      0 0 0 0
-      192 32 32 32
-      32 32 32 32
-    </sources>
+    <sources>0 0 0 0 64 32 32 32 0 0 0 0 192 32 32 32 32 32 32 32 0 0 0 0</sources>
     <texts>
       <Item>Volume</Item>
       <Item></Item>
       <Item>Fullscreen</Item>
+      <Item></Item>
       <Item></Item>
       <Item></Item>
     </texts>
@@ -87,6 +70,7 @@
       <Item>BaseUI</Item>
       <Item>BaseUI</Item>
       <Item>BaseUI</Item>
+      <Item></Item>
     </textures>
     <tooltips>
       <Item></Item>
@@ -94,13 +78,15 @@
       <Item></Item>
       <Item></Item>
       <Item></Item>
+      <Item></Item>
     </tooltips>
     <widgetTypes>
-      <Item>text</Item>
-      <Item>slider</Item>
-      <Item>text</Item>
-      <Item>tickbox</Item>
-      <Item>button</Item>
+      <Item>TEXT</Item>
+      <Item>SLIDER</Item>
+      <Item>TEXT</Item>
+      <Item>TICKBOX</Item>
+      <Item>BUTTON</Item>
+      <Item>BUTTON</Item>
     </widgetTypes>
   </Asset>
 </XnaContent>

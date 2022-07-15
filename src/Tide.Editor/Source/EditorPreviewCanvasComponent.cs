@@ -28,11 +28,17 @@ namespace Tide.Editor
             TrySetDefault(args.input, out input);
             TrySetDefault(args.window, out window);
 
-            dynamicCanvasComponent.OnDynamicCanvasUpdated += () => { CanvasComponent.cache.canvas = dynamicCanvasComponent.DynamicCanvas.AsCanvas(); };
+            dynamicCanvasComponent.OnDynamicCanvasUpdated += () => 
+            { 
+                CanvasComponent.cache.canvas = dynamicCanvasComponent.DynamicCanvas.AsCanvas();
+                CanvasComponent.cache.canvas.root = new Rectangle(400, 24, 1280, 720);
+            };
             dynamicCanvasComponent.OnDynamicCanvasSet += () => { RebuildCanvas(); };
             //dynamicCanvasComponent.OnSelectionUpdated += () => { RebuildCanvas(); };
         }
 
+        public ACanvasComponent PreviewCanvasComponent { get; private set; }
+        public ACanvasDrawComponent PreviewDrawComponent { get; private set; }
         public ACanvasComponent CanvasComponent { get; private set; }
         public ACanvasDrawComponent DrawComponent { get; private set; }
 
@@ -40,6 +46,8 @@ namespace Tide.Editor
         {
             UnregisterChildComponent(CanvasComponent);
             UnregisterChildComponent(DrawComponent);
+
+            canvas.root = new Rectangle(400, 24, 1280, 720);
 
             FCanvasComponentConstructorArgs canvasArgs =
                 new FCanvasComponentConstructorArgs

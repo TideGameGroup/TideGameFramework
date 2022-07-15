@@ -6,6 +6,7 @@ using Tide.XMLSchema;
 namespace Tide.Core
 {
     public delegate void WidgetDelegate(GameTime gameTime);
+    public delegate void FocusWidgetDelegate(int i);
 
     public struct FCanvasComponentConstructorArgs
     {
@@ -70,16 +71,26 @@ namespace Tide.Core
 
             if (input != null)
             {
-                input.BindRawAction("primary.Pressed", (GameTime gt) =>
-                {
-                    suffix = ".Pressed";
+                FActionHandle handle1 = input.BindRawAction("primary.Pressed", (GameTime gt) => { suffix = ".Pressed"; });
+                FActionHandle handle2 = input.BindRawAction("primary.OnPressed", (GameTime gt) => 
+                { 
+                    suffix = ".OnPressed";
+                    if (focusedWidget != -1)
+                    {
+                        OnWidgetUnFocused?.Invoke(focusedWidget);
+                        focusedWidget = -1;
+                    }
                 });
-                input.BindRawAction("primary.OnPressed", (GameTime gt) => { suffix = ".OnPressed"; focusedWidget = -1; });
-                input.BindRawAction("primary.Released", (GameTime gt) => { suffix = ".Released"; });
-                input.BindRawAction("primary.OnReleased", (GameTime gt) =>
+                FActionHandle handle3 = input.BindRawAction("primary.Released", (GameTime gt) => { suffix = ".Released"; });
+                FActionHandle handle4 = input.BindRawAction("primary.OnReleased", (GameTime gt) => { suffix = ".OnReleased"; });
+                
+                OnUnregisterComponent += () =>
                 {
-                    suffix = ".OnReleased";
-                });
+                    input.UnbindAction(handle1);
+                    input.UnbindAction(handle2);
+                    input.UnbindAction(handle3);
+                    input.UnbindAction(handle4);
+                };
             }
 
             OnUnregisterComponent += () =>
@@ -98,8 +109,9 @@ namespace Tide.Core
         }
 
         public bool IsEnabled { get; set; }
-
         public bool IsHovered { get => bIsHovered; }
+        public FocusWidgetDelegate OnWidgetFocused { get; set; }
+        public FocusWidgetDelegate OnWidgetUnFocused { get; set; }
 
         private void DoHover(GameTime gameTime, Dictionary<int, double> frameHoveredWidgets, int i)
         {
@@ -155,6 +167,7 @@ namespace Tide.Core
             {
                 string key = cache.canvas.IDs[focusedWidget] + ".OnTextEntered";
                 InvokeBindings(null, focusedWidget, key);
+                OnWidgetUnFocused?.Invoke(focusedWidget);
                 focusedWidget = -1;
             }
         }
@@ -242,23 +255,23 @@ namespace Tide.Core
         {
             switch (cache.canvas.widgetTypes[i])
             {
-                case EWidgetType.text:
+                case EWidgetType.TEXT:
                     DoHover(gameTime, frameHoveredWidgets, i);
                     break;
 
-                case EWidgetType.panel:
+                case EWidgetType.PANEL:
                     break;
 
-                case EWidgetType.button:
+                case EWidgetType.BUTTON:
                     DoHover(gameTime, frameHoveredWidgets, i);
 
                     InvokeBindings(gameTime, i);
                     break;
 
-                case EWidgetType.label:
+                case EWidgetType.LABEL:
                     break;
 
-                case EWidgetType.scrollbar:
+                case EWidgetType.SCROLLBAR:
                     DoHover(gameTime, frameHoveredWidgets, i);
 
                     if (suffix != ".Released")
@@ -270,7 +283,7 @@ namespace Tide.Core
                     }
                     break;
 
-                case EWidgetType.slider:
+                case EWidgetType.SLIDER:
                     DoHover(gameTime, frameHoveredWidgets, i);
 
                     if (suffix != ".Released")
@@ -282,7 +295,7 @@ namespace Tide.Core
                     }
                     break;
 
-                case EWidgetType.tickbox:
+                case EWidgetType.TICKBOX:
                     DoHover(gameTime, frameHoveredWidgets, i);
 
                     if (suffix == ".OnReleased")
@@ -292,12 +305,14 @@ namespace Tide.Core
                     InvokeBindings(gameTime, i);
                     break;
 
-                case EWidgetType.textfield:
+                case EWidgetType.TEXTFIELD:
                     DoHover(gameTime, frameHoveredWidgets, i);
 
                     if (suffix == ".OnReleased")
                     {
                         focusedWidget = i;
+                        cache.canvas.texts[i] = "";
+                        OnWidgetFocused?.Invoke(i);
                         // set cursor position here
                         // FTextField.SetCursorPosition(mouseposition, rect)
                     }

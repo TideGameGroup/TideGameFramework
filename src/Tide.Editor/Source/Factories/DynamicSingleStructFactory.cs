@@ -39,31 +39,32 @@ namespace Tide.Editor
                     highlightColor: Color.LightGray
                     );
 
-
             string[] rectlabels = { "X", "Y", "W", "H" };
             string[] colorlabels = { "R", "G", "B", "A" };
 
-            AddAttributeWidget(0, "ID", canvas.IDs[i]);
-            AddAttributeWidget(1, "parent", canvas.parents[i].ToString());
+            if (canvas.Count > 0 && i >= 0 && i < canvas.Count)
+            {
+                AddAttributeWidget(0, "ID", canvas.IDs[i]);
+                AddAttributeWidget(1, "parent", canvas.parents[i].ToString());
 
-            AddAttributeWidget(2, "widgettype", canvas.widgetTypes[i].ToString());
-            //AddAttributeWidget(3, "position", FStaticTypeStringConversions.RectangleToString(canvas.rectangles[i]));
-            AddAttribute4Widget(3, "position", FStaticTypeStringConversions.RectangleToStringArray(canvas.rectangles[i]), rectlabels);
-            AddAttributeWidget(4, "texture", canvas.textures[i]);
-            AddAttribute4Widget(5, "source", FStaticTypeStringConversions.RectangleToStringArray(canvas.sources[i]), rectlabels);
+                AddAttributeWidget(2, "widgettype", canvas.widgetTypes[i].ToString());
+                AddAttributeWidget(3, "texture", canvas.textures[i]);
+                AddAttribute4Widget(4, "position", FStaticTypeStringConversions.RectangleToStringArray(canvas.rectangles[i]), rectlabels);
+                AddAttribute4Widget(5, "source", FStaticTypeStringConversions.RectangleToStringArray(canvas.sources[i]), rectlabels);
 
-            AddAttributeWidget(6, "alignment", canvas.alignments[i].ToString());
-            AddAttributeWidget(7, "anchor", canvas.anchors[i].ToString());
+                AddAttributeWidget(6, "alignment", canvas.alignments[i].ToString());
+                AddAttributeWidget(7, "anchor", canvas.anchors[i].ToString());
 
-            AddAttributeWidget(8, "text", canvas.texts[i]);
-            AddAttributeWidget(9, "font", canvas.fonts[i]);
-            AddAttributeWidget(10, "color", FStaticTypeStringConversions.ColorToHexcodeString(canvas.colors[i]));
-            AddAttributeWidget(11, "highlightcolor", FStaticTypeStringConversions.ColorToHexcodeString(canvas.highlightColors[i]));
+                AddAttributeWidget(8, "text", canvas.texts[i]);
+                AddAttributeWidget(9, "font", canvas.fonts[i]);
+                AddAttribute4Widget(10, "color", FStaticTypeStringConversions.ColorToStringArray(canvas.colors[i]), colorlabels);
+                AddAttribute4Widget(11, "highlightcolor", FStaticTypeStringConversions.ColorToStringArray(canvas.highlightColors[i]), colorlabels);
 
-            AddAttributeWidget(12, "clicksound", canvas.clickSounds[i]);
-            AddAttributeWidget(13, "hoversound", canvas.hoverSounds[i]);
+                AddAttributeWidget(12, "clicksound", canvas.clickSounds[i]);
+                AddAttributeWidget(13, "hoversound", canvas.hoverSounds[i]);
 
-            AddAttributeWidget(14, "tooltip", canvas.tooltips[i]);
+                AddAttributeWidget(14, "tooltip", canvas.tooltips[i]);
+            }
         }
 
         public void AddAttributeWidget(int n, string ID, string default_text)
@@ -76,7 +77,7 @@ namespace Tide.Editor
                     texture: "Icons",
                     color: Color.DarkSlateGray,
                     highlightColor: Color.DarkSlateGray,
-                    widgetType: EWidgetType.text,
+                    widgetType: EWidgetType.TEXT,
                     text: ID + ":",
                     font: "consolas"
                     );
@@ -90,7 +91,7 @@ namespace Tide.Editor
                 text: default_text,
                 color: Color.WhiteSmoke,
                 highlightColor: Color.White,
-                widgetType: EWidgetType.textfield,
+                widgetType: EWidgetType.TEXTFIELD,
                 font: "consolas"
                 );
         }
@@ -105,7 +106,7 @@ namespace Tide.Editor
                     texture: "Icons",
                     color: Color.DarkSlateGray,
                     highlightColor: Color.DarkSlateGray,
-                    widgetType: EWidgetType.text,
+                    widgetType: EWidgetType.TEXT,
                     text: ID + ":",
                     font: "consolas"
                     );
@@ -121,7 +122,7 @@ namespace Tide.Editor
                     texture: "Icons",
                     color: Color.DarkSlateGray,
                     highlightColor: Color.DarkSlateGray,
-                    widgetType: EWidgetType.text,
+                    widgetType: EWidgetType.TEXT,
                     text: labels[i],
                     font: "consolas"
                     );
@@ -135,7 +136,7 @@ namespace Tide.Editor
                     text: default_texts[i],
                     color: Color.WhiteSmoke,
                     highlightColor: Color.White,
-                    widgetType: EWidgetType.textfield,
+                    widgetType: EWidgetType.TEXTFIELD,
                     font: "consolas"
                     );
             }

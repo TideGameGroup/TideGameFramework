@@ -6,8 +6,6 @@ namespace Tide.Tools
 {
     public class FDynamicCanvas : ISerialisedInstanceData
     {
-        public static int staticCount = 0;
-
         public List<EWidgetAlignment> alignments = new List<EWidgetAlignment>();
         public List<EWidgetAnchor> anchors = new List<EWidgetAnchor>();
         public List<string> clickSounds = new List<string>();
@@ -25,6 +23,7 @@ namespace Tide.Tools
         public List<string> textures = new List<string>();
         public List<string> tooltips = new List<string>();
         public List<EWidgetType> widgetTypes = new List<EWidgetType>();
+
         public FDynamicCanvas(string ID) 
         {
             this.ID = ID;
@@ -53,34 +52,34 @@ namespace Tide.Tools
 
         public int Count => IDs.Count;
 
-        public void DynamicAdd<T>(List<T> L, T _default)
+        public int Add(int prior)
         {
-            L.Add(L.Count > 0 ? L[^1] : _default);
-        }
+            IDs.Add(GetValidID(prior));
+            parents.Add(prior);
 
-        public void Add()
-        {
-            DynamicAdd(alignments, EWidgetAlignment.Left);
-            DynamicAdd(anchors, EWidgetAnchor.NW);
-            DynamicAdd(clickSounds, "");
-            DynamicAdd(colors, Color.LightGray);
-            DynamicAdd(fonts, "Arial");
-            DynamicAdd(highlightColors, Color.White);
-            DynamicAdd(hoverSounds, "");
-            DynamicAdd(parents, -1);
-            DynamicAdd(rectangles, new Rectangle(0,0,100, 30));
-            DynamicAdd(sources, new Rectangle(0, 0, 100, 30));
-            DynamicAdd(texts, "");
-            DynamicAdd(textures, "");
-            DynamicAdd(tooltips, "");
-            DynamicAdd(widgetTypes, EWidgetType.button);
+            Rectangle rect = rectangles[prior];
+            rect.Location = new Point(32, 32);
+            rectangles.Add(rect);
 
-            IDs.Add(string.Format(IDs.Count > 0 ? IDs[^1] + "{0}" : "widget{0}", staticCount++));
+            alignments.Add(alignments[prior]);
+            anchors.Add(anchors[prior]);
+            clickSounds.Add(clickSounds[prior]);
+            colors.Add(colors[prior]);
+            fonts.Add(fonts[prior]);
+            highlightColors.Add(highlightColors[prior]);
+            hoverSounds.Add(hoverSounds[prior]);
+            sources.Add(sources[prior]);
+            texts.Add("");
+            textures.Add(textures[prior]);
+            tooltips.Add(tooltips[prior]);
+            widgetTypes.Add(widgetTypes[prior]);
+
+            return parents.Count - 1;
         }
 
         public void Add(
             string ID,
-            EWidgetAlignment alignment = EWidgetAlignment.Left, 
+            EWidgetAlignment alignment = EWidgetAlignment.L,
             EWidgetAnchor anchor = EWidgetAnchor.NW,
             string clickSound = "",
             Color color = default,
@@ -93,20 +92,20 @@ namespace Tide.Tools
             string text = "",
             string texture = "",
             string tooltip = "",
-            EWidgetType widgetType = EWidgetType.button
+            EWidgetType widgetType = EWidgetType.BUTTON
             )
         {
-            IDs.Add(ID);
+            IDs.Add(GetValidID(ID));
             alignments.Add(alignment);
             anchors.Add(anchor);
             clickSounds.Add(clickSound);
-            colors.Add(color);
+            colors.Add(color == default ? Color.White : color);
             fonts.Add(font);
-            highlightColors.Add(highlightColor);
+            highlightColors.Add(highlightColor == default ? Color.White : highlightColor);
             hoverSounds.Add(hoverSound);
             parents.Add(parent);
-            rectangles.Add(rectangle);
-            sources.Add(source);
+            rectangles.Add(rectangle == default ? new Rectangle(0, 0, 96, 32) : rectangle);
+            sources.Add(source == default ? new Rectangle(0, 0, 32, 32) : source);
             texts.Add(text);
             textures.Add(texture);
             tooltips.Add(tooltip);
@@ -135,6 +134,52 @@ namespace Tide.Tools
                 tooltips = tooltips.ToArray(),
                 widgetTypes = widgetTypes.ToArray()
             };
+        }
+        public int Duplicate(int prior)
+        {
+            IDs.Add(GetValidID(prior));
+            parents.Add(parents[prior]);
+
+            Rectangle rect = rectangles[prior];
+            rect.Location = new Point(32, 32);
+            rectangles.Add(rect);
+
+            alignments.Add(alignments[prior]);
+            anchors.Add(anchors[prior]);
+            clickSounds.Add(clickSounds[prior]);
+            colors.Add(colors[prior]);
+            fonts.Add(fonts[prior]);
+            highlightColors.Add(highlightColors[prior]);
+            hoverSounds.Add(hoverSounds[prior]);
+            sources.Add(sources[prior]);
+            texts.Add("");
+            textures.Add(textures[prior]);
+            tooltips.Add(tooltips[prior]);
+            widgetTypes.Add(widgetTypes[prior]);
+
+            return parents.Count - 1;
+        }
+
+        private string GetValidID(int prior)
+        {
+            string id = string.Format("{0}-copy", IDs[prior]);
+            return GetValidID(id);
+        }
+
+        private string GetValidID(string id)
+        {
+            int i = 0;
+            while (i < IDs.Count)
+            {
+                if (IDs[i] == id)
+                {
+                    id = string.Format("{0}-copy", id);
+                    i = 0;
+                }
+                i++;
+            }
+
+            return id;
         }
 
         public void RemoveAt(int i)

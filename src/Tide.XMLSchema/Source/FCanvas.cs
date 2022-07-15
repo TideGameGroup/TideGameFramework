@@ -4,9 +4,9 @@ namespace Tide.XMLSchema
 {
     public enum EWidgetAlignment
     {
-        Centre,
-        Left,
-        Right
+        C,
+        L,
+        R,
     }
 
     public enum EWidgetAnchor
@@ -24,14 +24,14 @@ namespace Tide.XMLSchema
 
     public enum EWidgetType
     {
-        panel,
-        button,
-        label,
-        text,
-        slider,
-        tickbox,
-        scrollbar,
-        textfield
+        PANEL,
+        BUTTON,
+        LABEL,
+        TEXT,
+        SLIDER,
+        TICKBOX,
+        SCROLLBAR,
+        TEXTFIELD
     }
 
     public struct FCanvas : ISerialisedInstanceData

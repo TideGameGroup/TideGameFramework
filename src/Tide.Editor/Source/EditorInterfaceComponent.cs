@@ -17,6 +17,10 @@ namespace Tide.Editor
     {
         private readonly UContentManager content;
 
+        private FCanvas? _newcanvas = null;
+
+        private string openFilePath = "";
+
         public UEditorInterface(FEditorInterfaceConstructorArgs args)
         {
             NullCheck(args.input);
@@ -101,28 +105,35 @@ namespace Tide.Editor
             SetupBindings(EditorCanvasComponent);
         }
 
+        // panels
+        public EditorDynamicCanvasComponent DynamicCanvasComponent { get; private set; }
+
         public ACanvasComponent EditorCanvasComponent { get; private set; }
         public ACanvasDrawComponent EditorDrawComponent { get; private set; }
         public AInputComponent InputComponent { get; private set; }
-
-        // panels
-        public EditorDynamicCanvasComponent DynamicCanvasComponent { get; private set; }
-        public EditorTreeCanvasComponent TreeCanvasComponent { get; private set; }
-        public EditorPropertiesCanvasComponent PropertiesCanvasComponent { get; private set; }
         public EditorPreviewCanvasComponent PreviewCanvasComponent { get; private set; }
+        public EditorPropertiesCanvasComponent PropertiesCanvasComponent { get; private set; }
+        public EditorTreeCanvasComponent TreeCanvasComponent { get; private set; }
 
         private string OpenFileDialog()
         {
-            string filePath = "";
             using OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                filePath = openFileDialog.FileName;
+                return openFileDialog.FileName;
             }
-            return filePath;
+            return "";
         }
 
-        private FCanvas? _newcanvas = null;
+        private string OpenSaveDialog()
+        {
+            using SaveFileDialog openFileDialog = new SaveFileDialog();
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                return openFileDialog.FileName;
+            }
+            return "";
+        }
 
         private void OpenUIFile()
         {
@@ -134,18 +145,45 @@ namespace Tide.Editor
             }
         }
 
-        public void SetupBindings(ACanvasComponent canvas)
+        private void SaveFile()
         {
-            canvas.BindAction("open.OnReleased", (gt) => { OpenUIFile(); });
+            if (DynamicCanvasComponent.DynamicCanvas == null) { return; }
+
+            if (openFilePath == "")
+            {
+                SaveFileAs();
+            }
+            else
+            {
+                UExportTools.ExportSerialisedInstanceData(openFilePath, DynamicCanvasComponent.DynamicCanvas.AsCanvas());
+            }
+        }
+
+        private void SaveFileAs()
+        {
+            if (DynamicCanvasComponent.DynamicCanvas == null) { return; }
+
+            openFilePath = OpenSaveDialog();
+            if (openFilePath != "")
+            {
+                SaveFile();
+            }
+        }
+
+        public void SetupBindings(ACanvasComponent component)
+        {
+            component.BindAction("open.OnReleased", (gt) => { OpenUIFile(); });
+            component.BindAction("save.OnReleased", (gt) => { SaveFile(); });
+            component.BindAction("saveas.OnReleased", (gt) => { SaveFileAs(); });
+            component.BindAction("new.OnReleased", (gt) => { DynamicCanvasComponent.New(); });
+            component.BindAction("undo.OnReleased", (gt) => { });
         }
 
         public void Update(GameTime gameTime)
         {
             if (_newcanvas != null)
             {
-                InputComponent.ClearBindings();
                 DynamicCanvasComponent.Set(new FDynamicCanvas((FCanvas)_newcanvas));
-                SetupBindings(EditorCanvasComponent);
                 _newcanvas = null;
             }
         }
