@@ -70,3 +70,4 @@ dkms.conf
 /src/Tide.Editor/Content/obj
 /src/Tide.Editor/Content/bin
 *.xnb
+/src/Tide.Editor/Content/mappings.xml
