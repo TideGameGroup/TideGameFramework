@@ -41,8 +41,8 @@ namespace Tide.Core
             NullCheck(args.canvas);
             NullCheck(args.content);
             NullCheck(args.scale);
-            TrySetDefault(args.input, out input);
             TrySetDefault(args.focus, out focus);
+            TrySetOptional(args.input, out input);
             TrySetOptional(args.audio, out audio);
 
             IsEnabled = true;
@@ -95,16 +95,21 @@ namespace Tide.Core
 
             OnUnregisterComponent += () =>
             {
-                if (bIsHovered)
-                {
-                    bIsHovered = false;
-                    AInputComponent.PopFocus(focus);
-                }
+                UnFocusOnFocusLost();
             };
 
             if (args.window != null)
             {
                 args.window.TextInput += handleTextInput;
+            }
+        }
+
+        public void UnFocusOnFocusLost()
+        {
+            if (bIsHovered)
+            {
+                bIsHovered = false;
+                AInputComponent.PopFocus(focus);
             }
         }
 
@@ -128,7 +133,7 @@ namespace Tide.Core
 
         private bool DoScrollbarMovement(int i, Rectangle rect)
         {
-            if (IsEnabled && input.CheckValidToTrigger(focus))
+            if (IsEnabled && input != null && input.CheckValidToTrigger(focus))
             {
                 float height = rect.Height - cache.canvas.sources[i].Height;
                 float start = rect.Top + (cache.canvas.sources[i].Height / 2);
@@ -145,7 +150,7 @@ namespace Tide.Core
 
         private bool DoSliderMovement(int i, Rectangle rect)
         {
-            if (IsEnabled && input.CheckValidToTrigger(focus))
+            if (IsEnabled && input != null && input.CheckValidToTrigger(focus))
             {
                 float width = rect.Width - cache.canvas.sources[i].Width;
                 float start = rect.Left + (cache.canvas.sources[i].Width / 2);
@@ -180,7 +185,7 @@ namespace Tide.Core
 
         private void InvokeBindings(GameTime gameTime, int i, string key)
         {
-            if (IsEnabled && input.CheckValidToTrigger(focus))
+            if (IsEnabled && input != null && input.CheckValidToTrigger(focus))
             {
                 if (bindings.ContainsKey(key))
                 {
@@ -195,7 +200,7 @@ namespace Tide.Core
 
         private void ToggleTickBox(int i)
         {
-            if (IsEnabled && input.CheckValidToTrigger(focus))
+            if (IsEnabled && input != null && input.CheckValidToTrigger(focus))
             {
                 values[i] = FSetting.Bool(!values[i].b);
             }
@@ -337,6 +342,8 @@ namespace Tide.Core
 
         public bool IsWidgetHovered(int i, ref Rectangle rect)
         {
+            if (input == null) { return false; }
+
             Rectangle scissor = graph.GetRectangle(cache.canvas, cache.canvas.parents[i]);
             rect = graph.GetRectangleInParent(cache.canvas, i, scissor);
 

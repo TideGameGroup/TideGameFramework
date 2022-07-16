@@ -24,7 +24,8 @@ namespace Tide.Core
         public ACinematicComponent(
             UContentManager content,
             UInput input,
-            int page = -1
+            int page = -1,
+            string canvas = "Cinematic"
             )
         {
             InputComponent = new AInputComponent(input);
@@ -33,7 +34,7 @@ namespace Tide.Core
                 new FCanvasComponentConstructorArgs
                 {
                     audio = null,
-                    canvas = content.Load<FCanvas>("Cinematic"),
+                    canvas = content.Load<FCanvas>(canvas),
                     content = content,
                     focus = EFocus.Cinematic | EFocus.GameUI,
                     input = InputComponent,
@@ -289,11 +290,15 @@ namespace Tide.Core
                     {
                         CinematicCanvas.bIsVisible = false;
                         CinematicCanvas.bIsActive = false;
+                        CinematicCanvasRenderer.bIsVisible = false;
+                        CinematicCanvasRenderer.bIsActive = false;
                     }
                     else
                     {
                         CinematicCanvas.bIsVisible = true;
                         CinematicCanvas.bIsActive = true;
+                        CinematicCanvasRenderer.bIsVisible = true;
+                        CinematicCanvasRenderer.bIsActive = true;
                         CinematicCanvas.SetWidgetText("text", texts[currentPage]);
                     }
                 }

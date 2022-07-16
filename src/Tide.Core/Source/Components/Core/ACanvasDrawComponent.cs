@@ -26,7 +26,7 @@ namespace Tide.Core
             TrySetDefault(args.component, out component);
             TrySetDefault(args.component.cache, out cache);
             TrySetDefault(args.component.graph, out graph);
-            TrySetDefault(args.input, out input);
+            TrySetOptional(args.input, out input);
         }
 
         private Color DoFlashing(FCanvas canvas, int i, GameTime gameTime)
