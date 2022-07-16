@@ -62,10 +62,10 @@ namespace Tide.Editor
                 dynamicCanvasEditStack.RemoveAt(dynamicCanvasEditStack.Count - 1);
             }
 
-            if (dynamicCanvasEditStack.Count > 64)
-            {
-                dynamicCanvasEditStack.RemoveAt(0);
-            }
+            //if (dynamicCanvasEditStack.Count > 64)
+            //{
+                //dynamicCanvasEditStack.RemoveAt(0);
+            //}
 
             // add new
             dynamicCanvasEditStack.Add(new FDynamicCanvas(dynamicCanvas.AsCanvas()));

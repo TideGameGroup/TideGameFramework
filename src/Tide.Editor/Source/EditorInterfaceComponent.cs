@@ -99,10 +99,10 @@ namespace Tide.Editor
             PreviewCanvasComponent = new EditorPreviewCanvasComponent(previewArgs);
 
             RegisterChildComponent(InputComponent);
+            RegisterChildComponent(PreviewCanvasComponent);
             RegisterChildComponent(EditorCanvasComponent);
             RegisterChildComponent(EditorDrawComponent);
             RegisterChildComponent(DynamicCanvasComponent);
-            RegisterChildComponent(PreviewCanvasComponent);
             RegisterChildComponent(TreeCanvasComponent);
             RegisterChildComponent(PropertiesCanvasComponent);
 

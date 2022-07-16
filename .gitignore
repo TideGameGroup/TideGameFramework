@@ -71,3 +71,4 @@ dkms.conf
 /src/Tide.Editor/Content/bin
 *.xnb
 /src/Tide.Editor/Content/mappings.xml
+/src/Games/GMTK22/Source/GMTK22.Core/Content/UI
