@@ -220,6 +220,13 @@ namespace Tide.Editor
                 }
             });
 
+            canvas.BindAction("tooltiptext_field.OnTextEntered", (gt) => {
+                if (parser.GetFieldValue("tooltiptext_field", out string field_value))
+                {
+                    dynamicCanvasComponent.DynamicCanvas.tooltiptexts[dynamicCanvasComponent.selection] = field_value;
+                }
+            });
+
             // todo tooltip text
         }
 

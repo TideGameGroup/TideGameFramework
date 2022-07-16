@@ -77,6 +77,12 @@ namespace Tide.Core
                     suffix = ".OnPressed";
                     if (focusedWidget != -1)
                     {
+                        if (cache.canvas.widgetTypes[focusedWidget] == EWidgetType.TEXTFIELD)
+                        {
+                            string key = cache.canvas.IDs[focusedWidget] + ".OnTextEntered";
+                            InvokeBindings(null, focusedWidget, key);
+                        }
+
                         OnWidgetUnFocused?.Invoke(focusedWidget);
                         focusedWidget = -1;
                     }

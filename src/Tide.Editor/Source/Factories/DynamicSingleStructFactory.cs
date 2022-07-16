@@ -68,6 +68,7 @@ namespace Tide.Editor
                 AddAttributeWidget(13, "hoversound", canvas.hoverSounds[i]);
 
                 AddAttributeWidget(14, "tooltip", canvas.tooltips[i]);
+                AddAttributeWidget(15, "tooltiptext", canvas.tooltiptexts[i]);
             }
         }
 
