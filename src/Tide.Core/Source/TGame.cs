@@ -109,7 +109,7 @@ namespace Tide.Core
             SpriteBatch.End();
 
             // 2d pass
-            SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp,
+            SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointWrap,
                 null, null, null, View.ViewProjectionMatrix);
 
             foreach (UComponent script in ComponentGraph)
@@ -124,8 +124,8 @@ namespace Tide.Core
 
             SpriteBatch.End();
 
-            // ui pass
-            SpriteBatch.Begin( SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp,
+            // ui PointClamp
+            SpriteBatch.Begin( SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp,
                 null, null, null, null);
 
             foreach (UComponent script in ComponentGraph)
