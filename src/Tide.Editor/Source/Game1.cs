@@ -42,7 +42,6 @@ namespace Tide.Editor
                     bFullscreen = false,
                     bAllowUserResizing = true,
                     graphicsDeviceManager = MonoGame.GraphicsDeviceManager,
-                    view = view,
                     window = MonoGame.Window,
                     width = 1280,
                     height = 720
@@ -83,6 +82,7 @@ namespace Tide.Editor
                 new TDrawConstructorArgs
                 {
                     graphicsDevice = MonoGame.GraphicsDevice,
+                    window = window,
                     drawPasses = new List<FDrawPass>
                     {
                         UIPass

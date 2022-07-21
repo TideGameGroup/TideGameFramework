@@ -45,7 +45,7 @@ namespace Tide.Core
             Matrix? matrix = null;
             if (drawPass.bUseMatrix)
             {
-                matrix = window.view.ViewProjectionMatrix;
+                matrix = window.View.ViewProjectionMatrix;
             }
 
             graphicsDevice.SetRenderTarget(drawPass.renderTarget);
@@ -63,11 +63,11 @@ namespace Tide.Core
             {
                 if (component is T drawable && component.IsVisible)
                 {
-                    drawable.Draw(window.view, SpriteBatch, gameTime);
+                    drawable.Draw(window.View, SpriteBatch, gameTime);
                 }
             }
 
-            drawPass.postPassDelegate?.Invoke(window.view, SpriteBatch, gameTime);
+            drawPass.postPassDelegate?.Invoke(window.View, SpriteBatch, gameTime);
 
             SpriteBatch.End();
         }
