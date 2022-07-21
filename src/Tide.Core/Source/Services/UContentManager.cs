@@ -8,15 +8,24 @@ using Tide.XMLSchema;
 
 namespace Tide.Core
 {
+    public struct UContentManagerConstructorArgs
+    {
+        public ContentManager contentManager;
+        public GraphicsDevice graphicsDevice;
+    }
+
     public class UContentManager
     {
         private readonly Dictionary<Type, object> defaults = new Dictionary<Type, object>();
         private readonly Dictionary<string, string> pathMappings = new Dictionary<string, string>();
 
-        public UContentManager(ContentManager contentManager, GraphicsDevice graphicsDevice)
+        public UContentManager(UContentManagerConstructorArgs args)
         {
-            Content = contentManager ?? throw new ArgumentNullException(nameof(contentManager));
-            GraphicsDevice = graphicsDevice ?? throw new ArgumentNullException(nameof(graphicsDevice));
+            StaticValidation.NullCheck(args.contentManager);
+            StaticValidation.NullCheck(args.graphicsDevice);
+
+            Content = args.contentManager;
+            GraphicsDevice = args.graphicsDevice;
             DynamicLibrary = new Dictionary<string, object>();
 
             FContentMappings mappings = Content.Load<FContentMappings>("mappings");

@@ -6,29 +6,32 @@ namespace Tide.Core
 {
     public struct FWindowConstructorArgs
     {
+        public bool bAllowUserResizing;
         public bool bFullscreen;
         public GraphicsDeviceManager graphicsDeviceManager;
-        public FView view2D;
-        public GameWindow window;
-        public int width;
         public int height;
+        public USettings settings;
+        public FView view;
+        public int width;
+        public GameWindow window;
     }
 
-    public class TWindow : UComponent
+    public class TWindow : ISystem
     {
         private readonly GraphicsDeviceManager graphicsDeviceManager;
-        private readonly FView view2D;
-        private readonly GameWindow window;
+        public readonly FView view;
+        public readonly GameWindow window;
         public int screenHeight;
         public int screenWidth;
 
         public TWindow(FWindowConstructorArgs args)
         {
-            TrySetDefault(args.graphicsDeviceManager, out graphicsDeviceManager);
-            TrySetDefault(args.view2D, out view2D);
-            TrySetDefault(args.window, out window);
-            TrySetDefault(args.width, out screenWidth);
-            TrySetDefault(args.height, out screenHeight);
+            StaticValidation.NullCheck(args.settings);
+            StaticValidation.TrySetDefault(args.graphicsDeviceManager, out graphicsDeviceManager);
+            StaticValidation.TrySetDefault(args.view, out view);
+            StaticValidation.TrySetDefault(args.window, out window);
+            StaticValidation.TrySetDefault(args.width, out screenWidth);
+            StaticValidation.TrySetDefault(args.height, out screenHeight);
 
             UserWidth = screenWidth;
             UserHeight = screenHeight;
@@ -43,24 +46,28 @@ namespace Tide.Core
             SetFullscreen(args.bFullscreen);
             window.ClientSizeChanged += new EventHandler<EventArgs>(RecreateWindow);
             window.AllowUserResizing = true;
+
+            args.settings.SetOnChangedCallback("fullscreen", () =>
+                {
+                    SetFullscreen(args.settings["fullscreen"].b);
+                }
+            );
         }
 
+        public FRenderTarget RenderTarget { get; set; }
         public int UserHeight { get; set; }
         public int UserWidth { get; set; }
-        public FRenderTarget RenderTarget { get; set; }
+        protected void RecalculateViewMatrix(int preferredWidth, int preferredHeight)
+        {
+            view.viewport.Width = preferredWidth;
+            view.viewport.Height = preferredHeight;
+            view.BuildMatrices();
+        }
 
         protected virtual void RecreateWindow(object _, EventArgs e)
         {
             RecreateWindow(window.ClientBounds.Width, window.ClientBounds.Height);
         }
-
-        protected void RecalculateViewMatrix(int preferredWidth, int preferredHeight)
-        {
-            view2D.viewport.Width = preferredWidth;
-            view2D.viewport.Height = preferredHeight;
-            view2D.BuildMatrices();
-        }
-
         protected void RecreateWindow(int preferredWidth, int preferredHeight)
         {
             RecalculateViewMatrix(preferredWidth, preferredHeight);
@@ -103,5 +110,15 @@ namespace Tide.Core
 
             RecalculateViewMatrix(UserWidth, UserHeight);
         }
+
+        #region ISystem
+        public void Draw(TComponentGraph graph, GameTime gameTime)
+        {
+        }
+
+        public void Update(TComponentGraph graph, GameTime gameTime)
+        {
+        }
+        #endregion
     }
 }

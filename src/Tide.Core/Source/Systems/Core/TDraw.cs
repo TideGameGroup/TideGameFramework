@@ -9,45 +9,71 @@ namespace Tide.Core
 
     public struct TDrawConstructorArgs
     {
+        public List<FDrawPass> drawPasses;
         public GraphicsDevice graphicsDevice;
-        public TWindow window;
     }
 
-    public struct FDrawPass
+    public class TDraw<T> : ISystem where T : IDrawableComponentType
     {
-        public SpriteSortMode sortMode;
-        public BlendState blendState;
-        public SamplerState samplerState;
-        public bool bUseMatrix;
-        public DrawDelegate postPassDelegate;
-        public RenderTarget2D renderTarget;
-    }
-
-    public class TDraw<T> where T : IDrawableComponentType
-    {
-        private readonly Stopwatch drawStopwatch = null;
-        private readonly SpriteFont font;
+        private readonly List<FDrawPass> drawPasses = new List<FDrawPass>();
         private readonly GraphicsDevice graphicsDevice;
-        private readonly RasterizerState rasterizerState;
-        public Color clearColor;
-
-        private List<FDrawPass> drawPasses;
 
         public TDraw(TDrawConstructorArgs args)
         {
             StaticValidation.TrySetDefault(args.graphicsDevice, out graphicsDevice);
+
             SpriteBatch = new SpriteBatch(args.graphicsDevice);
+
+            if (args.drawPasses != null)
+            {
+                drawPasses.AddRange(args.drawPasses);
+            }
         }
 
         public SpriteBatch SpriteBatch { get; private set; }
         public FView View { get; set; }
         public TWindow WindowManager { get; set; }
 
+        private void DrawPass(FDrawPass drawPass, TComponentGraph graph, GameTime gameTime)
+        {
+            if (drawPass.bClearRenderTarget)
+            {
+                graphicsDevice.Clear(drawPass.clearColor);
+            }
+
+            Matrix? matrix = null;
+            if (drawPass.bUseMatrix)
+            {
+                matrix = View.ViewProjectionMatrix;
+            }
+
+            graphicsDevice.SetRenderTarget(drawPass.renderTarget);
+
+            SpriteBatch.Begin(
+                drawPass.sortMode,
+                drawPass.blendState,
+                drawPass.samplerState,
+                null,
+                drawPass.rasterizerState,
+                null,
+                matrix);
+
+            foreach (UComponent component in graph)
+            {
+                if (component is T drawable && component.IsVisible)
+                {
+                    drawable.Draw(View, SpriteBatch, gameTime);
+                }
+            }
+
+            drawPass.postPassDelegate?.Invoke(View, SpriteBatch, gameTime);
+
+            SpriteBatch.End();
+        }
+
         private void DrawToBackBuffer(RenderTarget2D renderTarget)
         {
             graphicsDevice.SetRenderTarget(null);
-            graphicsDevice.Clear(clearColor);
-
             SpriteBatch.Begin(0, BlendState.Opaque, SamplerState.PointClamp);
             PresentationParameters parameters = graphicsDevice.PresentationParameters;
             SpriteBatch.Draw(renderTarget,
@@ -63,46 +89,14 @@ namespace Tide.Core
 
         public void Draw(TComponentGraph graph, GameTime gameTime)
         {
-            drawStopwatch.Restart();
-            graphicsDevice.SetRenderTarget(WindowManager.RenderTarget.RenderTarget);
-            graphicsDevice.Clear(clearColor);
-
             foreach (var pass in drawPasses)
             {
                 DrawPass(pass, graph, gameTime);
             }
         }
 
-        private void DrawPass(FDrawPass drawPass, TComponentGraph graph, GameTime gameTime)
+        public void Update(TComponentGraph graph, GameTime gameTime)
         {
-            Matrix? matrix = null;
-            if (drawPass.bUseMatrix)
-            {
-                matrix = View.ViewProjectionMatrix;
-            }
-
-            graphicsDevice.SetRenderTarget(drawPass.renderTarget);
-
-            SpriteBatch.Begin(
-                drawPass.sortMode,
-                drawPass.blendState,
-                drawPass.samplerState,
-                null,
-                null,
-                null,
-                matrix);
-
-            foreach (UComponent component in graph)
-            {
-                if (component is T drawable && component.IsVisible)
-                {
-                    drawable.Draw(View, SpriteBatch, gameTime);
-                }
-            }
-
-            drawPass.postPassDelegate?.Invoke(View, SpriteBatch, gameTime);
-
-            SpriteBatch.End();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Tide.Editor
     {
         public UContentManager content;
         public TInput input;
-        public GameWindow window;
+        public TWindow window;
     }
 
     public class UEditorInterface : UComponent, IUpdateComponent
@@ -42,7 +42,7 @@ namespace Tide.Editor
                     focus = EFocus.Cinematic | EFocus.GameUI,
                     input = InputComponent,
                     scale = 1f,
-                    window = args.window
+                    window = args.window.window
                 };
 
             EditorCanvasComponent = new ACanvasComponent(canvasArgs);
@@ -68,7 +68,7 @@ namespace Tide.Editor
                 {
                     content = content,
                     input = InputComponent,
-                    window = args.window,
+                    window = args.window.window,
                     dynamicCanvasComponent = DynamicCanvasComponent
                 };
 
@@ -80,7 +80,7 @@ namespace Tide.Editor
                 {
                     content = content,
                     input = InputComponent,
-                    window = args.window,
+                    window = args.window.window,
                     dynamicCanvasComponent = DynamicCanvasComponent
                 };
 
@@ -92,7 +92,7 @@ namespace Tide.Editor
                 {
                     content = content,
                     input = InputComponent,
-                    window = args.window,
+                    window = args.window.window,
                     dynamicCanvasComponent = DynamicCanvasComponent
                 };
 

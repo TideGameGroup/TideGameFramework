@@ -450,9 +450,9 @@ namespace Tide.Core
 
         public void CollisionUpdate(GameTime gameTime)
         {
-            if (this == ScriptGraph.Find<AColliderComponent>())
+            if (this == ComponentGraph.Find<AColliderComponent>())
             {
-                StaticTickImplementation(ScriptGraph, gameTime);
+                StaticTickImplementation(ComponentGraph, gameTime);
             }
         }
 

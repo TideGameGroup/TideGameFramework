@@ -7,6 +7,7 @@ namespace Tide.Core
 {
     public class TGame2 : Game
     {
+        /*
         private Stopwatch drawStopwatch = null;
         private SpriteFont font;
         public int height = 720;
@@ -166,7 +167,6 @@ namespace Tide.Core
             rasterizerState = new RasterizerState() { ScissorTestEnable = false };
             rasterizerUIState = new RasterizerState() { ScissorTestEnable = true };
 
-
             statistics = new UStatistics();
             Audio = new TAudio(ContentManager, Settings);
             Input = new TInput(statistics);
@@ -182,7 +182,7 @@ namespace Tide.Core
                 {
                     bFullscreen = Settings["fullscreen"].b,
                     graphicsDeviceManager = GraphicsDeviceManager,
-                    view2D = View,
+                    view = View,
                     window = Window
                 };
 
@@ -279,5 +279,6 @@ namespace Tide.Core
                 }
             }
         }
+        */
     }
 }

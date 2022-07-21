@@ -28,21 +28,21 @@ namespace Tide.Tools
                     scale = 1f
                 };
 
-            ACanvasComponent CinematicCanvas = new ACanvasComponent(canvasArgs);
+            canvas = new ACanvasComponent(canvasArgs);
 
             FCanvasDrawComponentConstructorArgs canvasRenderArgs =
                 new FCanvasDrawComponentConstructorArgs
                 {
-                    component = CinematicCanvas,
+                    component = canvas,
                     content = content,
                     input = InputComponent
                 };
 
-            ACanvasDrawComponent CinematicCanvasDraw = new ACanvasDrawComponent(canvasRenderArgs);
+            ACanvasDrawComponent canvasDraw = new ACanvasDrawComponent(canvasRenderArgs);
 
             AddChildComponent(InputComponent);
-            AddChildComponent(CinematicCanvas);
-            AddChildComponent(CinematicCanvasDraw);
+            AddChildComponent(canvas);
+            AddChildComponent(canvasDraw);
         }
 
         public void BindActionToCanvas(string action, WidgetDelegate callback)

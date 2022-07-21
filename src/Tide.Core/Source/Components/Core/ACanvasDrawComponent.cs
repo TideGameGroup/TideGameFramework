@@ -297,7 +297,7 @@ namespace Tide.Core
         }
 
         // draw interface
-        public void DrawUI(FView view2D, SpriteBatch spriteBatch, GameTime gameTime)
+        public void Draw(FView view2D, SpriteBatch spriteBatch, GameTime gameTime)
         {
             Rectangle scissor = spriteBatch.GraphicsDevice.ScissorRectangle;
 

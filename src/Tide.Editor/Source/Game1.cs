@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Collections.Generic;
 using Tide.Core;
 using Tide.Editor;
 using Tide.XMLSchema;
@@ -11,84 +12,84 @@ namespace Tide.Editor
     {
         public Game1()
         {
-            IsMouseVisible = true;
-            clearColor = Color.DarkGray;
         }
 
         public UEditorInterface EditorInterfaceComponent { get; private set; }
 
-        protected override void Initialize()
+        public override void InitialiseComponents(UContentManager content, TComponentGraph components, TSystemGraph systems)
         {
-            base.Initialize();
-            GraphicsDeviceManager.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-            GraphicsDeviceManager.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
-            Window.AllowUserResizing = true;
-
             FEditorInterfaceConstructorArgs interfaceArgs =
                 new FEditorInterfaceConstructorArgs
                 {
-                    input = Input,
-                    content = ContentManager,
-                    window = Window
+                    input = systems.Find<TInput>(),
+                    content = content,
+                    window = systems.Find<TWindow>(),
                 };
 
             EditorInterfaceComponent = new UEditorInterface(interfaceArgs);
 
             ComponentGraph.Add(EditorInterfaceComponent);
-            SetupDefaultKeybindings();
         }
 
-        private void SetupDefaultKeybindings()
+        public override void InitialiseSystems(UContentManager content, TSystemGraph systems)
         {
-            Input.keyBindings.Add(new FBinding(EMouseButtons.LeftButton, "primary"));
-            Input.keyBindings.Add(new FBinding(EMouseButtons.RightButton, "secondary"));
-            Input.keyBindings.Add(new FBinding(EMouseButtons.MiddleButton, "tertiary"));
+            FView view = new FView(MonoGame.GraphicsDevice.Viewport);
 
-            Input.keyBindings.Add(new FBinding(Keys.W, "up"));
-            Input.keyBindings.Add(new FBinding(Keys.A, "left"));
-            Input.keyBindings.Add(new FBinding(Keys.S, "down"));
-            Input.keyBindings.Add(new FBinding(Keys.D, "right"));
-            Input.keyBindings.Add(new FBinding(EMouseButtons.ScrollDown, "scrollup"));
-            Input.keyBindings.Add(new FBinding(EMouseButtons.ScrollUp, "scrolldown"));
+            FWindowConstructorArgs windowArgs =
+                new FWindowConstructorArgs
+                {
+                    settings = Settings,
+                    bFullscreen = false,
+                    bAllowUserResizing = true,
+                    graphicsDeviceManager = MonoGame.GraphicsDeviceManager,
+                    view = view,
+                    window = MonoGame.Window,
+                    width = 1280,
+                    height = 720
+                };
 
-            Input.keyBindings.Add(new FBinding(Keys.Q, "Q"));
-            Input.keyBindings.Add(new FBinding(Keys.E, "E"));
-            Input.keyBindings.Add(new FBinding(Keys.F, "F"));
-            Input.keyBindings.Add(new FBinding(Keys.Z, "Z"));
+            TWindow window = new TWindow(windowArgs);
+            systems.Add(window);
 
-            Input.keyBindings.Add(new FBinding(Keys.Up, "uparrow"));
-            Input.keyBindings.Add(new FBinding(Keys.Down, "downarrow"));
-            Input.keyBindings.Add(new FBinding(Keys.Left, "leftarrow"));
-            Input.keyBindings.Add(new FBinding(Keys.Right, "rightarrow"));
+            FInputConstructorArgs inputArgs =
+                new FInputConstructorArgs
+                {
+                    statistics = Statistics,
+                    bindings = new FDefaultBindings
+                    {
+                        bindings = TInput.GetDefaultKeybindings()
+                    }
+                };
 
-            Input.keyBindings.Add(new FBinding(Keys.D1, "1"));
-            Input.keyBindings.Add(new FBinding(Keys.D2, "2"));
-            Input.keyBindings.Add(new FBinding(Keys.D3, "3"));
-            Input.keyBindings.Add(new FBinding(Keys.D4, "4"));
-            Input.keyBindings.Add(new FBinding(Keys.D5, "5"));
-            Input.keyBindings.Add(new FBinding(Keys.D6, "6"));
-            Input.keyBindings.Add(new FBinding(Keys.D7, "7"));
+            systems.Add(new TInput(inputArgs));
 
-            Input.keyBindings.Add(new FBinding(Keys.Escape, "escape"));
-            Input.keyBindings.Add(new FBinding(Keys.Back, "back"));
+            FDrawPass UIPass = new FDrawPass
+            {
+                bClearRenderTarget = true,
+                clearColor = Color.DarkGray,
+                sortMode = SpriteSortMode.Deferred,
+                blendState = BlendState.AlphaBlend,
+                samplerState = SamplerState.LinearClamp,
+                bUseMatrix = false,
+                postPassDelegate = null,
+                renderTarget = null,
+                rasterizerState = new RasterizerState
+                {
+                    ScissorTestEnable = false
+                }
+            };
 
-            Input.keyBindings.Add(new FBinding(Keys.LeftShift, "mod1"));
-            Input.keyBindings.Add(new FBinding(Keys.LeftControl, "mod2"));
-        }
+            TDrawConstructorArgs drawConstructorArgs =
+                new TDrawConstructorArgs
+                {
+                    graphicsDevice = MonoGame.GraphicsDevice,
+                    drawPasses = new List<FDrawPass>
+                    {
+                        UIPass
+                    }
+                };
 
-        protected override void LoadContent()
-        {
-            base.LoadContent();
-        }
-
-        protected override void Update(GameTime gameTime)
-        {
-            base.Update(gameTime);
-        }
-
-        protected override void Draw(GameTime gameTime)
-        {
-            base.Draw(gameTime);
+            systems.Add(new TDraw<IDrawableCanvasComponent>(drawConstructorArgs));
         }
     }
 }

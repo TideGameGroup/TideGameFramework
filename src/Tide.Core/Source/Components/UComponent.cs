@@ -16,7 +16,7 @@ namespace Tide.Core
 
         public List<UComponent> Children { get; private set; }
 
-        private bool bIsActive;
+        private bool bIsActive = true;
         public bool IsActive
         {
             get
@@ -30,7 +30,7 @@ namespace Tide.Core
             }
         }
 
-        private bool bIsVisible;
+        private bool bIsVisible = true;
         public bool IsVisible
         {
             get
@@ -51,7 +51,7 @@ namespace Tide.Core
         public OnGraphEvent OnUnregisterChildComponent { get; set; }
         public OnEvent OnUnregisterComponent { get; set; }
         public UComponent Parent { get; set; }
-        public virtual TComponentGraph ScriptGraph => Parent.ScriptGraph;
+        public virtual TComponentGraph ComponentGraph => Parent.ComponentGraph;
 
         //public USerialisationComponent SerialisationComponent { get; set; }
 
@@ -140,7 +140,7 @@ namespace Tide.Core
             return child;
         }
 
-        public void Update()
+        public void UpdateGraph()
         {
             foreach(var f in deferredRegistrations)
             {

@@ -173,10 +173,15 @@ namespace Tide.Core
         {
             foreach (UComponent component in graph)
             {
-                if (component is IUpdateComponent && component.bIsVisible)
+                if (component is IUpdateComponent updater && component.IsVisible)
                 {
-                    ((IUpdateComponent)component).Update(gameTime);
+                    updater.Update(gameTime);
                 }
+            }
+
+            foreach (UComponent component in graph)
+            {
+                component.UpdateGraph();
             }
         }
 

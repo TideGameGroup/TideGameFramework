@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Tide.Core
 {
@@ -9,7 +7,6 @@ namespace Tide.Core
     {
         public int numPhysicsSubsteps;
     }
-
 
     public class TPhysics : ISystem
     {

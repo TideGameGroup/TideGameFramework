@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -12,98 +11,16 @@ namespace Tide.Core
 
     public delegate void ButtonDelegate(GameTime gameTime);
 
-    public enum EMouseButtons
+    public struct FDefaultBindings
     {
-        None,
-        LeftButton,
-        MiddleButton,
-        RightButton,
-        Mouse4,
-        Mouse5,
-        ScrollUp,
-        ScrollDown
-    }
+        public FBinding[] bindings;
+    };
 
-    public struct FActionHandle
+    public struct FInputConstructorArgs
     {
-        public string action;
-        public ButtonDelegate actionCallback;
-        public Axis2DDelegate axis2DCallback;
-        public AxisDelegate axisCallback;
-
-        public FActionHandle(string action, ButtonDelegate callback)
-        {
-            this.action = action ?? throw new ArgumentNullException(nameof(action));
-            actionCallback = callback;
-            axisCallback = null;
-            axis2DCallback = null;
-        }
-
-        public FActionHandle(string action, AxisDelegate callback)
-        {
-            this.action = action ?? throw new ArgumentNullException(nameof(action));
-            actionCallback = null;
-            axisCallback = callback;
-            axis2DCallback = null;
-        }
-
-        public FActionHandle(string action, Axis2DDelegate callback)
-        {
-            this.action = action ?? throw new ArgumentNullException(nameof(action));
-            actionCallback = null;
-            axisCallback = null;
-            axis2DCallback = callback;
-        }
-    }
-
-    public struct FBinding
-    {
-        public string bound;
-        public Buttons button;
-        public Keys key;
-        public EMouseButtons mouseButton;
-        public IVirtualInputEvent custom;
-
-        public FBinding(Keys key, string bound)
-        {
-            this.key = key;
-            this.bound = bound;
-
-            button = Buttons.A;
-            mouseButton = EMouseButtons.None;
-            custom = null;
-        }
-
-        public FBinding(Buttons button, string bound)
-        {
-            this.button = button;
-            this.bound = bound;
-
-            key = Keys.None;
-            mouseButton = EMouseButtons.None;
-            custom = null;
-        }
-
-        public FBinding(EMouseButtons mouseButton, string bound)
-        {
-            this.mouseButton = mouseButton;
-            this.bound = bound;
-
-            key = Keys.None;
-            button = Buttons.A;
-            custom = null;
-        }
-
-        public FBinding(IVirtualInputEvent custom, string bound)
-        {
-            this.custom = custom;
-            this.bound = bound;
-
-            key = Keys.None;
-            button = Buttons.A;
-            mouseButton = EMouseButtons.None;
-        }
-    }
+        public UStatistics statistics;
+        public FDefaultBindings bindings;
+    };
 
     public class TInput : ISystem
     {
@@ -123,12 +40,52 @@ namespace Tide.Core
         // stats
         private readonly UStatistics statistics;
 
-        public TInput(UStatistics statistics)
+        public TInput(FInputConstructorArgs args)
         {
-            this.statistics = statistics;
+            StaticValidation.TrySetDefault(args.statistics, out statistics);
 
             priorMouseState = Mouse.GetState();
             priorKeyboardState = Keyboard.GetState();
+
+            foreach(var bindings in args.bindings.bindings)
+            {
+                keyBindings.Add(bindings);
+            }
+        }
+
+        public static FBinding[] GetDefaultKeybindings()
+        {
+            List<FBinding> defaultBindings = new List<FBinding>
+            {
+                new FBinding(EMouseButtons.LeftButton, "primary"),
+                new FBinding(EMouseButtons.RightButton, "secondary"),
+                new FBinding(EMouseButtons.MiddleButton, "tertiary"),
+                new FBinding(EMouseButtons.ScrollDown, "scrollup"),
+                new FBinding(EMouseButtons.ScrollUp, "scrolldown"),
+
+                new FBinding(Keys.Up, "uparrow"),
+                new FBinding(Keys.Down, "downarrow"),
+                new FBinding(Keys.Left, "leftarrow"),
+                new FBinding(Keys.Right, "rightarrow"),
+
+                new FBinding(Keys.D0, "0"),
+                new FBinding(Keys.D1, "1"),
+                new FBinding(Keys.D2, "2"),
+                new FBinding(Keys.D3, "3"),
+                new FBinding(Keys.D4, "4"),
+                new FBinding(Keys.D5, "5"),
+                new FBinding(Keys.D6, "6"),
+                new FBinding(Keys.D7, "7"),
+                new FBinding(Keys.D8, "8"),
+                new FBinding(Keys.D9, "9"),
+
+                new FBinding(Keys.Escape, "escape"),
+                new FBinding(Keys.Back, "back"),
+                new FBinding(Keys.LeftShift, "lshift"),
+                new FBinding(Keys.LeftControl, "lctrl")
+            };
+
+            return defaultBindings.ToArray();
         }
 
         public Vector2 MousePosition { get; private set; } = Vector2.Zero;

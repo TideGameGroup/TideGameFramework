@@ -49,7 +49,7 @@ namespace Tide.Core
             return points.Count - 1;
         }
 
-        public void Draw2D(FView view2D, SpriteBatch spriteBatch, GameTime gameTime)
+        public void Draw(FView view2D, SpriteBatch spriteBatch, GameTime gameTime)
         {
             for (int l = 0; l < points.Count; l++)
             {
