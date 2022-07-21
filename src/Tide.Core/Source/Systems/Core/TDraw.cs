@@ -13,7 +13,7 @@ namespace Tide.Core
         public TWindow window;
     }
 
-    public struct FDrawPass<T> where T : IDrawableComponent
+    public struct FDrawPass
     {
         public SpriteSortMode sortMode;
         public BlendState blendState;
@@ -21,10 +21,9 @@ namespace Tide.Core
         public bool bUseMatrix;
         public DrawDelegate postPassDelegate;
         public RenderTarget2D renderTarget;
-        public T _type;
     }
 
-    public class TDraw
+    public class TDraw<T> where T : IDrawableComponentType
     {
         private readonly Stopwatch drawStopwatch = null;
         private readonly SpriteFont font;
@@ -32,7 +31,7 @@ namespace Tide.Core
         private readonly RasterizerState rasterizerState;
         public Color clearColor;
 
-        private List<FDrawPass<IDrawableComponent>> drawPasses;
+        private List<FDrawPass> drawPasses;
 
         public TDraw(TDrawConstructorArgs args)
         {
@@ -62,12 +61,6 @@ namespace Tide.Core
             SpriteBatch.End();
         }
 
-        public void AddDrawPass<T>(FDrawPass<T> drawpass, int at = -1) where T : IDrawableComponent
-        {
-            if (at == -1)
-            drawPasses.Add(drawpass);
-        }
-
         public void Draw(TComponentGraph graph, GameTime gameTime)
         {
             drawStopwatch.Restart();
@@ -80,13 +73,15 @@ namespace Tide.Core
             }
         }
 
-        private void DrawPass(FDrawPass<IDrawableComponent> drawPass, TComponentGraph graph, GameTime gameTime)
+        private void DrawPass(FDrawPass drawPass, TComponentGraph graph, GameTime gameTime)
         {
             Matrix? matrix = null;
             if (drawPass.bUseMatrix)
             {
                 matrix = View.ViewProjectionMatrix;
             }
+
+            graphicsDevice.SetRenderTarget(drawPass.renderTarget);
 
             SpriteBatch.Begin(
                 drawPass.sortMode,
@@ -99,9 +94,9 @@ namespace Tide.Core
 
             foreach (UComponent component in graph)
             {
-                if (component is drawPass._type && component.IsVisible)
+                if (component is T drawable && component.IsVisible)
                 {
-                    ((IDrawableComponent)component).Draw(View, SpriteBatch, gameTime);
+                    drawable.Draw(View, SpriteBatch, gameTime);
                 }
             }
 

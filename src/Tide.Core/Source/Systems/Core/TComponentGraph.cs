@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -10,7 +11,7 @@ namespace Tide.Core
 
     public delegate void OnPropertyEvent(bool val);
 
-    public class TComponentGraph : IEnumerable<UComponent>
+    public class TComponentGraph : IEnumerable<UComponent> , ISystem
     {
         public TComponentGraph()
         {
@@ -161,10 +162,30 @@ namespace Tide.Core
             return GetEnumerator();
         }
 
+        #region ISystem
+
+        public void Draw(TComponentGraph graph, GameTime gameTime)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public void Update(TComponentGraph graph, GameTime gameTime)
+        {
+            foreach (UComponent component in graph)
+            {
+                if (component is IUpdateComponent && component.bIsVisible)
+                {
+                    ((IUpdateComponent)component).Update(gameTime);
+                }
+            }
+        }
+
+        #endregion
+
         private class ARootScript : UComponent
         {
             public TComponentGraph RootParent = null;
-            public override TComponentGraph ScriptGraph => RootParent;
+            public override TComponentGraph ComponentGraph => RootParent;
         }
     }
 }

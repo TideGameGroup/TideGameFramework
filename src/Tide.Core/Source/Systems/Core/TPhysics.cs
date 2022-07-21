@@ -22,7 +22,6 @@ namespace Tide.Core
 
         public void Draw(TComponentGraph graph, GameTime gameTime)
         {
-            throw new NotImplementedException();
         }
 
         public void Update(TComponentGraph graph, GameTime gameTime)
@@ -35,9 +34,9 @@ namespace Tide.Core
 
             foreach (UComponent script in graph)
             {
-                if (script is IPhysicsComponent && script.IsActive)
+                if (script is IPhysicsComponent component && script.IsActive)
                 {
-                    ((IPhysicsComponent)script).PrePhysics(gameTime);
+                    component.PrePhysics(gameTime);
                 }
             }
 
@@ -47,30 +46,28 @@ namespace Tide.Core
 
                 foreach (UComponent script in graph)
                 {
-                    if (script is IPhysicsComponent && script.IsActive)
+                    if (script is IPhysicsComponent component && script.IsActive)
                     {
-                        ((IPhysicsComponent)script).CollisionUpdate(stepTime);
+                        component.CollisionUpdate(stepTime);
                     }
                 }
 
                 foreach (UComponent script in graph)
                 {
-                    if (script is IPhysicsComponent && script.IsActive)
+                    if (script is IPhysicsComponent component && script.IsActive)
                     {
-                        ((IPhysicsComponent)script).PhysicsUpdate(stepTime);
+                        component.PhysicsUpdate(stepTime);
                     }
                 }
             }
 
             foreach (UComponent script in graph)
             {
-                if (script is IPhysicsComponent && script.IsActive)
+                if (script is IPhysicsComponent component && script.IsActive)
                 {
-                    ((IPhysicsComponent)script).PostPhysics(gameTime);
+                    component.PostPhysics(gameTime);
                 }
             }
         }
-
-
     }
 }

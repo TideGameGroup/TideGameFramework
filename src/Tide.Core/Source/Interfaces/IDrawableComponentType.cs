@@ -4,7 +4,8 @@ using System.Collections.Generic;
 
 namespace Tide.Core
 {
-    public interface IDrawableCanvasComponent : IDrawableComponentType
+    public interface IDrawableComponentType
     {
+        public void Draw(FView view2D, SpriteBatch spriteBatch, GameTime gameTime);
     }
 }

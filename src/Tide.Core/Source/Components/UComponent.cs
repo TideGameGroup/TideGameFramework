@@ -15,8 +15,35 @@ namespace Tide.Core
         }
 
         public List<UComponent> Children { get; private set; }
-        public bool IsActive { get; private set; }
-        public bool IsVisible { get; private set; }
+
+        private bool bIsActive;
+        public bool IsActive
+        {
+            get
+            {
+                return bIsActive;
+            }
+            set
+            {
+                bIsActive = value;
+                OnSetActive?.Invoke(bIsActive);
+            }
+        }
+
+        private bool bIsVisible;
+        public bool IsVisible
+        {
+            get
+            {
+                return bIsVisible;
+            }
+            set
+            {
+                bIsVisible = value;
+                OnSetVisibility?.Invoke(bIsVisible);
+            }
+        }
+
         public OnGraphEvent OnRegisterChildComponent { get; set; }
         public OnEvent OnRegisterComponent { get; set; }
         public OnPropertyEvent OnSetActive { get; set; }
@@ -105,18 +132,6 @@ namespace Tide.Core
         {
             deferredRegistrations.Add(() => DeferredAddChildComponent(child, at));
             return child;
-        }
-
-        public void SetActive(bool isActive)
-        {
-            IsActive = isActive;
-            OnSetActive?.Invoke(isActive);
-        }
-
-        public void SetVisibility(bool isVisible)
-        {
-            IsVisible = isVisible;
-            OnSetVisibility?.Invoke(isVisible);
         }
 
         public UComponent RemoveChildComponent(UComponent child)
