@@ -10,11 +10,11 @@ namespace Tide.Core
         public GraphicsDevice graphicsDevice;
     }
 
-    public class URenderTarget : UComponent
+    public class FRenderTarget : UComponent
     {
         private readonly GraphicsDevice graphicsDevice;
 
-        public URenderTarget(RenderTargetConstructorArgs args)
+        public FRenderTarget(RenderTargetConstructorArgs args)
         {
             TrySetDefault(args.graphicsDevice, out graphicsDevice);
         }
@@ -25,6 +25,7 @@ namespace Tide.Core
         {
             PresentationParameters parameters = graphicsDevice.PresentationParameters;
             SurfaceFormat format = parameters.BackBufferFormat;
+
             RenderTarget = new RenderTarget2D(graphicsDevice,
                 parameters.BackBufferWidth,
                 parameters.BackBufferHeight,

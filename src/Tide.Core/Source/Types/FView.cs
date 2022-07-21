@@ -4,13 +4,13 @@ using System;
 
 namespace Tide.Core
 {
-    public class UView : IViewComponent
+    public class FView : IViewComponent
     {
         public Vector2 position;
         public Matrix ProjectionInverse;
         public Viewport viewport;
 
-        public UView(Viewport viewport)
+        public FView(Viewport viewport)
         {
             position = Vector2.Zero;
             Scale = 1440f;

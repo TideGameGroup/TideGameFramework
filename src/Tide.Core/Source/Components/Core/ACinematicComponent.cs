@@ -23,7 +23,7 @@ namespace Tide.Core
 
         public ACinematicComponent(
             UContentManager content,
-            UInput input,
+            TInput input,
             int page = -1,
             string canvas = "Cinematic"
             )
@@ -60,8 +60,8 @@ namespace Tide.Core
 
             if (currentPage == -1)
             {
-                CinematicCanvas.bIsActive = false;
-                CinematicCanvas.bIsVisible = false;
+                CinematicCanvas.IsActive = false;
+                CinematicCanvas.IsVisible = false;
             }
         }
 
@@ -201,10 +201,10 @@ namespace Tide.Core
         {
             if (serialisedScriptPath == "" || serialisedScriptPath == null)
             {
-                bIsActive = false;
-                bIsVisible = false;
-                UnregisterChildComponent(CinematicCanvas);
-                UnregisterChildComponent(CinematicCanvasRenderer);
+                IsActive = false;
+                IsVisible = false;
+                RemoveChildComponent(CinematicCanvas);
+                RemoveChildComponent(CinematicCanvasRenderer);
                 return;
             }
 
@@ -228,8 +228,8 @@ namespace Tide.Core
                 positions.Add(new List<Vector2>(array));
             }
 
-            CinematicCanvas.bIsActive = true;
-            CinematicCanvas.bIsVisible = true;
+            CinematicCanvas.IsActive = true;
+            CinematicCanvas.IsVisible = true;
             currentPage = 0;
             deferredPage = 0;
             BindCinematic(currentPage, 0.0);
@@ -257,15 +257,15 @@ namespace Tide.Core
             {
                 currentPage = 0;
                 deferredPage = 0;
-                RegisterChildComponent(CinematicCanvas);
-                RegisterChildComponent(CinematicCanvasRenderer);
+                AddChildComponent(CinematicCanvas);
+                AddChildComponent(CinematicCanvasRenderer);
                 BindCinematic(currentPage, 0.0);
             }
             else
             {
                 Load(content, serialisedScriptPath);
-                RegisterChildComponent(CinematicCanvas);
-                RegisterChildComponent(CinematicCanvasRenderer);
+                AddChildComponent(CinematicCanvas);
+                AddChildComponent(CinematicCanvasRenderer);
                 currentCinematic = serialisedScriptPath;
             }
         }
@@ -288,23 +288,23 @@ namespace Tide.Core
 
                     if (texts[currentPage] == null || texts[currentPage] == "")
                     {
-                        CinematicCanvas.bIsVisible = false;
-                        CinematicCanvas.bIsActive = false;
-                        CinematicCanvasRenderer.bIsVisible = false;
-                        CinematicCanvasRenderer.bIsActive = false;
+                        CinematicCanvas.IsVisible = false;
+                        CinematicCanvas.IsActive = false;
+                        CinematicCanvasRenderer.IsVisible = false;
+                        CinematicCanvasRenderer.IsActive = false;
                     }
                     else
                     {
-                        CinematicCanvas.bIsVisible = true;
-                        CinematicCanvas.bIsActive = true;
-                        CinematicCanvasRenderer.bIsVisible = true;
-                        CinematicCanvasRenderer.bIsActive = true;
+                        CinematicCanvas.IsVisible = true;
+                        CinematicCanvas.IsActive = true;
+                        CinematicCanvasRenderer.IsVisible = true;
+                        CinematicCanvasRenderer.IsActive = true;
                         CinematicCanvas.SetWidgetText("text", texts[currentPage]);
                     }
                 }
                 else
                 {
-                    UnregisterChildComponent(CinematicCanvas);
+                    RemoveChildComponent(CinematicCanvas);
                     //currentPage = -1;
                 }
             }

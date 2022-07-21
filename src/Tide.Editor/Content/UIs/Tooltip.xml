@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<XnaContent xmlns:XMLSchema="Tide.XMLSchema">
+<XnaContent xmlns:XMLSchema="Tide.XMLSchema" xnaversion ="1.0">
   <Asset Type="XMLSchema:FCanvas">
     <alignments>
       <Item>L</Item>

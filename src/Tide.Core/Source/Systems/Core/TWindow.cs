@@ -8,44 +8,46 @@ namespace Tide.Core
     {
         public bool bFullscreen;
         public GraphicsDeviceManager graphicsDeviceManager;
-        public UView view2D;
+        public FView view2D;
         public GameWindow window;
+        public int width;
+        public int height;
     }
 
-    public class UWindow : UComponent
+    public class TWindow : UComponent
     {
         private readonly GraphicsDeviceManager graphicsDeviceManager;
-        private readonly UView view2D;
+        private readonly FView view2D;
         private readonly GameWindow window;
+        public int screenHeight;
+        public int screenWidth;
 
-        public UWindow(FWindowConstructorArgs args)
+        public TWindow(FWindowConstructorArgs args)
         {
             TrySetDefault(args.graphicsDeviceManager, out graphicsDeviceManager);
             TrySetDefault(args.view2D, out view2D);
             TrySetDefault(args.window, out window);
+            TrySetDefault(args.width, out screenWidth);
+            TrySetDefault(args.height, out screenHeight);
 
-            ScreenWidth = 1280;
-            ScreenHeight = 720;
-            UserWidth = ScreenWidth;
-            UserHeight = ScreenHeight;
+            UserWidth = screenWidth;
+            UserHeight = screenHeight;
 
             RenderTargetConstructorArgs renderTargetConstructorArgs =
                 new RenderTargetConstructorArgs
                 {
                     graphicsDevice = graphicsDeviceManager.GraphicsDevice
                 };
-            RenderTarget = new URenderTarget(renderTargetConstructorArgs);
+            RenderTarget = new FRenderTarget(renderTargetConstructorArgs);
 
             SetFullscreen(args.bFullscreen);
             window.ClientSizeChanged += new EventHandler<EventArgs>(RecreateWindow);
             window.AllowUserResizing = true;
         }
 
-        public int ScreenHeight { get; set; }
-        public int ScreenWidth { get; set; }
         public int UserHeight { get; set; }
         public int UserWidth { get; set; }
-        public URenderTarget RenderTarget { get; set; }
+        public FRenderTarget RenderTarget { get; set; }
 
         protected virtual void RecreateWindow(object _, EventArgs e)
         {

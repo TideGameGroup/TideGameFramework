@@ -105,7 +105,7 @@ namespace Tide.Core
         }
     }
 
-    public class UInput : UComponent, IUpdateComponent
+    public class TInput : ISystem
     {
         private readonly Dictionary<string, List<ButtonDelegate>> keyEvents = new Dictionary<string, List<ButtonDelegate>>();
         private readonly Dictionary<string, List<Axis2DDelegate>> axis2DEvents = new Dictionary<string, List<Axis2DDelegate>>();
@@ -123,7 +123,7 @@ namespace Tide.Core
         // stats
         private readonly UStatistics statistics;
 
-        public UInput(UStatistics statistics)
+        public TInput(UStatistics statistics)
         {
             this.statistics = statistics;
 
@@ -205,8 +205,7 @@ namespace Tide.Core
         }
 
         // interface implementation
-
-        public void Update(GameTime gameTime)
+        public void Update(TComponentGraph graph, GameTime gameTime)
         {
             keyStatus.Clear(); 
             
@@ -312,5 +311,7 @@ namespace Tide.Core
             priorVirtualInputState.AddRange(virtualInputState);
             virtualInputState.Clear();
         }
+
+        public void Draw(TComponentGraph graph, GameTime gameTime){}
     }
 }

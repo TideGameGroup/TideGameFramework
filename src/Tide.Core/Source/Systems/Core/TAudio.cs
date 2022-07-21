@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Tide.Core
 {
-    public class UAudio : UComponent
+    public class TAudio : ISystem
     {
         private Dictionary<string, SoundEffect> soundTable 
             = new Dictionary<string, SoundEffect>();
@@ -16,7 +16,7 @@ namespace Tide.Core
         private readonly UContentManager content;
         private readonly USettings settings;
 
-        public UAudio(UContentManager content, USettings settings)
+        public TAudio(UContentManager content, USettings settings)
         {
             this.content = content;
             this.settings = settings;
@@ -84,5 +84,9 @@ namespace Tide.Core
                 instance.Stop();
             }
         }
+
+        public void Draw(TComponentGraph graph, GameTime gameTime) {}
+
+        public void Update(TComponentGraph graph, GameTime gameTime) {}
     }
 }

@@ -12,7 +12,7 @@ namespace Tide.Core
         public AInputComponent input;
     }
 
-    public class ACanvasDrawComponent : UComponent, IDrawableCanvasScript
+    public class ACanvasDrawComponent : UComponent, IDrawableCanvasComponent
     {
         private readonly FCanvasCache cache;
         private readonly ACanvasComponent component;
@@ -297,7 +297,7 @@ namespace Tide.Core
         }
 
         // draw interface
-        public void DrawUI(UView view2D, SpriteBatch spriteBatch, GameTime gameTime)
+        public void DrawUI(FView view2D, SpriteBatch spriteBatch, GameTime gameTime)
         {
             Rectangle scissor = spriteBatch.GraphicsDevice.ScissorRectangle;
 

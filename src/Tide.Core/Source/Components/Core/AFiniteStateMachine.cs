@@ -32,8 +32,8 @@ namespace Tide.Core
         {
             if (IsValidIndex(index))
             {
-                UnregisterChildComponent(TrueChildren[ActiveChild]);
-                RegisterChildComponent(TrueChildren[index]);
+                RemoveChildComponent(TrueChildren[ActiveChild]);
+                AddChildComponent(TrueChildren[index]);
                 ActiveChild = index;
             }
         }
@@ -48,7 +48,7 @@ namespace Tide.Core
             if (!TrueChildren.Contains(child))
             {
                 TrueChildren.Add(child);
-                UnregisterChildComponent(child);
+                RemoveChildComponent(child);
             }
         }
 

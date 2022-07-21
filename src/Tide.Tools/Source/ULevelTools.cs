@@ -13,7 +13,7 @@ namespace Tide.Tools
     {
         private readonly ACanvasComponent canvas;
 
-        public ULevelTools(UContentManager content, UInput uInput)
+        public ULevelTools(UContentManager content, TInput uInput)
         {
             AInputComponent InputComponent = new AInputComponent(uInput);
 
@@ -40,9 +40,9 @@ namespace Tide.Tools
 
             ACanvasDrawComponent CinematicCanvasDraw = new ACanvasDrawComponent(canvasRenderArgs);
 
-            RegisterChildComponent(InputComponent);
-            RegisterChildComponent(CinematicCanvas);
-            RegisterChildComponent(CinematicCanvasDraw);
+            AddChildComponent(InputComponent);
+            AddChildComponent(CinematicCanvas);
+            AddChildComponent(CinematicCanvasDraw);
         }
 
         public void BindActionToCanvas(string action, WidgetDelegate callback)

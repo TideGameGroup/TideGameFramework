@@ -13,14 +13,14 @@ namespace Tide.Editor
 
     }
 
-    public class EditorDynamicCanvasComponent : UComponent
+    public class DynamicCanvasComponent : UComponent
     {
         public int selection = 0;
 
         private int dynamicCanvasActiveIndex = 0;
         private List<FDynamicCanvas> dynamicCanvasEditStack = new List<FDynamicCanvas>();
 
-        public EditorDynamicCanvasComponent()
+        public DynamicCanvasComponent()
         {
             dynamicCanvasEditStack.Add(null);
         }

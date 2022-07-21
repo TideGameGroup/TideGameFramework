@@ -10,7 +10,7 @@ namespace Tide.Editor
     public struct EditorPropertiesCanvasComponentConstructorArgs
     {
         public UContentManager content;
-        public EditorDynamicCanvasComponent dynamicCanvasComponent;
+        public DynamicCanvasComponent dynamicCanvasComponent;
         public AInputComponent input;
         public GameWindow window;
     }
@@ -21,7 +21,7 @@ namespace Tide.Editor
         private readonly AInputComponent input;
         private readonly GameWindow window;
         private ITreeCanvasFactory factory = null;
-        public EditorDynamicCanvasComponent dynamicCanvasComponent;
+        public DynamicCanvasComponent dynamicCanvasComponent;
 
         public EditorPropertiesCanvasComponent(EditorPropertiesCanvasComponentConstructorArgs args)
         {
@@ -40,8 +40,8 @@ namespace Tide.Editor
 
         private void RebuildCanvasComponents(FCanvas canvas)
         {
-            UnregisterChildComponent(CanvasComponent);
-            UnregisterChildComponent(DrawComponent);
+            RemoveChildComponent(CanvasComponent);
+            RemoveChildComponent(DrawComponent);
 
             FCanvasComponentConstructorArgs canvasArgs =
                 new FCanvasComponentConstructorArgs
@@ -67,8 +67,8 @@ namespace Tide.Editor
 
             DrawComponent = new ACanvasDrawComponent(canvasRenderArgs);
 
-            RegisterChildComponent(CanvasComponent);
-            RegisterChildComponent(DrawComponent);
+            AddChildComponent(CanvasComponent);
+            AddChildComponent(DrawComponent);
 
             SetupBindings(CanvasComponent);
         }

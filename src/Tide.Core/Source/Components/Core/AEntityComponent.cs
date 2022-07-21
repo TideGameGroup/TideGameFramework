@@ -22,8 +22,8 @@ namespace Tide.Core
             Transforms = new ATransform();
             SpriteRenderer = new ASpritesRenderer(Transforms);
 
-            RegisterChildComponent(Transforms);
-            RegisterChildComponent(SpriteRenderer);
+            AddChildComponent(Transforms);
+            AddChildComponent(SpriteRenderer);
         }
 
         public int Count => Transforms.Count;

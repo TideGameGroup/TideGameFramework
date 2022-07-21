@@ -20,7 +20,7 @@ namespace Tide.Core
         private List<FActionHandle> actionHandles = new List<FActionHandle>();
         public static List<EFocus> focusList = new List<EFocus>();
 
-        public AInputComponent(UInput handler)
+        public AInputComponent(TInput handler)
         {
             Handler = handler;
             Active = true;
@@ -35,7 +35,7 @@ namespace Tide.Core
 
         private bool Active { get; set; }
         public Vector2 MousePosition => Handler.MousePosition;
-        public UInput Handler { get; private set; }
+        public TInput Handler { get; private set; }
 
         public static void PopFocus(EFocus focus)
         {

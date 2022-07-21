@@ -1,13 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
-using System.Text;
-using Tide.XMLSchema;
 
 namespace Tide.Core
 {
@@ -15,17 +8,20 @@ namespace Tide.Core
 
     public delegate void OnGraphEvent(UComponent child);
 
-    public class UComponentGraph : IEnumerable<UComponent>
+    public delegate void OnPropertyEvent(bool val);
+
+    public class TComponentGraph : IEnumerable<UComponent>
     {
-        public UComponentGraph()
+        public TComponentGraph()
         {
             RootScript = new ARootScript
             {
                 RootParent = this
             };
         }
+        private ARootScript RootScript { get; }
 
-        public static IEnumerable<UComponent> _GetScriptsRecursive(UComponent script)
+        private static IEnumerable<UComponent> _GetScriptsRecursive(UComponent script)
         {
             yield return script;
 
@@ -36,6 +32,16 @@ namespace Tide.Core
                     yield return x;
                 }
             }
+        }
+
+        public UComponent Add(UComponent script, UComponent parent = null, int at = -1)
+        {
+            if (parent == null)
+            {
+                parent = RootScript;
+            }
+            parent.AddChildComponent(script, at);
+            return script;
         }
 
         /// <summary>
@@ -111,19 +117,9 @@ namespace Tide.Core
             return _GetScriptsRecursive(RootScript).GetEnumerator();
         }
 
-        public UComponent Add(UComponent script, UComponent parent = null, int at = -1)
-        {
-            if (parent == null)
-            {
-                parent = RootScript;
-            }
-            parent.RegisterChildComponent(script, at);
-            return script;
-        }
-
         public void Remove(UComponent script)
         {
-            RootScript.UnregisterChildComponent(script);
+            RootScript.RemoveChildComponent(script);
         }
 
         // Remove the first script matching the predicate.
@@ -138,7 +134,7 @@ namespace Tide.Core
                     break;
                 }
             }
-            RootScript.UnregisterChildComponent(toRemove);
+            RootScript.RemoveChildComponent(toRemove);
             return;
         }
 
@@ -155,7 +151,7 @@ namespace Tide.Core
             }
             foreach (var script in toRemove)
             {
-                RootScript.UnregisterChildComponent(script);
+                RootScript.RemoveChildComponent(script);
             }
             return toRemove.Count;
         }
@@ -165,12 +161,10 @@ namespace Tide.Core
             return GetEnumerator();
         }
 
-        private ARootScript RootScript { get; }
-
         private class ARootScript : UComponent
         {
-            public UComponentGraph RootParent = null;
-            public override UComponentGraph ScriptGraph => RootParent;
+            public TComponentGraph RootParent = null;
+            public override TComponentGraph ScriptGraph => RootParent;
         }
     }
 }

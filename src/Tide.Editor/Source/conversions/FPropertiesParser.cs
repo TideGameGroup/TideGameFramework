@@ -10,9 +10,9 @@ namespace Tide.Editor
     public class FPropertiesParser
     {
         private ACanvasComponent component;
-        private EditorDynamicCanvasComponent dynamicComponent;
+        private DynamicCanvasComponent dynamicComponent;
 
-        public FPropertiesParser(ACanvasComponent component, EditorDynamicCanvasComponent dynamicComponent)
+        public FPropertiesParser(ACanvasComponent component, DynamicCanvasComponent dynamicComponent)
         {
             this.component = component;
             this.dynamicComponent = dynamicComponent;

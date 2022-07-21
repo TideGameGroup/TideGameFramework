@@ -13,7 +13,7 @@ namespace Tide.Editor
     public struct FEditorInterfaceConstructorArgs
     {
         public UContentManager content;
-        public UInput input;
+        public TInput input;
         public GameWindow window;
     }
 
@@ -60,7 +60,7 @@ namespace Tide.Editor
 
             // dynamic canvas
 
-            DynamicCanvasComponent = new EditorDynamicCanvasComponent();
+            DynamicCanvasComponent = new DynamicCanvasComponent();
 
             // tree canvas
             EditorTreeCanvasComponentConstructorArgs treeArgs =
@@ -98,19 +98,19 @@ namespace Tide.Editor
 
             PreviewCanvasComponent = new EditorPreviewCanvasComponent(previewArgs);
 
-            RegisterChildComponent(InputComponent);
-            RegisterChildComponent(PreviewCanvasComponent);
-            RegisterChildComponent(EditorCanvasComponent);
-            RegisterChildComponent(EditorDrawComponent);
-            RegisterChildComponent(DynamicCanvasComponent);
-            RegisterChildComponent(TreeCanvasComponent);
-            RegisterChildComponent(PropertiesCanvasComponent);
+            AddChildComponent(InputComponent);
+            AddChildComponent(PreviewCanvasComponent);
+            AddChildComponent(EditorCanvasComponent);
+            AddChildComponent(EditorDrawComponent);
+            AddChildComponent(DynamicCanvasComponent);
+            AddChildComponent(TreeCanvasComponent);
+            AddChildComponent(PropertiesCanvasComponent);
 
             SetupBindings(EditorCanvasComponent);
         }
 
         // panels
-        public EditorDynamicCanvasComponent DynamicCanvasComponent { get; private set; }
+        public DynamicCanvasComponent DynamicCanvasComponent { get; private set; }
 
         public ACanvasComponent EditorCanvasComponent { get; private set; }
         public ACanvasDrawComponent EditorDrawComponent { get; private set; }
@@ -139,7 +139,7 @@ namespace Tide.Editor
             return "";
         }
 
-        private void OpenUIFile()
+        private void OpenXMLFile()
         {
             string filePath = OpenFileDialog();
             if (filePath != "")
@@ -158,6 +158,7 @@ namespace Tide.Editor
                 content.DynamicLibrary[filename] = Texture2D.FromFile(content.GraphicsDevice, filePath);
             }
         }
+
         private void OpenFontFile()
         {
             if (OpenFile(out SpriteFontContent file, out string filePath))
@@ -225,7 +226,7 @@ namespace Tide.Editor
 
         public void SetupBindings(ACanvasComponent component)
         {
-            component.BindAction("open.OnReleased", (gt) => { OpenUIFile(); });
+            component.BindAction("open.OnReleased", (gt) => { OpenXMLFile(); });
             component.BindAction("save.OnReleased", (gt) => { SaveFile(); });
             component.BindAction("saveas.OnReleased", (gt) => { SaveFileAs(); });
             component.BindAction("new.OnReleased", (gt) => { DynamicCanvasComponent.New(); });

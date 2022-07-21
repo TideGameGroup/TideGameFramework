@@ -123,7 +123,7 @@ namespace Tide.Core
             }
         }
 
-        public void Draw2D(UView view, SpriteBatch spriteBatch, GameTime gameTime)
+        public void Draw2D(FView view, SpriteBatch spriteBatch, GameTime gameTime)
         {
             float ymod = view.position.Y + view.Scale / 2;
             float yalpha = 1 / view.Scale;

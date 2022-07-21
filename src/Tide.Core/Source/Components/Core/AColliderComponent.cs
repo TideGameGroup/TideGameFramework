@@ -325,7 +325,7 @@ namespace Tide.Core
             return collision;
         }
 
-        public static void StaticTickImplementation(UComponentGraph ComponentGraph, GameTime gameTime)
+        public static void StaticTickImplementation(TComponentGraph ComponentGraph, GameTime gameTime)
         {
             List<AColliderComponent> StaticColliders = ComponentGraph.FindAll<AColliderComponent>();
 

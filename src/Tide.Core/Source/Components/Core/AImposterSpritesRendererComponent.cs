@@ -14,7 +14,7 @@ namespace Tide.Core
         {
             SpriteRenderer = new ASpritesRenderer(transforms);
 
-            RegisterChildComponent(SpriteRenderer);
+            AddChildComponent(SpriteRenderer);
 
             this.transforms = transforms;
 

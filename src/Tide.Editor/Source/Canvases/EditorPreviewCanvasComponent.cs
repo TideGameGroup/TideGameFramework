@@ -11,7 +11,7 @@ namespace Tide.Editor
         public UContentManager content;
         public AInputComponent input;
         public GameWindow window;
-        public EditorDynamicCanvasComponent dynamicCanvasComponent;
+        public DynamicCanvasComponent dynamicCanvasComponent;
     }
 
     public class EditorPreviewCanvasComponent : UComponent, IUpdateComponent
@@ -21,7 +21,7 @@ namespace Tide.Editor
         private readonly GameWindow window;
         private bool rebuild = false;
 
-        public EditorDynamicCanvasComponent dynamicCanvasComponent;
+        public DynamicCanvasComponent dynamicCanvasComponent;
 
         public EditorPreviewCanvasComponent(EditorPreviewCanvasComponentConstructorArgs args)
         {
@@ -88,10 +88,10 @@ namespace Tide.Editor
 
             PreviewDrawComponent = new ACanvasDrawComponent(canvasRenderArgs);
 
-            RegisterChildComponent(ZoomCanvasComponent);
-            RegisterChildComponent(ZoomDrawComponent);
-            RegisterChildComponent(PreviewCanvasComponent);
-            RegisterChildComponent(PreviewDrawComponent);
+            AddChildComponent(ZoomCanvasComponent);
+            AddChildComponent(ZoomDrawComponent);
+            AddChildComponent(PreviewCanvasComponent);
+            AddChildComponent(PreviewDrawComponent);
 
             window.ClientSizeChanged += Window_ClientSizeChanged;
         }
@@ -159,8 +159,8 @@ namespace Tide.Editor
 
         private void RebuildCanvasComponents(FCanvas canvas)
         {
-            UnregisterChildComponent(CanvasComponent);
-            UnregisterChildComponent(DrawComponent);
+            RemoveChildComponent(CanvasComponent);
+            RemoveChildComponent(DrawComponent);
 
             canvas.root = new Rectangle(400, 24, 1280, 720);
             if (GetAbsolutePreviewBounds(out Rectangle rect))
@@ -192,8 +192,8 @@ namespace Tide.Editor
 
             DrawComponent = new ACanvasDrawComponent(canvasRenderArgs);
 
-            RegisterChildComponent(CanvasComponent);
-            RegisterChildComponent(DrawComponent);
+            AddChildComponent(CanvasComponent);
+            AddChildComponent(DrawComponent);
         }
 
         public void RebuildCanvas()

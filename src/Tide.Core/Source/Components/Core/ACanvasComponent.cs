@@ -10,7 +10,7 @@ namespace Tide.Core
 
     public struct FCanvasComponentConstructorArgs
     {
-        public UAudio audio;
+        public TAudio audio;
         public FCanvas canvas;
         public UContentManager content;
         public EFocus focus;
@@ -21,7 +21,7 @@ namespace Tide.Core
 
     public class ACanvasComponent : UComponent, IUpdateComponent
     {
-        private readonly UAudio audio;
+        private readonly TAudio audio;
         private readonly Dictionary<string, List<WidgetDelegate>> bindings = new Dictionary<string, List<WidgetDelegate>>();
         private readonly EFocus focus;
         private readonly AInputComponent input;
