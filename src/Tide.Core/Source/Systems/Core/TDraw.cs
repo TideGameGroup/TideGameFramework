@@ -11,16 +11,19 @@ namespace Tide.Core
     {
         public List<FDrawPass> drawPasses;
         public GraphicsDevice graphicsDevice;
+        public TWindow window;
     }
 
     public class TDraw<T> : ISystem where T : IDrawableComponentType
     {
         private readonly List<FDrawPass> drawPasses = new List<FDrawPass>();
         private readonly GraphicsDevice graphicsDevice;
+        private readonly TWindow window;
 
         public TDraw(TDrawConstructorArgs args)
         {
             StaticValidation.TrySetDefault(args.graphicsDevice, out graphicsDevice);
+            StaticValidation.TrySetDefault(args.window, out window);
 
             SpriteBatch = new SpriteBatch(args.graphicsDevice);
 
@@ -31,8 +34,6 @@ namespace Tide.Core
         }
 
         public SpriteBatch SpriteBatch { get; private set; }
-        public FView View { get; set; }
-        public TWindow WindowManager { get; set; }
 
         private void DrawPass(FDrawPass drawPass, TComponentGraph graph, GameTime gameTime)
         {
@@ -44,7 +45,7 @@ namespace Tide.Core
             Matrix? matrix = null;
             if (drawPass.bUseMatrix)
             {
-                matrix = View.ViewProjectionMatrix;
+                matrix = window.view.ViewProjectionMatrix;
             }
 
             graphicsDevice.SetRenderTarget(drawPass.renderTarget);
@@ -62,11 +63,11 @@ namespace Tide.Core
             {
                 if (component is T drawable && component.IsVisible)
                 {
-                    drawable.Draw(View, SpriteBatch, gameTime);
+                    drawable.Draw(window.view, SpriteBatch, gameTime);
                 }
             }
 
-            drawPass.postPassDelegate?.Invoke(View, SpriteBatch, gameTime);
+            drawPass.postPassDelegate?.Invoke(window.view, SpriteBatch, gameTime);
 
             SpriteBatch.End();
         }

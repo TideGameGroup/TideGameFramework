@@ -30,8 +30,6 @@ namespace Tide.Core
 
             MonoGame = new TMono(monoargs);
             SystemGraph.Add(ComponentGraph);
-
-
         }
 
         public TComponentGraph ComponentGraph { get; private set; }

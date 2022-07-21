@@ -5,22 +5,25 @@ using System.Collections.Generic;
 
 namespace Tide.Core
 {
+    public struct FAudioConstructorArgs
+    {
+        public UContentManager content;
+        public USettings settings;
+    }
+
     public class TAudio : ISystem
     {
         private readonly UContentManager content;
-
         private readonly USettings settings;
-
         private readonly Dictionary<SoundEffectInstance, settingChangedEvent> soundEventTable
             = new Dictionary<SoundEffectInstance, settingChangedEvent>();
-
         private readonly Dictionary<string, SoundEffect> soundTable
             = new Dictionary<string, SoundEffect>();
 
-        public TAudio(UContentManager content, USettings settings)
+        public TAudio(FAudioConstructorArgs args)
         {
-            this.content = content;
-            this.settings = settings;
+            StaticValidation.TrySetDefault(args.content, out content);
+            StaticValidation.TrySetDefault(args.settings, out settings);
         }
 
         private SoundEffect Get(string sound)
