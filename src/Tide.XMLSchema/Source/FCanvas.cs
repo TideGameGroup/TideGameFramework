@@ -53,9 +53,10 @@ namespace Tide.XMLSchema
         public string[] textures;
         public string[] tooltips;
         public string[] tooltiptexts;
+        public bool[] visibilities;
         public EWidgetType[] widgetTypes;
 
-        public string Type => "Tide.ACanvas";
+        public static float ExpectedVersion => 0.1f;
 
         public static FCanvas Empty(string ID = "", int size = 1)
         {
@@ -78,6 +79,7 @@ namespace Tide.XMLSchema
                 sources = new Rectangle[size],
                 colors = new Color[size],
                 highlightColors = new Color[size],
+                visibilities = new bool[size],
                 widgetTypes = new EWidgetType[size]
             };
             return deepCopy;
@@ -104,6 +106,7 @@ namespace Tide.XMLSchema
                 sources = new Rectangle[sources.Length],
                 colors = new Color[colors.Length],
                 highlightColors = new Color[highlightColors.Length],
+                visibilities = new bool[widgetTypes.Length],
                 widgetTypes = new EWidgetType[widgetTypes.Length]
             };
 
@@ -123,6 +126,7 @@ namespace Tide.XMLSchema
             sources.CopyTo(deepCopy.sources, 0);
             colors.CopyTo(deepCopy.colors, 0);
             highlightColors.CopyTo(deepCopy.highlightColors, 0);
+            visibilities.CopyTo(deepCopy.visibilities, 0);
             widgetTypes.CopyTo(deepCopy.widgetTypes, 0);
 
             return deepCopy;

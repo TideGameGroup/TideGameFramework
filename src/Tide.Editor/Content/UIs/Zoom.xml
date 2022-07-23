@@ -58,6 +58,7 @@
       <Item></Item>
       <Item></Item>
     </tooltiptexts>
+    <visibilities> true true true </visibilities>
     <widgetTypes>
       <Item>SCROLLBAR</Item>
       <Item>TEXTFIELD</Item>

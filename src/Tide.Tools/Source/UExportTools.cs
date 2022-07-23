@@ -2,8 +2,11 @@
 using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Intermediate;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Xml;
+using System.Xml.Linq;
 using Tide.Core;
 using Tide.XMLSchema;
 
@@ -22,6 +25,36 @@ namespace Tide.Tools
             };
             using XmlWriter writer = XmlWriter.Create(path, settings);
             IntermediateSerializer.Serialize(writer, data, null);
+            writer.Close();
+
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+
+            while (watch.ElapsedMilliseconds < 3000)
+            {
+                XDocument doc;
+                try
+                {
+                    doc = XDocument.Load(path);
+                    XElement node = doc.Element("XnaContent");
+                    if (node != null)
+                    {
+                        var staticProperty = data.GetType().GetProperty("ExpectedVersion", BindingFlags.Public | BindingFlags.Static);
+                        var value = staticProperty.GetValue(data, null);
+                        node.SetAttributeValue("XnaVersion", value);
+                    }
+                    doc.Save(path);
+                    return;
+                }
+                catch (IOException)
+                {
+                    continue;
+                }
+                catch (Exception)
+                {
+                    return;
+                }
+            }
         }
 
         public static void ExportSerialisedInstanceData(string folder, string Id, ISerialisedInstanceData data)

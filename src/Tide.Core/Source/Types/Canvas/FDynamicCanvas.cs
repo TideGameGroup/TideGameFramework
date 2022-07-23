@@ -23,9 +23,10 @@ namespace Tide.Tools
         public List<string> textures = new List<string>();
         public List<string> tooltips = new List<string>();
         public List<string> tooltiptexts = new List<string>();
+        public List<bool> visibilities = new List<bool>();
         public List<EWidgetType> widgetTypes = new List<EWidgetType>();
 
-        public FDynamicCanvas(string ID) 
+        public FDynamicCanvas(string ID)
         {
             this.ID = ID;
         }
@@ -49,6 +50,7 @@ namespace Tide.Tools
             textures = new List<string>(canvas.textures);
             tooltips = new List<string>(canvas.tooltips);
             tooltiptexts = new List<string>(canvas.tooltiptexts);
+            visibilities = new List<bool>(canvas.visibilities);
             widgetTypes = new List<EWidgetType>(canvas.widgetTypes);
         }
 
@@ -75,6 +77,7 @@ namespace Tide.Tools
             textures.Add(textures[prior]);
             tooltips.Add(tooltips[prior]);
             tooltiptexts.Add(tooltiptexts[prior]);
+            visibilities.Add(visibilities[prior]);
             widgetTypes.Add(widgetTypes[prior]);
 
             return parents.Count - 1;
@@ -96,6 +99,7 @@ namespace Tide.Tools
             string texture = "",
             string tooltip = "",
             string tooltiptext = "",
+            bool visible = true,
             EWidgetType widgetType = EWidgetType.BUTTON
             )
         {
@@ -114,6 +118,7 @@ namespace Tide.Tools
             textures.Add(texture);
             tooltips.Add(tooltip);
             tooltiptexts.Add(tooltiptext);
+            visibilities.Add(visible);
             widgetTypes.Add(widgetType);
         }
 
@@ -138,6 +143,7 @@ namespace Tide.Tools
                 textures = textures.ToArray(),
                 tooltips = tooltips.ToArray(),
                 tooltiptexts = tooltiptexts.ToArray(),
+                visibilities = visibilities.ToArray(),
                 widgetTypes = widgetTypes.ToArray()
             };
         }
@@ -162,6 +168,7 @@ namespace Tide.Tools
             textures.Add(textures[prior]);
             tooltips.Add(tooltips[prior]);
             tooltiptexts.Add(tooltips[prior]);
+            visibilities.Add(visibilities[prior]);
             widgetTypes.Add(widgetTypes[prior]);
 
             return parents.Count - 1;
@@ -205,6 +212,7 @@ namespace Tide.Tools
             textures.RemoveAt(i);
             tooltips.RemoveAt(i);
             tooltiptexts.RemoveAt(i);
+            visibilities.RemoveAt(i);
             widgetTypes.RemoveAt(i);
             IDs.RemoveAt(i);
         }

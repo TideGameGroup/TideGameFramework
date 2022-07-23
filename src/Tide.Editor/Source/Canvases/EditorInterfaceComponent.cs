@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Content.Pipeline.Serialization.Compiler;
 using Microsoft.Xna.Framework.Graphics;
 using System.IO;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using Tide.Core;
 using Tide.Tools;
 using Tide.XMLSchema;
@@ -144,8 +145,15 @@ namespace Tide.Editor
             string filePath = OpenFileDialog();
             if (filePath != "")
             {
-                string projectDir = ProjectSourcePath.Path + "Content";
-                UImportTools.ImportSerialisedData(projectDir, filePath, out _newcanvas);
+                FVersioningInfo res = Versioning.CheckVersioning(filePath, out XDocument xml); 
+                if (res.result == EVersioningResult.ESUCCESS)
+                {
+                    Versioning.DoConversionChain(res, ref xml);
+                    xml.Save(filePath);
+
+                    string projectDir = ProjectSourcePath.Path + "Content";
+                    UImportTools.ImportSerialisedData(projectDir, filePath, out _newcanvas);
+                }
             }
         }
 

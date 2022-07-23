@@ -106,7 +106,7 @@ namespace Tide.Core
 
             if (args.window != null)
             {
-                args.window.TextInput += handleTextInput;
+                args.window.TextInput += HandleTextInput;
             }
         }
 
@@ -171,7 +171,7 @@ namespace Tide.Core
             return false;
         }
 
-        private void handleTextInput(object sender, TextInputEventArgs e)
+        private void HandleTextInput(object sender, TextInputEventArgs e)
         {
             if (focusedWidget == -1) { return; }
             if (FTextField.HandleTextInput(cache.canvas, focusedWidget, e))
