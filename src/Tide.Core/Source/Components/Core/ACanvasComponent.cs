@@ -5,8 +5,9 @@ using Tide.XMLSchema;
 
 namespace Tide.Core
 {
-    public delegate void WidgetDelegate(GameTime gameTime);
     public delegate void FocusWidgetDelegate(int i);
+
+    public delegate void WidgetDelegate(GameTime gameTime);
 
     public struct FCanvasComponentConstructorArgs
     {
@@ -72,8 +73,8 @@ namespace Tide.Core
             if (input != null)
             {
                 FActionHandle handle1 = input.BindRawAction("primary.Pressed", (GameTime gt) => { suffix = ".Pressed"; });
-                FActionHandle handle2 = input.BindRawAction("primary.OnPressed", (GameTime gt) => 
-                { 
+                FActionHandle handle2 = input.BindRawAction("primary.OnPressed", (GameTime gt) =>
+                {
                     suffix = ".OnPressed";
                     if (focusedWidget != -1)
                     {
@@ -89,7 +90,7 @@ namespace Tide.Core
                 });
                 FActionHandle handle3 = input.BindRawAction("primary.Released", (GameTime gt) => { suffix = ".Released"; });
                 FActionHandle handle4 = input.BindRawAction("primary.OnReleased", (GameTime gt) => { suffix = ".OnReleased"; });
-                
+
                 OnUnregisterComponent += () =>
                 {
                     input.UnbindAction(handle1);
@@ -110,18 +111,12 @@ namespace Tide.Core
             }
         }
 
-        public void UnFocusOnFocusLost()
-        {
-            if (bIsHovered)
-            {
-                bIsHovered = false;
-                AInputComponent.PopFocus(focus);
-            }
-        }
-
         public bool IsEnabled { get; set; }
+
         public bool IsHovered { get => bIsHovered; }
+
         public FocusWidgetDelegate OnWidgetFocused { get; set; }
+
         public FocusWidgetDelegate OnWidgetUnFocused { get; set; }
 
         private void DoHover(GameTime gameTime, Dictionary<int, double> frameHoveredWidgets, int i)
@@ -236,6 +231,11 @@ namespace Tide.Core
         public Rectangle GetRectangle(int i)
         {
             return cache.canvas.rectangles[i];
+        }
+
+        public Rectangle GetRoot()
+        {
+            return cache.canvas.root;
         }
 
         public string GetWidgetText(string widget)
@@ -360,6 +360,11 @@ namespace Tide.Core
             return true;
         }
 
+        public void SetRoot(Rectangle root)
+        {
+            cache.canvas.root = root;
+        }
+
         public void SetTooltipText(string toolTip, string widget, string text)
         {
             if (cache.tooltipCache.ContainsKey(toolTip))
@@ -405,6 +410,15 @@ namespace Tide.Core
             if (bindings.ContainsKey(action))
             {
                 bindings[action].Remove(callback);
+            }
+        }
+
+        public void UnFocusOnFocusLost()
+        {
+            if (bIsHovered)
+            {
+                bIsHovered = false;
+                AInputComponent.PopFocus(focus);
             }
         }
 
