@@ -5,42 +5,63 @@ namespace Tide.Core
 {
     public class UComponent
     {
+        private readonly List<UComponent> children = new List<UComponent>();
         private readonly List<Func<bool>> deferredRegistrations = new List<Func<bool>>();
         private readonly List<Func<bool>> deferredUnregistrations = new List<Func<bool>>();
-
-        public UComponent()
-        {
-            Children = new List<UComponent>();
-            Parent = null;
-        }
-
-        public List<UComponent> Children { get; private set; }
-
         private bool bIsActive = true;
+        private bool bIsVisible = true;
+
+        public List<UComponent> Children => children;
+        public virtual TComponentGraph ComponentGraph => Parent.ComponentGraph;
+
         public bool IsActive
         {
             get
             {
-                return bIsActive;
+                if (Parent != null)
+                {
+                    return bIsActive && Parent.IsActive;
+                }
+                else
+                {
+                    return bIsActive;
+                }
             }
             set
             {
                 bIsActive = value;
                 OnSetActive?.Invoke(bIsActive);
+
+                foreach (var child in children)
+                {
+                    child.OnSetActive?.Invoke(bIsActive);
+                }
             }
         }
 
-        private bool bIsVisible = true;
         public bool IsVisible
         {
             get
             {
-                return bIsVisible;
+                if (Parent != null)
+                {
+                    return bIsVisible && Parent.IsVisible;
+                }
+                else
+                {
+                    return bIsVisible;
+                }
             }
             set
             {
                 bIsVisible = value;
+                if (bIsActive) bIsActive = false;
                 OnSetVisibility?.Invoke(bIsVisible);
+
+                foreach (var child in children)
+                {
+                    child.OnSetVisibility?.Invoke(bIsActive);
+                }
             }
         }
 
@@ -51,8 +72,6 @@ namespace Tide.Core
         public OnGraphEvent OnUnregisterChildComponent { get; set; }
         public OnEvent OnUnregisterComponent { get; set; }
         public UComponent Parent { get; set; }
-        public virtual TComponentGraph ComponentGraph => Parent.ComponentGraph;
-
         //public USerialisationComponent SerialisationComponent { get; set; }
 
         /// <summary>
@@ -85,14 +104,16 @@ namespace Tide.Core
             o = t;
         }
 
+        public UComponent AddChildComponent(UComponent child, int at = -1)
+        {
+            deferredRegistrations.Add(() => DeferredAddChildComponent(child, at));
+            return child;
+        }
+
         public bool DeferredAddChildComponent(UComponent child, int at = -1)
         {
             if (child == null) { return false; }
 
-            if (Children == null)
-            {
-                Children = new List<UComponent>();
-            }
             child.Parent = this;
 
             at = (at == -1) ? Children.Count : at;
@@ -128,12 +149,6 @@ namespace Tide.Core
             return (T)Children.Find((item) => item is T);
         }
 
-        public UComponent AddChildComponent(UComponent child, int at = -1)
-        {
-            deferredRegistrations.Add(() => DeferredAddChildComponent(child, at));
-            return child;
-        }
-
         public UComponent RemoveChildComponent(UComponent child)
         {
             deferredUnregistrations.Add(() => DeferredRemoveChildComponent(child));
@@ -142,7 +157,7 @@ namespace Tide.Core
 
         public void UpdateGraph()
         {
-            foreach(var f in deferredRegistrations)
+            foreach (var f in deferredRegistrations)
             {
                 f.Invoke();
             }

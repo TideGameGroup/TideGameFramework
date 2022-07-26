@@ -9,7 +9,6 @@ namespace Tide.Core
     {
         public ACanvasComponent component;
         public UContentManager content;
-        public AInputComponent input;
     }
 
     public class ACanvasDrawComponent : UComponent, IDrawableCanvasComponent
@@ -26,7 +25,7 @@ namespace Tide.Core
             TrySetDefault(args.component, out component);
             TrySetDefault(args.component.cache, out cache);
             TrySetDefault(args.component.graph, out graph);
-            TrySetOptional(args.input, out input);
+            TrySetOptional(args.component.InputComponent, out input);
         }
 
         private Color DoFlashing(FCanvas canvas, int i, GameTime gameTime)
@@ -273,7 +272,7 @@ namespace Tide.Core
         {
             Color color = canvas.colors[i];
 
-            if (!component.IsEnabled)
+            if (!component.IsActive)
             {
                 return Color.DarkGray;
             }

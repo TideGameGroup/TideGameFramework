@@ -28,8 +28,6 @@ namespace Tide.Core
             string canvas = "Cinematic"
             )
         {
-            InputComponent = new AInputComponent(input);
-
             FCanvasComponentConstructorArgs canvasArgs =
                 new FCanvasComponentConstructorArgs
                 {
@@ -37,7 +35,7 @@ namespace Tide.Core
                     canvas = content.Load<FCanvas>(canvas),
                     content = content,
                     focus = EFocus.Cinematic | EFocus.GameUI,
-                    input = InputComponent,
+                    input = input,
                     scale = 1f
                 };
 
@@ -47,8 +45,7 @@ namespace Tide.Core
                 new FCanvasDrawComponentConstructorArgs
                 {
                     component = CinematicCanvas,
-                    content = content,
-                    input = InputComponent
+                    content = content
                 };
 
             CinematicCanvasRenderer = new ACanvasDrawComponent(canvasRenderArgs);
@@ -70,18 +67,17 @@ namespace Tide.Core
 
         public ACanvasComponent CinematicCanvas { get; private set; }
         public ACanvasDrawComponent CinematicCanvasRenderer { get; private set; }
-        public AInputComponent InputComponent { get; private set; }
 
         private void BindCinematic(int page, double time)
         {
             if (bLocksInput[page])
             {
-                AInputComponent.PushFocus(EFocus.Cinematic);
+                CinematicCanvas.InputComponent.PushFocus(EFocus.Cinematic);
             }
 
             foreach (string key in canvases.Keys)
             {
-                canvases[key].IsEnabled = false;
+                canvases[key].IsActive = false;
             }
 
             foreach (var highlight in highlights[page])
@@ -90,7 +86,7 @@ namespace Tide.Core
 
                 string[] canvas_widget = highlight.Split(".", 2);
                 canvases[canvas_widget[0]].HighlightWidget(canvas_widget[1], time);
-                canvases[canvas_widget[0]].IsEnabled = true;
+                canvases[canvas_widget[0]].IsActive = true;
             }
 
             switch (bindingTypes[page])
@@ -100,7 +96,7 @@ namespace Tide.Core
                     if (binding.Length == 2 && canvases.ContainsKey(binding[0]))
                     {
                         canvases[binding[0]].BindAction(binding[1], GoNext);
-                        canvases[binding[0]].IsEnabled = true;
+                        canvases[binding[0]].IsActive = true;
                     }
                     break;
 
@@ -117,7 +113,7 @@ namespace Tide.Core
         {
             foreach (string key in canvases.Keys)
             {
-                canvases[key].IsEnabled = true;
+                canvases[key].IsActive = true;
             }
 
             foreach (var highlight in highlights[page])
@@ -148,7 +144,7 @@ namespace Tide.Core
 
             if (bLocksInput[page])
             {
-                AInputComponent.PopFocus(EFocus.Cinematic);
+                CinematicCanvas.InputComponent.PopFocus(EFocus.Cinematic);
             }
         }
 

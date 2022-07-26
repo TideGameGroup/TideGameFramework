@@ -8,48 +8,75 @@ namespace Tide.Core
     public enum EFocus
     {
         None = 0,
-        Console = 1,
-        UI = 2,
-        Cinematic = 4,
-        GameUI = 8,
-        Game = 16
+        Layer1 = 1,
+        Console = 2,
+        Layer2 = 2,
+        Layer3 = 4,
+        Layer4 = 8,
+        UI = 16,
+        Layer5 = 16,
+        Layer6 = 32,
+        Layer7 = 64,
+        Layer8 = 128,
+        Cinematic = 256,
+        Layer9 = 256,
+        Layer10 = 512,
+        Layer11 = 1024,
+        GameUI = 2048,
+        Layer12 = 2048,
+        Layer13 = 4096,
+        Game = 8192,
+        Layer14 = 8192,
+        Layer15 = 16384
     }
 
     public class AInputComponent : UComponent
     {
-        private List<FActionHandle> actionHandles = new List<FActionHandle>();
+        private readonly List<FActionHandle> actionHandles = new List<FActionHandle>();
+        private List<EFocus> localFocusList = new List<EFocus>();
         public static List<EFocus> focusList = new List<EFocus>();
 
         public AInputComponent(TInput handler)
         {
             Handler = handler;
-            Active = true;
 
             if (focusList.Count == 0)
             {
                 PushFocus(EFocus.Game);
             }
 
-            OnUnregisterComponent += OnUnregisterScript;
+            base.OnUnregisterComponent += DoUnregisterComponent;
+            OnSetActive += DoActivateDeactivateComponent;
         }
 
-        private bool Active { get; set; }
-        public Vector2 MousePosition => Handler.MousePosition;
         public TInput Handler { get; private set; }
 
-        public static void PopFocus(EFocus focus)
+        public Vector2 MousePosition => Handler.MousePosition;
+
+        private void DoActivateDeactivateComponent(bool val)
         {
-            focusList.Remove(focus);
+            if (val == false)
+            {
+                foreach (var local in localFocusList)
+                {
+                    focusList.Remove(local);
+                }
+            }
+            else
+            {
+                foreach (var local in localFocusList)
+                {
+                    focusList.Add(local);
+                }
+            }
+
             focusList.Sort();
         }
 
-        public static void PushFocus(EFocus focus)
+        private void DoUnregisterComponent()
         {
-            if (focusList.Count == 0 || focusList[0] >= focus)
-            {
-                focusList.Add(focus);
-                focusList.Sort();
-            }
+            ClearBindings();
+            IsActive = false;
         }
 
         public FActionHandle BindAction(string action, EFocus focus, ButtonDelegate callback)
@@ -62,6 +89,14 @@ namespace Tide.Core
             return handle;
         }
 
+        public void BindAxis(string action, EFocus focus, AxisDelegate callback)
+        {
+            Handler.BindAxis(action, (float x, GameTime gt) =>
+            {
+                if (CheckValidToTrigger(focus)) { callback.Invoke(x, gt); }
+            });
+        }
+
         public FActionHandle BindRawAction(string action, ButtonDelegate callback)
         {
             FActionHandle handle = Handler.BindAction(action, callback);
@@ -71,52 +106,7 @@ namespace Tide.Core
 
         public bool CheckValidToTrigger(EFocus focus)
         {
-            return Active && focusList.Count > 0 && focus.HasFlag(focusList[0]);
-        }
-
-        /*
-        public void BindAction(string action, ButtonDelegate callback)
-        {
-            TActionHandle handle = Handler.BindAction(action, (GameTime gt) =>
-            {
-                if (CheckValidToTrigger(Focus)) { callback.Invoke(gt); }
-            });
-            actionHandles.Add(handle);
-        }
-        */
-
-        
-        public void BindAxis(string action, EFocus focus, AxisDelegate callback)
-        {
-            Handler.BindAxis(action, (float x, GameTime gt) =>
-            {
-                if (CheckValidToTrigger(focus)) { callback.Invoke(x, gt); }
-            });
-        }
-
-        /*
-        public void BindAxis2D(string action, Axis2DDelegate callback)
-        {
-            Handler.BindAxis2D(action, (float x, float y, GameTime gt) =>
-            {
-                if (CheckValidToTrigger(Focus)) { callback.Invoke(x, y, gt); }
-            });
-        }
-        */
-
-        public void OnUnregisterScript()
-        {
-            ClearBindings();
-        }
-
-        public bool PollActionBinding(string action)
-        {
-            return Handler.PollActionBinding(action);
-        }
-
-        public void UnbindAction(FActionHandle handle)
-        {
-            Handler.RemoveAction(handle);
+            return IsActive && focusList.Count > 0 && focus.HasFlag(focusList[0]);
         }
 
         public void ClearBindings()
@@ -125,6 +115,30 @@ namespace Tide.Core
             {
                 UnbindAction(handle);
             }
+        }
+
+        public bool PollActionBinding(string action)
+        {
+            return Handler.PollActionBinding(action);
+        }
+
+        public void PopFocus(EFocus focus)
+        {
+            localFocusList.Remove(focus);
+            focusList.Remove(focus);
+            focusList.Sort();
+        }
+
+        public void PushFocus(EFocus focus)
+        {
+            localFocusList.Add(focus);
+            focusList.Add(focus);
+            focusList.Sort();
+        }
+
+        public void UnbindAction(FActionHandle handle)
+        {
+            Handler.RemoveAction(handle);
         }
     }
 }

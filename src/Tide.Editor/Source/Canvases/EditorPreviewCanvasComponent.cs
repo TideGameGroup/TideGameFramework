@@ -9,7 +9,7 @@ namespace Tide.Editor
     public struct EditorPreviewCanvasComponentConstructorArgs
     {
         public UContentManager content;
-        public AInputComponent input;
+        public TInput input;
         public GameWindow window;
         public DynamicCanvasComponent dynamicCanvasComponent;
     }
@@ -17,7 +17,7 @@ namespace Tide.Editor
     public class EditorPreviewCanvasComponent : UComponent, IUpdateComponent
     {
         private readonly UContentManager content;
-        private readonly AInputComponent input;
+        private readonly TInput input;
         private readonly GameWindow window;
         private bool rebuild = false;
 
@@ -55,8 +55,7 @@ namespace Tide.Editor
                 new FCanvasDrawComponentConstructorArgs
                 {
                     component = ZoomCanvasComponent,
-                    content = content,
-                    input = input
+                    content = content
                 };
 
             ZoomDrawComponent = new ACanvasDrawComponent(zoomRenderArgs);
@@ -82,8 +81,7 @@ namespace Tide.Editor
                 new FCanvasDrawComponentConstructorArgs
                 {
                     component = PreviewCanvasComponent,
-                    content = content,
-                    input = input
+                    content = content
                 };
 
             PreviewDrawComponent = new ACanvasDrawComponent(canvasRenderArgs);
@@ -186,8 +184,7 @@ namespace Tide.Editor
                 new FCanvasDrawComponentConstructorArgs
                 {
                     component = CanvasComponent,
-                    content = content,
-                    input = input
+                    content = content
                 };
 
             DrawComponent = new ACanvasDrawComponent(canvasRenderArgs);

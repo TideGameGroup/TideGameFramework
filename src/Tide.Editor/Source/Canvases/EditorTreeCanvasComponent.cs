@@ -17,14 +17,14 @@ namespace Tide.Editor
     {
         public UContentManager content;
         public DynamicCanvasComponent dynamicCanvasComponent;
-        public AInputComponent input;
+        public TInput input;
         public GameWindow window;
     }
 
     public class EditorTreeCanvasComponent : UComponent, IUpdateComponent
     {
         private readonly UContentManager content;
-        private readonly AInputComponent input;
+        private readonly TInput input;
         private readonly GameWindow window;
         private ETreeCanvasType canvasType;
         private ITreeCanvasFactory factory = null;
@@ -73,8 +73,7 @@ namespace Tide.Editor
                 new FCanvasDrawComponentConstructorArgs
                 {
                     component = CanvasComponent,
-                    content = content,
-                    input = input
+                    content = content
                 };
 
             DrawComponent = new ACanvasDrawComponent(canvasRenderArgs);

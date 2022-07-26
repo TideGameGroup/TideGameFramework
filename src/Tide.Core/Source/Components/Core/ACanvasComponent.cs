@@ -15,7 +15,7 @@ namespace Tide.Core
         public FCanvas canvas;
         public UContentManager content;
         public EFocus focus;
-        public AInputComponent input;
+        public TInput input;
         public float scale;
         public GameWindow window;
     }
@@ -25,7 +25,6 @@ namespace Tide.Core
         private readonly TAudio audio;
         private readonly Dictionary<string, List<WidgetDelegate>> bindings = new Dictionary<string, List<WidgetDelegate>>();
         private readonly EFocus focus;
-        private readonly AInputComponent input;
         private bool bIsHovered = false;
         private string suffix = ".Released";
         public readonly FCanvasCache cache;
@@ -43,10 +42,7 @@ namespace Tide.Core
             NullCheck(args.content);
             NullCheck(args.scale);
             TrySetDefault(args.focus, out focus);
-            TrySetOptional(args.input, out input);
             TrySetOptional(args.audio, out audio);
-
-            IsEnabled = true;
 
             FCanvasCacheConstructorArgs cacheArgs = new FCanvasCacheConstructorArgs
             {
@@ -70,10 +66,13 @@ namespace Tide.Core
                 values.Add(FSetting.Float(1.0f));
             }
 
-            if (input != null)
+            if (args.input != null)
             {
-                FActionHandle handle1 = input.BindRawAction("primary.Pressed", (GameTime gt) => { suffix = ".Pressed"; });
-                FActionHandle handle2 = input.BindRawAction("primary.OnPressed", (GameTime gt) =>
+                InputComponent = new AInputComponent(args.input);
+                AddChildComponent(InputComponent);
+
+                FActionHandle handle1 = InputComponent.BindRawAction("primary.Pressed", (GameTime gt) => { suffix = ".Pressed"; });
+                FActionHandle handle2 = InputComponent.BindRawAction("primary.OnPressed", (GameTime gt) =>
                 {
                     suffix = ".OnPressed";
                     if (focusedWidget != -1)
@@ -88,22 +87,17 @@ namespace Tide.Core
                         focusedWidget = -1;
                     }
                 });
-                FActionHandle handle3 = input.BindRawAction("primary.Released", (GameTime gt) => { suffix = ".Released"; });
-                FActionHandle handle4 = input.BindRawAction("primary.OnReleased", (GameTime gt) => { suffix = ".OnReleased"; });
+                FActionHandle handle3 = InputComponent.BindRawAction("primary.Released", (GameTime gt) => { suffix = ".Released"; });
+                FActionHandle handle4 = InputComponent.BindRawAction("primary.OnReleased", (GameTime gt) => { suffix = ".OnReleased"; });
 
                 OnUnregisterComponent += () =>
                 {
-                    input.UnbindAction(handle1);
-                    input.UnbindAction(handle2);
-                    input.UnbindAction(handle3);
-                    input.UnbindAction(handle4);
+                    InputComponent.UnbindAction(handle1);
+                    InputComponent.UnbindAction(handle2);
+                    InputComponent.UnbindAction(handle3);
+                    InputComponent.UnbindAction(handle4);
                 };
             }
-
-            OnUnregisterComponent += () =>
-            {
-                UnFocusOnFocusLost();
-            };
 
             if (args.window != null)
             {
@@ -111,12 +105,9 @@ namespace Tide.Core
             }
         }
 
-        public bool IsEnabled { get; set; }
-
+        public AInputComponent InputComponent { get; private set; }
         public bool IsHovered { get => bIsHovered; }
-
         public FocusWidgetDelegate OnWidgetFocused { get; set; }
-
         public FocusWidgetDelegate OnWidgetUnFocused { get; set; }
 
         private void DoHover(GameTime gameTime, Dictionary<int, double> frameHoveredWidgets, int i)
@@ -134,11 +125,11 @@ namespace Tide.Core
 
         private bool DoScrollbarMovement(int i, Rectangle rect)
         {
-            if (IsEnabled && input != null && input.CheckValidToTrigger(focus))
+            if (IsInputValid())
             {
                 float height = rect.Height - cache.canvas.sources[i].Height;
                 float start = rect.Top + (cache.canvas.sources[i].Height / 2);
-                float current = input.MousePosition.Y;
+                float current = InputComponent.MousePosition.Y;
                 float value = ((current - start) / (height + 0.00001f));
                 value = Math.Clamp(value, 0.0f, 1.0f);
 
@@ -151,11 +142,11 @@ namespace Tide.Core
 
         private bool DoSliderMovement(int i, Rectangle rect)
         {
-            if (IsEnabled && input != null && input.CheckValidToTrigger(focus))
+            if (IsInputValid())
             {
                 float width = rect.Width - cache.canvas.sources[i].Width;
                 float start = rect.Left + (cache.canvas.sources[i].Width / 2);
-                float current = input.MousePosition.X;
+                float current = InputComponent.MousePosition.X;
                 float value = ((current - start) / (width + 0.00001f));
                 value = Math.Clamp(value, 0.0f, 1.0f);
 
@@ -186,7 +177,7 @@ namespace Tide.Core
 
         private void InvokeBindings(GameTime gameTime, int i, string key)
         {
-            if (IsEnabled && input != null && input.CheckValidToTrigger(focus))
+            if (IsInputValid())
             {
                 if (bindings.ContainsKey(key))
                 {
@@ -199,9 +190,14 @@ namespace Tide.Core
             }
         }
 
+        private bool IsInputValid()
+        {
+            return IsActive && InputComponent != null && InputComponent.CheckValidToTrigger(focus);
+        }
+
         private void ToggleTickBox(int i)
         {
-            if (IsEnabled && input != null && input.CheckValidToTrigger(focus))
+            if (IsInputValid())
             {
                 values[i] = FSetting.Bool(!values[i].b);
             }
@@ -231,11 +227,6 @@ namespace Tide.Core
         public Rectangle GetRectangle(int i)
         {
             return cache.canvas.rectangles[i];
-        }
-
-        public Rectangle GetRoot()
-        {
-            return cache.canvas.root;
         }
 
         public string GetWidgetText(string widget)
@@ -348,21 +339,16 @@ namespace Tide.Core
 
         public bool IsWidgetHovered(int i, ref Rectangle rect)
         {
-            if (input == null) { return false; }
+            if (InputComponent == null) { return false; }
 
             Rectangle scissor = graph.GetRectangle(cache.canvas, cache.canvas.parents[i]);
             rect = graph.GetRectangleInParent(cache.canvas, i, scissor);
 
             if (i == focusedWidget) { return true; }
-            if (!scissor.Contains(input.MousePosition)) { return false; }
-            if (!rect.Contains(input.MousePosition)) { return false; }
+            if (!scissor.Contains(InputComponent.MousePosition)) { return false; }
+            if (!rect.Contains(InputComponent.MousePosition)) { return false; }
 
             return true;
-        }
-
-        public void SetRoot(Rectangle root)
-        {
-            cache.canvas.root = root;
         }
 
         public void SetTooltipText(string toolTip, string widget, string text)
@@ -413,15 +399,6 @@ namespace Tide.Core
             }
         }
 
-        public void UnFocusOnFocusLost()
-        {
-            if (bIsHovered)
-            {
-                bIsHovered = false;
-                AInputComponent.PopFocus(focus);
-            }
-        }
-
         public void UnHighlightWidget(string widget)
         {
             if (!graph.widgetNameIndexMap.ContainsKey(widget)) { return; }
@@ -436,7 +413,7 @@ namespace Tide.Core
 
         public void Update(GameTime gameTime)
         {
-            if (input == null) { return; }
+            if (InputComponent == null) { return; }
 
             Dictionary<int, double> frameHoveredWidgets = new Dictionary<int, double>();
             bool hovered = false;
@@ -458,12 +435,12 @@ namespace Tide.Core
             {
                 if (hovered)
                 {
-                    AInputComponent.PushFocus(focus);
+                    InputComponent.PushFocus(focus);
                     bIsHovered = true;
                 }
                 else if (focusedWidget == -1) // remain "hovered" if a widget is focused
                 {
-                    AInputComponent.PopFocus(focus);
+                    InputComponent.PopFocus(focus);
                     bIsHovered = false;
                 }
             }

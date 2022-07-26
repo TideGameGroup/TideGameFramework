@@ -41,7 +41,7 @@ namespace Tide.Editor
                     canvas = content.Load<FCanvas>("UI"),
                     content = content,
                     focus = EFocus.Cinematic | EFocus.GameUI,
-                    input = InputComponent,
+                    input = args.input,
                     scale = 1f,
                     window = args.window.window
                 };
@@ -53,8 +53,7 @@ namespace Tide.Editor
                 new FCanvasDrawComponentConstructorArgs
                 {
                     component = EditorCanvasComponent,
-                    content = content,
-                    input = InputComponent
+                    content = content
                 };
 
             EditorDrawComponent = new ACanvasDrawComponent(canvasRenderArgs);
@@ -68,7 +67,7 @@ namespace Tide.Editor
                 new EditorTreeCanvasComponentConstructorArgs
                 {
                     content = content,
-                    input = InputComponent,
+                    input = args.input,
                     window = args.window.window,
                     dynamicCanvasComponent = DynamicCanvasComponent
                 };
@@ -80,7 +79,7 @@ namespace Tide.Editor
                 new EditorPropertiesCanvasComponentConstructorArgs
                 {
                     content = content,
-                    input = InputComponent,
+                    input = args.input,
                     window = args.window.window,
                     dynamicCanvasComponent = DynamicCanvasComponent
                 };
@@ -92,7 +91,7 @@ namespace Tide.Editor
                 new EditorPreviewCanvasComponentConstructorArgs
                 {
                     content = content,
-                    input = InputComponent,
+                    input = args.input,
                     window = args.window.window,
                     dynamicCanvasComponent = DynamicCanvasComponent
                 };

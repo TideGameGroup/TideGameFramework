@@ -13,10 +13,8 @@ namespace Tide.Tools
     {
         private readonly ACanvasComponent canvas;
 
-        public ULevelTools(UContentManager content, TInput uInput)
+        public ULevelTools(UContentManager content, TInput input)
         {
-            AInputComponent InputComponent = new AInputComponent(uInput);
-
             FCanvasComponentConstructorArgs canvasArgs =
                 new FCanvasComponentConstructorArgs
                 {
@@ -24,7 +22,7 @@ namespace Tide.Tools
                     canvas = GenerateFCanvas(),
                     content = content,
                     focus = EFocus.Console,
-                    input = InputComponent,
+                    input = input,
                     scale = 1f
                 };
 
@@ -34,13 +32,11 @@ namespace Tide.Tools
                 new FCanvasDrawComponentConstructorArgs
                 {
                     component = canvas,
-                    content = content,
-                    input = InputComponent
+                    content = content
                 };
 
             ACanvasDrawComponent canvasDraw = new ACanvasDrawComponent(canvasRenderArgs);
 
-            AddChildComponent(InputComponent);
             AddChildComponent(canvas);
             AddChildComponent(canvasDraw);
         }
