@@ -229,6 +229,11 @@ namespace Tide.Core
             return cache.canvas.rectangles[i];
         }
 
+        public Rectangle GetRoot()
+        {
+            return cache.canvas.root;
+        }
+
         public string GetWidgetText(string widget)
         {
             if (!graph.widgetNameIndexMap.ContainsKey(widget)) { return default; }
@@ -349,6 +354,11 @@ namespace Tide.Core
             if (!rect.Contains(InputComponent.MousePosition)) { return false; }
 
             return true;
+        }
+
+        public void SetRoot(Rectangle root)
+        {
+            cache.canvas.root = root;
         }
 
         public void SetTooltipText(string toolTip, string widget, string text)
