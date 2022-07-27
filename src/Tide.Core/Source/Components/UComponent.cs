@@ -35,12 +35,15 @@ namespace Tide.Core
             }
             set
             {
-                bIsActive = value;
-                OnSetActive?.Invoke(bIsActive);
-
-                foreach (var child in children)
+                if (value != bIsActive)
                 {
-                    child.OnSetActive?.Invoke(bIsActive);
+                    bIsActive = value;
+                    OnSetActive?.Invoke(bIsActive);
+
+                    foreach (var child in children)
+                    {
+                        child.OnSetActive?.Invoke(bIsActive);
+                    }
                 }
             }
         }
@@ -60,14 +63,17 @@ namespace Tide.Core
             }
             set
             {
-                if (value == false && bIsActive) bIsActive = false;
-
-                bIsVisible = value;
-                OnSetVisibility?.Invoke(bIsVisible);
-
-                foreach (var child in children)
+                if (value != bIsVisible)
                 {
-                    child.OnSetVisibility?.Invoke(bIsActive);
+                    if (value == false && bIsActive) bIsActive = false; //  IsActive = false; ?
+
+                    bIsVisible = value;
+                    OnSetVisibility?.Invoke(bIsVisible);
+
+                    foreach (var child in children)
+                    {
+                        child.OnSetVisibility?.Invoke(bIsActive);
+                    }
                 }
             }
         }
@@ -143,6 +149,7 @@ namespace Tide.Core
                 child.DeferredRemoveChildComponent(child.Children[0]);
             }
 
+            child.IsActive = false;
             child.Parent = null;
             Children.Remove(child);
 

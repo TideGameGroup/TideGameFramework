@@ -18,6 +18,8 @@ namespace Tide.Core
             SystemGraph = new TSystemGraph();
             ComponentGraph = new TComponentGraph();
 
+            UStatistics.Get = Statistics;
+
             TMonoConstructorArgs monoargs =
                 new TMonoConstructorArgs
                 {
