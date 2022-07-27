@@ -183,6 +183,10 @@ namespace Tide.Core
             {
                 component.UpdateGraph();
             }
+            foreach (UComponent component in graph)
+            {
+                component.InvokeUpdateGraphBindings();
+            }
         }
 
         #endregion
