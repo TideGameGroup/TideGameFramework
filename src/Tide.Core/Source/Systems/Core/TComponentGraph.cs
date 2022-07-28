@@ -171,21 +171,71 @@ namespace Tide.Core
 
         public void Update(TComponentGraph graph, GameTime gameTime)
         {
+            bool graphIsDirty = false;
+
             foreach (UComponent component in graph)
             {
                 if (component is IUpdateComponent updater && component.IsActive)
                 {
                     updater.Update(gameTime);
                 }
+                graphIsDirty = graphIsDirty || component.IsDirty;
             }
+
+            if (graphIsDirty)
+            {
+                UpdateGraph(graph);
+            }
+        }
+
+        private static void UpdateGraph(TComponentGraph graph)
+        {
+            List<FDeferredRegistrationInputs> allRegistrations = new List<FDeferredRegistrationInputs>();
+            List<FDeferredRegistrationInputs> allUnregistrations = new List<FDeferredRegistrationInputs>();
+
+            UpdateGraphRecursive(graph, allRegistrations, allUnregistrations);
+
+            foreach (var r in allRegistrations)
+            {
+                r.parent.OnRegisterChildComponent?.Invoke(r.child);
+                r.child.OnRegisterComponent?.Invoke();
+            }
+            foreach (var u in allUnregistrations)
+            {
+                u.child.OnUnregisterComponent?.Invoke();
+                u.parent.OnUnregisterChildComponent?.Invoke(u.child);
+            }
+        }
+
+        private static void UpdateGraphRecursive(TComponentGraph graph, List<FDeferredRegistrationInputs> allRegistrations, List<FDeferredRegistrationInputs> allUnregistrations)
+        {
+            List<FDeferredRegistrationInputs> registrations = new List<FDeferredRegistrationInputs>();
+            List<FDeferredRegistrationInputs> unregistrations = new List<FDeferredRegistrationInputs>();
 
             foreach (UComponent component in graph)
             {
-                component.UpdateGraph();
+                registrations.AddRange(component.deferredRegistrations);
+                component.deferredRegistrations.Clear();
+
+                unregistrations.AddRange(component.deferredUnregistrations);
+                component.deferredUnregistrations.Clear();
             }
-            foreach (UComponent component in graph)
+
+            foreach (var r in registrations)
             {
-                component.InvokeUpdateGraphBindings();
+                r.parent.DeferredAddChildComponent(r.child, r.at);
+            }
+            foreach (var u in unregistrations)
+            {
+                u.parent.DeferredRemoveChildComponent(u.child);
+            }
+
+            allRegistrations.AddRange(registrations);
+            allUnregistrations.AddRange(unregistrations);
+
+            if (registrations.Count > 0 || unregistrations.Count > 0)
+            {
+                UpdateGraphRecursive(graph, allRegistrations, allUnregistrations);
             }
         }
 
