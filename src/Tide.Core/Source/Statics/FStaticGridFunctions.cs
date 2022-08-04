@@ -3,7 +3,7 @@ using Tide.Core;
 
 namespace Tide.Core
 {
-    public class FGridHelper
+    public class FStaticGridFunctions
     {
         public static int Get1DIndex(FIntVector2 coord, int width)
         {

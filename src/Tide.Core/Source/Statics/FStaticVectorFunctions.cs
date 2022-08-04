@@ -4,7 +4,7 @@ using Tide.Core;
 
 namespace Tide.Core
 {
-    public class FVectorHelper
+    public class FStaticVectorFunctions
     {
         public static Vector2 ToVector2(Vector3 vec)
         {

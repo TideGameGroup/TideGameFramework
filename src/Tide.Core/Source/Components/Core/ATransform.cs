@@ -1,27 +1,60 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Tide.XMLSchema;
 
 namespace Tide.Core
 {
     public class ATransform : UComponent, ISerialisableComponent
     {
-        public List<float> angles       = new List<float>();
-        public List<float> scales       = new List<float>();
-        public List<Vector2> positions  = new List<Vector2>();
+        internal readonly List<float> worldAngles = new List<float>();
+        internal readonly List<Vector2> worldPositions = new List<Vector2>();
+        internal readonly List<float> worldScales = new List<float>();
+        internal readonly List<float> angles = new List<float>();
+        internal readonly List<Vector2> positions = new List<Vector2>();
+        internal readonly List<float> scales = new List<float>();
+        public static ICoordinateSystem defaultCoordinateSystem = new FCartesianCoordinates();
+
+        public ATransform(ICoordinateSystem coordinateSystem = null)
+        {
+            CoordinateSystem = coordinateSystem ?? defaultCoordinateSystem;
+        }
+
+        public ReadOnlyCollection<float> Angles => worldAngles.AsReadOnly();
+        public ICoordinateSystem CoordinateSystem { get; private set; }
         public int Count => positions.Count;
+        public ReadOnlyCollection<Vector2> Positions => worldPositions.AsReadOnly();
+        public ReadOnlyCollection<float> Scales => worldScales.AsReadOnly();
 
         public Matrix this[int i]
         {
-            get { return Matrix.CreateScale(scales[i]) * Matrix.CreateRotationZ(angles[i]) * Matrix.CreateTranslation(FVectorHelper.ToVector3(positions[i])); }
+            get { return Matrix.CreateScale(worldScales[i]) * Matrix.CreateRotationZ(worldAngles[i]) * Matrix.CreateTranslation(FStaticVectorFunctions.ToVector3(worldPositions[i])); }
         }
 
         public void Add(float angle, Vector2 position, float scale = 1.0f)
         {
-            angles.Add(angle);
-            positions.Add(position);
-            scales.Add(scale);
+            angles.Add(CoordinateSystem.ConvertAngleTo(angle));
+            positions.Add(CoordinateSystem.ConvertTo(position));
+            scales.Add(CoordinateSystem.ConvertAngleTo(scale));
+
+            worldAngles.Add(angle);
+            worldPositions.Add(position);
+            worldScales.Add(scale);
+        }
+
+        public float GetAngle(int i)
+        {
+            return CoordinateSystem.ConvertAngleFrom(angles[i]);
+        }
+
+        public Vector2 GetPosition(int i)
+        {
+            return CoordinateSystem.ConvertFrom(positions[i]);
+        }
+
+        public float GetScale(int i)
+        {
+            return CoordinateSystem.ConvertScaleFrom(scales[i]);
         }
 
         public void RemoveAt(int i)
@@ -29,6 +62,27 @@ namespace Tide.Core
             angles.RemoveAt(i);
             positions.RemoveAt(i);
             scales.RemoveAt(i);
+            worldAngles.RemoveAt(i);
+            worldPositions.RemoveAt(i);
+            worldScales.RemoveAt(i);
+        }
+
+        public void SetAngle(int i, float angle)
+        {
+            worldAngles[i] = angle;
+            angles[i] = CoordinateSystem.ConvertAngleTo(angle);
+        }
+
+        public void SetPosition(int i, Vector2 position)
+        {
+            worldPositions[i] = position;
+            positions[i] = CoordinateSystem.ConvertTo(position);
+        }
+
+        public void SetScale(int i, float scale)
+        {
+            worldScales[i] = scale;
+            scales[i] = CoordinateSystem.ConvertScaleTo(scale);
         }
 
         #region ISerialisableComponent
@@ -61,6 +115,6 @@ namespace Tide.Core
             return ID;
         }
 
-        #endregion
+        #endregion ISerialisableComponent
     }
 }

@@ -87,6 +87,7 @@ namespace Tide.Core
         {
             position += vector2;
             BuildViewMatrix();
+            BuildViewProjectionMatrix();
         }
     }
 }

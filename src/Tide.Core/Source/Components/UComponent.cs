@@ -13,12 +13,15 @@ namespace Tide.Core
     public class UComponent
     {
         private readonly List<UComponent> children = new List<UComponent>();
-        private bool bIsActive = true;
-        private bool bIsVisible = true;
+        internal bool bIsActive = true;
+        internal bool bCanUpdate = true;
+        internal bool bIsVisible = true;
+        internal bool bCanDraw = true;
+
         public readonly List<FDeferredRegistrationInputs> deferredRegistrations = new List<FDeferredRegistrationInputs>();
         public readonly List<FDeferredRegistrationInputs> deferredUnregistrations = new List<FDeferredRegistrationInputs>();
         public List<UComponent> Children => children;
-        public virtual TComponentGraph ComponentGraph => Parent.ComponentGraph;
+        public virtual TComponentGraph ComponentGraph => Parent?.ComponentGraph;
 
         public bool IsActive
         {
@@ -161,9 +164,15 @@ namespace Tide.Core
             return true;
         }
 
-        public T GetChildComponent<T>() where T : UComponent
+        public T GetChildComponent<T>(bool includePending = false) where T : UComponent
         {
-            return (T)Children.Find((item) => item is T);
+            UComponent child = Children.Find((item) => item is T);
+
+            if (child == null && includePending)
+            {
+                child = deferredRegistrations.Find((item) => item.child is T).child;
+            }
+            return (T)child;
         }
 
         public UComponent RemoveChildComponent(UComponent child)
