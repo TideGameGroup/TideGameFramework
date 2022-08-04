@@ -23,13 +23,33 @@ namespace Tide.Core
 
         public ACinematicComponent(
             UContentManager content,
-            UInput input,
-            int page = -1
+            TInput input,
+            int page = -1,
+            string canvas = "Cinematic"
             )
         {
-            InputComponent = new AInputComponent(input);
+            FCanvasComponentConstructorArgs canvasArgs =
+                new FCanvasComponentConstructorArgs
+                {
+                    audio = null,
+                    canvas = content.Load<FCanvas>(canvas),
+                    content = content,
+                    focus = EFocus.Cinematic | EFocus.GameUI,
+                    input = input,
+                    scale = 1f
+                };
 
-            CinematicCanvas = new ACanvasComponent(content, this.InputComponent, content.Load<FCanvas>("Cinematic"), EFocus.Cinematic | EFocus.GameUI);
+            CinematicCanvas = new ACanvasComponent(canvasArgs);
+
+            FCanvasDrawComponentConstructorArgs canvasRenderArgs =
+                new FCanvasDrawComponentConstructorArgs
+                {
+                    component = CinematicCanvas,
+                    content = content
+                };
+
+            CinematicCanvasRenderer = new ACanvasDrawComponent(canvasRenderArgs);
+
             canvases.Add("self", CinematicCanvas);
 
             currentPage = page;
@@ -37,8 +57,8 @@ namespace Tide.Core
 
             if (currentPage == -1)
             {
-                CinematicCanvas.bIsActive = false;
-                CinematicCanvas.bIsVisible = false;
+                CinematicCanvas.IsActive = false;
+                CinematicCanvas.IsVisible = false;
             }
         }
 
@@ -46,18 +66,18 @@ namespace Tide.Core
         public string CachedHash { get; set; }
 
         public ACanvasComponent CinematicCanvas { get; private set; }
-        public AInputComponent InputComponent { get; private set; }
+        public ACanvasDrawComponent CinematicCanvasRenderer { get; private set; }
 
         private void BindCinematic(int page, double time)
         {
             if (bLocksInput[page])
             {
-                AInputComponent.PushFocus(EFocus.Cinematic);
+                CinematicCanvas.InputComponent.PushFocus(EFocus.Cinematic);
             }
 
             foreach (string key in canvases.Keys)
             {
-                canvases[key].IsEnabled = false;
+                canvases[key].IsActive = false;
             }
 
             foreach (var highlight in highlights[page])
@@ -66,7 +86,7 @@ namespace Tide.Core
 
                 string[] canvas_widget = highlight.Split(".", 2);
                 canvases[canvas_widget[0]].HighlightWidget(canvas_widget[1], time);
-                canvases[canvas_widget[0]].IsEnabled = true;
+                canvases[canvas_widget[0]].IsActive = true;
             }
 
             switch (bindingTypes[page])
@@ -76,7 +96,7 @@ namespace Tide.Core
                     if (binding.Length == 2 && canvases.ContainsKey(binding[0]))
                     {
                         canvases[binding[0]].BindAction(binding[1], GoNext);
-                        canvases[binding[0]].IsEnabled = true;
+                        canvases[binding[0]].IsActive = true;
                     }
                     break;
 
@@ -93,7 +113,7 @@ namespace Tide.Core
         {
             foreach (string key in canvases.Keys)
             {
-                canvases[key].IsEnabled = true;
+                canvases[key].IsActive = true;
             }
 
             foreach (var highlight in highlights[page])
@@ -124,7 +144,7 @@ namespace Tide.Core
 
             if (bLocksInput[page])
             {
-                AInputComponent.PopFocus(EFocus.Cinematic);
+                CinematicCanvas.InputComponent.PopFocus(EFocus.Cinematic);
             }
         }
 
@@ -148,13 +168,39 @@ namespace Tide.Core
             return currentPage != -1 && currentPage < bLocksInput.Count;
         }
 
+        public void RegisterCanvas(string name, ACanvasComponent canvas)
+        {
+            canvases.TryAdd(name, canvas);
+        }
+
+        public void RegisterCanvases(Dictionary<string, ACanvasComponent> dict)
+        {
+            foreach (string key in dict.Keys)
+            {
+                RegisterCanvas(key, dict[key]);
+            }
+        }
+
+        public void RegisterFunction(string name, CinematicDelegate func)
+        {
+            functions.TryAdd(name, func);
+        }
+
+        public void UnregisterCanvas(string name)
+        {
+            canvases.Remove(name);
+        }
+
+        #region ISerialisableComponent
+
         public void Load(UContentManager content, string serialisedScriptPath)
         {
             if (serialisedScriptPath == "" || serialisedScriptPath == null)
             {
-                bIsActive = false;
-                bIsVisible = false;
-                UnregisterChildComponent(CinematicCanvas);
+                IsActive = false;
+                IsVisible = false;
+                RemoveChildComponent(CinematicCanvas);
+                RemoveChildComponent(CinematicCanvasRenderer);
                 return;
             }
 
@@ -178,30 +224,12 @@ namespace Tide.Core
                 positions.Add(new List<Vector2>(array));
             }
 
-            CinematicCanvas.bIsActive = true;
-            CinematicCanvas.bIsVisible = true;
+            CinematicCanvas.IsActive = true;
+            CinematicCanvas.IsVisible = true;
             currentPage = 0;
             deferredPage = 0;
             BindCinematic(currentPage, 0.0);
             CinematicCanvas.SetWidgetText("text", texts[currentPage]);
-        }
-
-        public void RegisterCanvas(string name, ACanvasComponent canvas)
-        {
-            canvases.TryAdd(name, canvas);
-        }
-
-        public void RegisterCanvases(Dictionary<string, ACanvasComponent> dict)
-        {
-            foreach (string key in dict.Keys)
-            {
-                RegisterCanvas(key, dict[key]);
-            }
-        }
-
-        public void RegisterFunction(string name, CinematicDelegate func)
-        {
-            functions.TryAdd(name, func);
         }
 
         public string Serialise(string path, ref Dictionary<string, ISerialisedInstanceData> serialisedSet)
@@ -225,21 +253,22 @@ namespace Tide.Core
             {
                 currentPage = 0;
                 deferredPage = 0;
-                RegisterChildComponent(CinematicCanvas);
+                AddChildComponent(CinematicCanvas);
+                AddChildComponent(CinematicCanvasRenderer);
                 BindCinematic(currentPage, 0.0);
             }
             else
             {
                 Load(content, serialisedScriptPath);
-                RegisterChildComponent(CinematicCanvas);
+                AddChildComponent(CinematicCanvas);
+                AddChildComponent(CinematicCanvasRenderer);
                 currentCinematic = serialisedScriptPath;
             }
         }
 
-        public void UnregisterCanvas(string name)
-        {
-            canvases.Remove(name);
-        }
+        #endregion ISerialisableComponent
+
+        #region IUpdateComponent
 
         public void Update(GameTime gameTime)
         {
@@ -255,19 +284,23 @@ namespace Tide.Core
 
                     if (texts[currentPage] == null || texts[currentPage] == "")
                     {
-                        CinematicCanvas.bIsVisible = false;
-                        CinematicCanvas.bIsActive = false;
+                        CinematicCanvas.IsVisible = false;
+                        CinematicCanvas.IsActive = false;
+                        CinematicCanvasRenderer.IsVisible = false;
+                        CinematicCanvasRenderer.IsActive = false;
                     }
                     else
                     {
-                        CinematicCanvas.bIsVisible = true;
-                        CinematicCanvas.bIsActive = true;
+                        CinematicCanvas.IsVisible = true;
+                        CinematicCanvas.IsActive = true;
+                        CinematicCanvasRenderer.IsVisible = true;
+                        CinematicCanvasRenderer.IsActive = true;
                         CinematicCanvas.SetWidgetText("text", texts[currentPage]);
                     }
                 }
                 else
                 {
-                    UnregisterChildComponent(CinematicCanvas);
+                    RemoveChildComponent(CinematicCanvas);
                     //currentPage = -1;
                 }
             }
@@ -277,5 +310,7 @@ namespace Tide.Core
                 functions[currentFunction].Invoke(gameTime);
             }
         }
+
+        #endregion IUpdateComponent
     }
 }

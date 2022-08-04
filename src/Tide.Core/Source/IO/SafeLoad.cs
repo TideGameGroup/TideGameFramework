@@ -9,7 +9,7 @@ namespace Tide.Core
 {
     public class SafeLoad
     {
-        static public bool XML(string path, ref XDocument outXDocument)
+        static public bool XML(string path, out XDocument outXDocument)
         {
             XDocument doc;
             try
@@ -27,14 +27,17 @@ namespace Tide.Core
                 outXDocument = doc;
                 return true;
             }
+            outXDocument = null;
             return false;
         }
 
-        static public bool Text(string path, ref List<string> outTxt)
+        static public bool Text(string path, out List<string> outTxt)
         {
             if (!File.Exists(path))
             {
                 Debug.Print("error: Unable to find file:" + path);
+
+                outTxt = new List<string>();
                 return false;
             }
 
@@ -45,6 +48,7 @@ namespace Tide.Core
             {
                 lines[i] = lines[i].TrimEnd('\r', '\n', ' ');
             }
+
             outTxt = new List<string>(lines);
             return true;
         }

@@ -74,11 +74,11 @@ namespace Tide.Core
         {
             for (int i = 0; i < impulses.Count; i++)
             {
-                Vector2 pos = transforms.positions[i];
+                Vector2 pos = transforms.worldPositions[i];
                 pos.X += impulses[i].X;
                 pos.Y += impulses[i].Y;
                 impulses[i] = Vector2.Zero;
-                transforms.positions[i] = pos;
+                transforms.SetPosition(i, pos);
             }
         }
 

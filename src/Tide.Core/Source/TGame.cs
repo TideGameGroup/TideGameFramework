@@ -1,277 +1,68 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Diagnostics;
+﻿using System;
 
 namespace Tide.Core
 {
-    public class TGame : Game
+    public struct FStaticGameSettings
     {
-        private Stopwatch drawStopwatch = null;
-        private SpriteFont font;
-        public int height = 720;
-        public int width = 1280;
-        private RasterizerState rasterizerState;
-        private RasterizerState rasterizerUIState;
-        private Stopwatch updateStopwatch = null;
+        public bool bAllowUserResizing;
+        public bool bUseFixedTimestep;
+        public bool bUseHardwareCursor;
+    }
 
-        protected UStatistics statistics = null;
-        public bool bDrawStats = true;
-        public bool bFixedTimestep = true;
-        public bool bAllowUserResizing = true;
-        public bool bVsync = false;
-        public Color clearColor = Color.AntiqueWhite;
-        public int numPhysicsSubsteps = 2;
-
-        public Texture2D backgroundTexture;
-        public Texture2D overlayTexture;
-
+    public class TGame : IDisposable
+    {
         public TGame()
         {
-            Content.RootDirectory = "Content";
-            IsMouseVisible = false;
-
-            GraphicsDeviceManager = new GraphicsDeviceManager(this)
-            {
-                SynchronizeWithVerticalRetrace = bVsync
-            };
-            IsFixedTimeStep = bFixedTimestep;
-        }
-
-        protected UContentManager ContentManager { get; private set; }
-        protected GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
-        protected UPostProcessStack PostProcessStack { get; private set; }
-        protected UComponentGraph ComponentGraph { get; private set; }
-        protected USettings Settings { get; private set; }
-        protected SpriteBatch SpriteBatch { get; private set; }
-        public UView View { get; set; }
-        public UWindow WindowManager { get; set; }
-
-        [Conditional("DEBUG")]
-        private void DrawStats(GameTime gameTime)
-        {
-            SpriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, rasterizerUIState);
-            if (bDrawStats)
-            {
-                SpriteBatch.DrawString(font, "FPS:   " + (1.0 / gameTime.ElapsedGameTime.TotalSeconds).ToString("0"), new Vector2(10, 10), Color.Black);
-                SpriteBatch.DrawString(font, "update:" + updateStopwatch.Elapsed.TotalMilliseconds.ToString(), new Vector2(10, 25), Color.Black);
-                SpriteBatch.DrawString(font, "draw:  " + drawStopwatch.Elapsed.TotalMilliseconds.ToString(), new Vector2(10, 40), Color.Black);
-
-                int y = 55;
-                foreach (var stat in statistics.stats)
-                {
-                    SpriteBatch.DrawString(font, stat.Key + ":" + stat.Value, new Vector2(10, y), Color.Black);
-                    y += 15;
-                }
-            }
-            SpriteBatch.End();
-        }
-
-        private void DrawToBackBuffer(RenderTarget2D renderTarget)
-        {
-            GraphicsDevice.SetRenderTarget(null);
-            GraphicsDevice.Clear(clearColor);
-
-            SpriteBatch.Begin(0, BlendState.Opaque, SamplerState.PointClamp);
-            PresentationParameters parameters = GraphicsDevice.PresentationParameters;
-            SpriteBatch.Draw(renderTarget,
-                new Rectangle(
-                    0,
-                    0,
-                    parameters.BackBufferWidth,
-                    parameters.BackBufferHeight
-                    ),
-                Color.White);
-            SpriteBatch.End();
-        }
-
-        protected override void Draw(GameTime gameTime)
-        {
-            drawStopwatch.Restart();
-            GraphicsDevice.SetRenderTarget(WindowManager.RenderTarget.RenderTarget);
-            GraphicsDevice.Clear(clearColor);
-
-            // background
-            
-            SpriteBatch.Begin(
-                SpriteSortMode.Deferred,
-                BlendState.AlphaBlend,
-                SamplerState.PointClamp,
-                null, null, null, null);
-
-            if (backgroundTexture != null)
-            {
-                SpriteBatch.Draw(backgroundTexture, GraphicsDevice.Viewport.Bounds, Color.White);
-            }
-
-            SpriteBatch.End();
-
-            // 2d pass
-            SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp,
-                null, null, null, View.ViewProjectionMatrix);
-
-            foreach (UComponent script in ComponentGraph)
-            {
-                if (script is IDrawableComponent && script.bIsVisible)
-                {
-                    ((IDrawableComponent)script).Draw2D(View, SpriteBatch, gameTime);
-                }
-            }
-
-            OnDraw2D(View, SpriteBatch, gameTime);
-
-            SpriteBatch.End();
-
-            // ui pass
-            SpriteBatch.Begin( SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp,
-                null, null, null, null);
-
-            foreach (UComponent script in ComponentGraph)
-            {
-                if (script is IDrawableCanvasScript && script.bIsVisible)
-                {
-                    ((IDrawableCanvasScript)script).DrawUI(View, SpriteBatch, gameTime);
-                }
-            }
-
-            OnDrawUI(View, SpriteBatch, gameTime);
-
-            if (overlayTexture != null)
-            {
-                SpriteBatch.Draw(overlayTexture, GraphicsDevice.Viewport.Bounds, Color.White);
-            }
-
-            SpriteBatch.End();
-
-            base.Draw(gameTime);
-
-            //PostProcessStack.DrawPostProcess(RenderTarget, RenderTarget, SpriteBatch, gameTime);
-            DrawToBackBuffer(WindowManager.RenderTarget.RenderTarget);
-
-            // stats
-            drawStopwatch.Stop();
-            DrawStats(gameTime);
-        }
-
-        protected override void Initialize()
-        {
-            base.Initialize();
-
-            SpriteBatch = new SpriteBatch(GraphicsDevice);
-            updateStopwatch = new Stopwatch();
-            drawStopwatch = new Stopwatch();
-            rasterizerState = new RasterizerState() { ScissorTestEnable = false };
-            rasterizerUIState = new RasterizerState() { ScissorTestEnable = true };
-            statistics = new UStatistics();
-
-            View = new UView(GraphicsDevice.Viewport);
-
-            ComponentGraph = new UComponentGraph();
-            PostProcessStack = new UPostProcessStack(ContentManager, GraphicsDevice);
             Settings = new USettings();
+            Statistics = new UStatistics();
+            SystemGraph = new TSystemGraph();
+            ComponentGraph = new TComponentGraph();
 
-            FWindowConstructorArgs windowConstructorArgs =
-                new FWindowConstructorArgs
+            UStatistics.Get = Statistics;
+
+            TMonoConstructorArgs monoargs =
+                new TMonoConstructorArgs
                 {
-                    bFullscreen = Settings["fullscreen"].b,
-                    graphicsDeviceManager = GraphicsDeviceManager,
-                    view2D = View,
-                    window = Window
+                    staticSettings = InitialiseStaticGameSettings(),
+                    settings = Settings,
+                    systemGraph = SystemGraph,
+                    componentGraph = ComponentGraph,
+                    game = this
                 };
 
-            WindowManager = new UWindow(windowConstructorArgs);
-
-            ComponentGraph.RegisterScript(PostProcessStack);
-            ComponentGraph.RegisterScript(Settings);
-            ComponentGraph.RegisterScript(statistics);
-            ComponentGraph.RegisterScript(WindowManager);
-
-            Settings.SetOnChangedCallback("fullscreen", () =>
-                {
-                    WindowManager.SetFullscreen(Settings["fullscreen"].b);
-                }
-            );
+            MonoGame = new TMono(monoargs);
+            SystemGraph.Add(ComponentGraph);
         }
 
-        protected override void LoadContent()
-        {
-            ContentManager = new UContentManager(Content, GraphicsDevice);
-            font = ContentManager.Load<SpriteFont>("Arial");
+        public TComponentGraph ComponentGraph { get; private set; }
+        public TMono MonoGame { get; set; }
+        public USettings Settings { get; private set; }
+        public UStatistics Statistics { get; private set; }
+        public TSystemGraph SystemGraph { get; private set; }
 
-            backgroundTexture = ContentManager.Load<Texture2D>("back");
-            overlayTexture = ContentManager.Load<Texture2D>("Vignette");
+        public void Dispose() => MonoGame.Dispose();
+
+        public virtual void InitialiseComponents(UContentManager content, TComponentGraph components, TSystemGraph systems)
+        {
         }
 
-        protected virtual void OnDraw2D(UView view2D, SpriteBatch spriteBatch, GameTime gameTime)
-        { }
-
-        protected virtual void OnDrawUI(UView view2D, SpriteBatch spriteBatch, GameTime gameTime)
-        { }
-
-        protected virtual void OnUpdate(GameTime gameTime)
-        { }
-
-        protected override void Update(GameTime gameTime)
+        public virtual FStaticGameSettings InitialiseStaticGameSettings()
         {
-            updateStopwatch.Restart();
-            
-            PhysicsUpdate(gameTime);
-
-            foreach (UComponent script in ComponentGraph)
+            return new FStaticGameSettings
             {
-                if (script is IUpdateComponent && script.bIsActive)
-                {
-                    ((IUpdateComponent)script).Update(gameTime);
-                }
-            }
-            OnUpdate(gameTime);
-            updateStopwatch.Stop();
+                bAllowUserResizing = true,
+                bUseFixedTimestep = true,
+                bUseHardwareCursor = true
+            };
         }
 
-        private void PhysicsUpdate(GameTime gameTime)
+        public virtual void InitialiseSystems(UContentManager content, TSystemGraph systems)
         {
-            TimeSpan elapsedStepTime = gameTime.ElapsedGameTime / numPhysicsSubsteps;
-            GameTime stepTime = new GameTime(
-                gameTime.TotalGameTime - gameTime.ElapsedGameTime,
-                gameTime.ElapsedGameTime / numPhysicsSubsteps
-                );
+        }
 
-            foreach (UComponent script in ComponentGraph)
-            {
-                if (script is IPhysicsComponent && script.bIsActive)
-                {
-                    ((IPhysicsComponent)script).PrePhysics(gameTime);
-                }
-            }
-
-            for (int n = 0; n < numPhysicsSubsteps; n++)
-            {
-                stepTime.TotalGameTime += elapsedStepTime * (n + 1);
-
-                foreach (UComponent script in ComponentGraph)
-                {
-                    if (script is IPhysicsComponent && script.bIsActive)
-                    {
-                        ((IPhysicsComponent)script).CollisionUpdate(stepTime);
-                    }
-                }
-
-                foreach (UComponent script in ComponentGraph)
-                {
-                    if (script is IPhysicsComponent && script.bIsActive)
-                    {
-                        ((IPhysicsComponent)script).PhysicsUpdate(stepTime);
-                    }
-                }
-            }
-
-            foreach (UComponent script in ComponentGraph)
-            {
-                if (script is IPhysicsComponent && script.bIsActive)
-                {
-                    ((IPhysicsComponent)script).PostPhysics(gameTime);
-                }
-            }
+        public void Run()
+        {
+            MonoGame.Run();
         }
     }
 }

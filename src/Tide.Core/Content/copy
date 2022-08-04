@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XnaContent xmlns:XMLSchema="Tide.XMLSchema">
+  <Asset Type="XMLSchema:FCanvas">
+    <alignments>
+      <Item>L</Item>
+    </alignments>
+    <anchors>
+      <Item>C</Item>
+    </anchors>
+    <clickSounds>
+      <Item></Item>
+    </clickSounds>
+    <colors>00000000</colors>
+    <fonts>
+      <Item>Arial</Item>
+    </fonts>
+    <highlightColors>00000000</highlightColors>
+    <hoverSounds>
+      <Item></Item>
+    </hoverSounds>
+    <ID>new_canvas</ID>
+    <IDs>
+      <Item>widget1</Item>
+    </IDs>
+    <parents>-1</parents>
+    <rectangles>0 0 500 500</rectangles>
+    <root>0 0 0 0</root>
+    <sources>0 0 16 16</sources>
+    <texts>
+      <Item></Item>
+    </texts>
+    <textures>
+      <Item>BaseUI</Item>
+    </textures>
+    <tooltips>
+      <Item></Item>
+    </tooltips>
+    <widgetTypes>
+      <Item>BUTTON</Item>
+    </widgetTypes>
+  </Asset>
+</XnaContent>

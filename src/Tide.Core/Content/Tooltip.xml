@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XnaContent xmlns:XMLSchema="Tide.XMLSchema">
+  <Asset Type="XMLSchema:FCanvas">
+    <alignments>
+      <Item>L</Item>
+      <Item>L</Item>
+    </alignments>
+    <anchors>
+      <Item>NW</Item>
+      <Item>NW</Item>
+    </anchors>
+    <clickSounds>
+      <Item></Item>
+      <Item></Item>
+    </clickSounds>
+    <colors>FFFFFFFF FF000000</colors>
+    <fonts>
+      <Item>consolas</Item>
+      <Item>consolas</Item>
+    </fonts>
+    <highlightColors>FFFFFFFF FF000000</highlightColors>
+    <hoverSounds>
+      <Item></Item>
+      <Item></Item>
+    </hoverSounds>
+    <ID>new_canvas</ID>
+    <IDs>
+      <Item>panel</Item>
+      <Item>tooltip_text</Item>
+    </IDs>
+    <parents>-1 -1</parents>
+    <rectangles>0 0 200 200 8 8 96 32</rectangles>
+    <root>0 0 0 0</root>
+    <sources>240 0 16 16 0 0 32 32</sources>
+    <texts>
+      <Item></Item>
+      <Item>tooltip text</Item>
+    </texts>
+    <textures>
+      <Item>Icons</Item>
+      <Item>Icons</Item>
+    </textures>
+    <tooltips>
+      <Item></Item>
+      <Item></Item>
+    </tooltips>
+    <tooltiptexts>
+      <Item></Item>
+      <Item></Item>
+    </tooltiptexts>
+    <widgetTypes>
+      <Item>PANEL</Item>
+      <Item>TEXT</Item>
+    </widgetTypes>
+  </Asset>
+</XnaContent>

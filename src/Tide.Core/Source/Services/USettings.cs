@@ -1,61 +1,24 @@
-﻿using Microsoft.Xna.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Xml.Linq;
 
 namespace Tide.Core
 {
     public delegate void settingChangedEvent();
 
-    [System.Runtime.InteropServices.StructLayout(LayoutKind.Explicit)]
-    public struct FSetting
-    {
-        [System.Runtime.InteropServices.FieldOffset(0)]
-        public bool b;
-
-        [System.Runtime.InteropServices.FieldOffset(0)]
-        public int i;
-
-        [System.Runtime.InteropServices.FieldOffset(0)]
-        public double d;
-
-        [System.Runtime.InteropServices.FieldOffset(0)]
-        public float f;
-
-        [System.Runtime.InteropServices.FieldOffset(sizeof(double))]
-        public char heldType;
-
-        public static FSetting Bool(bool v) { var s = new FSetting(); s.heldType = 'b'; s.b = v; return s; }
-        public static FSetting Int(int v) { var s = new FSetting(); s.heldType = 'i'; s.i = v; return s; }
-        public static FSetting Double(double v) { var s = new FSetting(); s.heldType = 'd'; s.d = v; return s; }
-        public static FSetting Float(float v) { var s = new FSetting(); s.heldType = 'f'; s.f = v; return s; }
-
-        public string GetValueString()
-        {
-            return heldType switch
-            {
-                'b' => "b" + b.ToString(),
-                'f' => "f" + f.ToString(),
-                'i' => "i" + i.ToString(),
-                'd' => "d" + d.ToString(),
-                _ => "",
-            };
-        }
-    }
-
     public class USettings : UComponent
     {
-        private Dictionary<string, FSetting> settings = new Dictionary<string, FSetting>();
         private Dictionary<string, settingChangedEvent> onChangeCallbacks = new Dictionary<string, settingChangedEvent>();
+        private Dictionary<string, FSetting> settings = new Dictionary<string, FSetting>();
 
         public USettings()
         {
             // defaults
             settings["volume"] = FSetting.Float(0.1f);
             settings["fullscreen"] = FSetting.Bool(false);
+            settings["vsync"] = FSetting.Bool(true);
 
             LoadSettingsFromFile();
             EnforceSettingsRanges();
@@ -63,12 +26,12 @@ namespace Tide.Core
 
         public FSetting this[string stat]
         {
-            get 
-            { 
+            get
+            {
                 return settings[stat];
             }
-            set 
-            { 
+            set
+            {
                 settings[stat] = value;
                 if (onChangeCallbacks.ContainsKey(stat))
                 {
@@ -78,38 +41,38 @@ namespace Tide.Core
             }
         }
 
-        public void SetOnChangedCallback(string setting, settingChangedEvent evt)
+        private static string GetPersistentSettingsFile()
         {
-            if (!onChangeCallbacks.ContainsKey(setting))
-            {
-                onChangeCallbacks[setting] = evt;
-            }
-            else
-            {
-                onChangeCallbacks[setting] += evt;
-            }
+            return Path.Combine(GetPersistentDataFolder(), "SETTINGS.xml");
         }
 
-        public void RemoveOnChangedCallback(string setting, settingChangedEvent evt)
+        private void SaveSettingsToFile()
         {
-            onChangeCallbacks[setting] -= evt;
+            XElement root = new XElement("document");
+
+            foreach (var setting in settings)
+            {
+                XElement elem = new XElement(setting.Key)
+                {
+                    Value = setting.Value.GetValueString()
+                };
+                root.Add(elem);
+            }
+
+            try
+            {
+                XDocument doc = new XDocument(root);
+                doc.Save(GetPersistentSettingsFile());
+            }
+            catch
+            {
+                return;
+            }
         }
 
         protected void EnforceSettingsRanges()
         {
             this["volume"] = FSetting.Float(Math.Clamp(this["volume"].f, 0.0f, 1.0f));
-        }
-
-        public static string GetPersistentDataFolder()
-        {
-            string dir = Directory.GetCurrentDirectory();
-
-            if (Directory.Exists(dir) == false)
-            {
-                Directory.CreateDirectory(dir);
-            }
-
-            return dir;
         }
 
         protected void LoadSettingsFromFile()
@@ -135,8 +98,7 @@ namespace Tide.Core
                 {
                     foreach (var setting in settings_list.Elements())
                     {
-                        FSetting newsetting = new FSetting();
-                        if (SafeParse.ParseSetting(setting.Value, ref newsetting))
+                        if (SafeParse.ParseSetting(setting.Value, out FSetting newsetting))
                         {
                             this[setting.Name.ToString()] = newsetting;
                         }
@@ -149,30 +111,32 @@ namespace Tide.Core
             }
         }
 
-        private static string GetPersistentSettingsFile()
+        public static string GetPersistentDataFolder()
         {
-            return Path.Combine(GetPersistentDataFolder(), "SETTINGS.xml");
+            string dir = Directory.GetCurrentDirectory();
+
+            if (Directory.Exists(dir) == false)
+            {
+                Directory.CreateDirectory(dir);
+            }
+
+            return dir;
         }
 
-        private void SaveSettingsToFile()
+        public void RemoveOnChangedCallback(string setting, settingChangedEvent evt)
         {
-            XElement root = new XElement("document");
+            onChangeCallbacks[setting] -= evt;
+        }
 
-            foreach (var setting in settings)
+        public void SetOnChangedCallback(string setting, settingChangedEvent evt)
+        {
+            if (!onChangeCallbacks.ContainsKey(setting))
             {
-                XElement elem = new XElement(setting.Key);
-                elem.Value = setting.Value.GetValueString();
-                root.Add(elem);
+                onChangeCallbacks[setting] = evt;
             }
-
-            try
+            else
             {
-                XDocument doc = new XDocument(root);
-                doc.Save(GetPersistentSettingsFile());
-            }
-            catch
-            {
-                return;
+                onChangeCallbacks[setting] += evt;
             }
         }
     }

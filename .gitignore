@@ -59,8 +59,16 @@ dkms.conf
 /src/Tide.Core/obj
 /src/.vs
 .vs
+.cache
 
 /src/Tide.Tools/bin
 /src/Tide.Tools/obj
 /src/Tide.Reflection/obj
-/src/Tide.Reflection/obj/Debug
+/src/Tide.Reflection/bin
+/src/Tide.Editor/obj
+/src/Tide.Editor/bin
+/src/Tide.Editor/Content/obj
+/src/Tide.Editor/Content/bin
+*.xnb
+/src/Tide.Editor/Content/mappings.xml
+/src/Games/GMTK22/Source/GMTK22.Core/Content/UI

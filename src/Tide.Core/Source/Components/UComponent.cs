@@ -1,32 +1,96 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Tide.XMLSchema;
 
 namespace Tide.Core
 {
+    public struct FDeferredRegistrationInputs
+    {
+        public int at;
+        public UComponent child;
+        public UComponent parent;
+    }
+
     public class UComponent
     {
-        public List<UComponent> Children { get; private set; }
-        public UComponent Parent { get; set; }
-        public virtual UComponentGraph ScriptGraph => Parent.ScriptGraph;
+        private readonly List<UComponent> children = new List<UComponent>();
+        internal bool bIsActive = true;
+        internal bool bCanUpdate = true;
+        internal bool bIsVisible = true;
+        internal bool bCanDraw = true;
 
-        public bool bIsActive  = true;
+        public readonly List<FDeferredRegistrationInputs> deferredRegistrations = new List<FDeferredRegistrationInputs>();
+        public readonly List<FDeferredRegistrationInputs> deferredUnregistrations = new List<FDeferredRegistrationInputs>();
+        public List<UComponent> Children => children;
+        public virtual TComponentGraph ComponentGraph => Parent?.ComponentGraph;
 
-        public bool bIsVisible = true;
-
-        public UComponent()
+        public bool IsActive
         {
-            Children    = new List<UComponent>();
-            Parent      = null;
+            get
+            {
+                if (Parent != null)
+                {
+                    return bIsActive && Parent.IsActive;
+                }
+                else
+                {
+                    return bIsActive;
+                }
+            }
+            set
+            {
+                if (value != bIsActive)
+                {
+                    bIsActive = value;
+                    OnSetActive?.Invoke(bIsActive);
+
+                    foreach (var child in children)
+                    {
+                        child.OnSetActive?.Invoke(bIsActive);
+                    }
+                }
+            }
+        }
+
+        public bool IsDirty => deferredUnregistrations.Count > 0 || deferredRegistrations.Count > 0;
+
+        public bool IsVisible
+        {
+            get
+            {
+                if (Parent != null)
+                {
+                    return bIsVisible && Parent.IsVisible;
+                }
+                else
+                {
+                    return bIsVisible;
+                }
+            }
+            set
+            {
+                if (value != bIsVisible)
+                {
+                    if (value == false && bIsActive) bIsActive = false; //  IsActive = false; ?
+
+                    bIsVisible = value;
+                    OnSetVisibility?.Invoke(bIsVisible);
+
+                    foreach (var child in children)
+                    {
+                        child.OnSetVisibility?.Invoke(bIsActive);
+                    }
+                }
+            }
         }
 
         public OnGraphEvent OnRegisterChildComponent { get; set; }
-        public OnGraphEvent OnUnregisterChildComponent { get; set; }
         public OnEvent OnRegisterComponent { get; set; }
+        public OnPropertyEvent OnSetActive { get; set; }
+        public OnPropertyEvent OnSetVisibility { get; set; }
+        public OnGraphEvent OnUnregisterChildComponent { get; set; }
         public OnEvent OnUnregisterComponent { get; set; }
-        public USerialisationComponent SerialisationComponent { get; set;  }
+        public UComponent Parent { get; set; }
+        //public USerialisationComponent SerialisationComponent { get; set; }
 
         /// <summary>
         /// This function is syntactic sugar for checking passed values are non-null
@@ -37,7 +101,7 @@ namespace Tide.Core
         protected static void NullCheck<T>(T t)
         {
             if (t == null)
-            { 
+            {
                 throw new ArgumentNullException(nameof(t));
             }
         }
@@ -58,45 +122,70 @@ namespace Tide.Core
             o = t;
         }
 
-        public UComponent RegisterChildComponent(UComponent child, int at = -1)
+        public UComponent AddChildComponent(UComponent child, int at = -1)
         {
             if (child == null) { return null; }
 
-            if (Children == null)
+            deferredRegistrations.Add(new FDeferredRegistrationInputs
             {
-                Children = new List<UComponent>();
-            }
+                parent = this,
+                child = child,
+                at = at
+            });
+            return child;
+        }
+
+        public bool DeferredAddChildComponent(UComponent child, int at = -1)
+        {
+            if (child == null) { return false; }
+
             child.Parent = this;
 
             at = (at == -1) ? Children.Count : at;
             at = Math.Min(Children.Count, at);
             Children.Insert(at, child);
 
-            OnRegisterChildComponent?.Invoke(child);
-            child.OnRegisterComponent?.Invoke();
-
-            return child;
+            return true;
         }
 
-        public T GetChildComponent<T>() where T : UComponent
+        public bool DeferredRemoveChildComponent(UComponent child)
         {
-            return (T)Children.Find((item) => item is T);
-        }
-
-        public void UnregisterChildComponent(UComponent child)
-        {
-            if (Children == null || child == null) { return; }
+            if (Children == null || child == null) { return false; }
 
             while (child.Children.Count > 0)
             {
-                child.UnregisterChildComponent(child.Children[0]);
+                child.DeferredRemoveChildComponent(child.Children[0]);
             }
 
+            child.IsActive = false;
             child.Parent = null;
-            child.OnUnregisterComponent?.Invoke();
-
             Children.Remove(child);
-            OnUnregisterChildComponent?.Invoke(child);
+
+            return true;
+        }
+
+        public T GetChildComponent<T>(bool includePending = false) where T : UComponent
+        {
+            UComponent child = Children.Find((item) => item is T);
+
+            if (child == null && includePending)
+            {
+                child = deferredRegistrations.Find((item) => item.child is T).child;
+            }
+            return (T)child;
+        }
+
+        public UComponent RemoveChildComponent(UComponent child)
+        {
+            if (child == null) { return null; }
+
+            deferredUnregistrations.Add(new FDeferredRegistrationInputs
+            {
+                parent = this,
+                child = child,
+                at = 0
+            });
+            return child;
         }
     }
 }

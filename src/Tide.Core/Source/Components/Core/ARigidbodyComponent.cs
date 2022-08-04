@@ -117,14 +117,14 @@ namespace Tide.Core
         {
             for (int i = 0; i < impulses.Count; i++)
             {
-                Vector2 pos = transforms.positions[i];
+                Vector2 pos = transforms.worldPositions[i];
                 pos.X += impulses[i].X;
                 pos.Y += impulses[i].Y;
                 pos.X += velocities[i].X * (float)gameTime.ElapsedGameTime.TotalSeconds;
                 pos.Y += velocities[i].Y * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
                 impulses[i] = Vector2.Zero;
-                transforms.positions[i] = pos;
+                transforms.SetPosition(i, pos);
             }
         }
 

@@ -1,0 +1,74 @@
+
+#----------------------------- Global Properties ----------------------------#
+
+/outputDir:bin/$(Platform)
+/intermediateDir:obj/$(Platform)
+/platform:DesktopGL
+/config:
+/profile:Reach
+/compress:False
+
+#-------------------------------- References --------------------------------#
+
+/reference:..\..\Tide.XMLSchema\bin\Debug\netcoreapp3.1\Tide.XMLSchema.dll
+
+#---------------------------------- Content ---------------------------------#
+
+#begin Arial.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Color
+/build:Arial.spritefont
+
+#begin consolas.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Color
+/build:consolas.spritefont
+
+#begin mappings.xml
+/importer:XmlImporter
+/processor:PassThroughProcessor
+/build:mappings.xml
+
+#begin Textures/BaseUI.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/BaseUI.png
+
+#begin Textures/Icons.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/Icons.png
+
+#begin UIs/Tooltip.xml
+/importer:XmlImporter
+/processor:PassThroughProcessor
+/build:UIs/Tooltip.xml
+
+#begin UIs/UI.xml
+/importer:XmlImporter
+/processor:PassThroughProcessor
+/build:UIs/UI.xml
+
+#begin UIs/Zoom.xml
+/importer:XmlImporter
+/processor:PassThroughProcessor
+/build:UIs/Zoom.xml
+

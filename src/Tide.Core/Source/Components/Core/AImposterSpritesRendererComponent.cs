@@ -14,7 +14,7 @@ namespace Tide.Core
         {
             SpriteRenderer = new ASpritesRenderer(transforms);
 
-            RegisterChildComponent(SpriteRenderer);
+            AddChildComponent(SpriteRenderer);
 
             this.transforms = transforms;
 
@@ -53,7 +53,7 @@ namespace Tide.Core
             }
             for (int i = 0; i < Count; i++)
             {
-                float angle = MathHelper.WrapAngle(transforms.angles[i]) + MathHelper.Pi;
+                float angle = MathHelper.WrapAngle(transforms.worldAngles[i]) + MathHelper.Pi;
                 int a = (int)MathHelper.Lerp(0, angleCount - 1, angle / MathHelper.TwoPi);
 
                 if (a != angleList[i])

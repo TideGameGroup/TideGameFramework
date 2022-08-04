@@ -9,6 +9,8 @@ namespace Tide.Core
     {
         public Dictionary<string, string> stats = new Dictionary<string, string>();
 
+        public static UStatistics Get;
+
         public string this[string stat]
         {
             get { return stats[stat]; }

@@ -598,6 +598,7 @@
       "path": "microsoft.netcore.targets/1.1.0",
       "files": [
         ".nupkg.metadata",
+        ".signature.p7s",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
         "lib/netstandard1.0/_._",
@@ -612,6 +613,7 @@
       "path": "microsoft.win32.registry/4.3.0",
       "files": [
         ".nupkg.metadata",
+        ".signature.p7s",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
         "lib/net46/Microsoft.Win32.Registry.dll",
@@ -1833,6 +1835,7 @@
       "path": "system.threading/4.0.11",
       "files": [
         ".nupkg.metadata",
+        ".signature.p7s",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
         "lib/MonoAndroid10/_._",
@@ -2006,30 +2009,20 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Mattl\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {},
-    "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\": {},
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+    "C:\\Users\\Marti\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Git\\Engines-frameworks\\Tide\\TideGameFramework\\src\\Tide.Reflection\\Tide.Reflection.csproj",
+      "projectUniqueName": "C:\\Git\\GrimTide\\TideGameFramework\\src\\Tide.Reflection\\Tide.Reflection.csproj",
       "projectName": "Tide.Reflection",
-      "projectPath": "D:\\Git\\Engines-frameworks\\Tide\\TideGameFramework\\src\\Tide.Reflection\\Tide.Reflection.csproj",
-      "packagesPath": "C:\\Users\\Mattl\\.nuget\\packages\\",
-      "outputPath": "D:\\Git\\Engines-frameworks\\Tide\\TideGameFramework\\src\\Tide.Reflection\\obj\\",
+      "projectPath": "C:\\Git\\GrimTide\\TideGameFramework\\src\\Tide.Reflection\\Tide.Reflection.csproj",
+      "packagesPath": "C:\\Users\\Marti\\.nuget\\packages\\",
+      "outputPath": "C:\\Git\\GrimTide\\TideGameFramework\\src\\Tide.Reflection\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
-        "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\",
-        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-      ],
       "configFilePaths": [
-        "C:\\Users\\Mattl\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        "C:\\Users\\Marti\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp3.1"
@@ -2040,10 +2033,9 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
-          "targetAlias": "netcoreapp3.1",
           "projectReferences": {
-            "D:\\Git\\Engines-frameworks\\Tide\\TideGameFramework\\src\\Tide.Core\\Tide.Core.csproj": {
-              "projectPath": "D:\\Git\\Engines-frameworks\\Tide\\TideGameFramework\\src\\Tide.Core\\Tide.Core.csproj"
+            "C:\\Git\\GrimTide\\TideGameFramework\\src\\Tide.Core\\Tide.Core.csproj": {
+              "projectPath": "C:\\Git\\GrimTide\\TideGameFramework\\src\\Tide.Core\\Tide.Core.csproj"
             }
           }
         }
@@ -2056,7 +2048,6 @@
     },
     "frameworks": {
       "netcoreapp3.1": {
-        "targetAlias": "netcoreapp3.1",
         "dependencies": {
           "Microsoft.Build.Framework": {
             "target": "Package",
@@ -2086,7 +2077,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.300\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.420\\RuntimeIdentifierGraph.json"
       }
     }
   }

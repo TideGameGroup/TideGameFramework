@@ -8,146 +8,196 @@ namespace Tide.Core
 {
     public class SafeParse
     {
-        public static bool ParseBool(XElement node, ref bool outBool, bool _default = false)
+        public static bool ParseBool(XAttribute attr, out bool result, bool _default = false)
         {
-            if (node != null)
+            if (attr != null)
             {
-                return ParseBool(node.Value, ref outBool, _default);
+                return ParseBool(attr.Value, out result, _default);
             }
+
+            result = _default;
             return false;
         }
 
-        public static bool ParseBool(string value, ref bool outBool, bool _default = false)
+        public static bool ParseBool(XElement node, out bool result, bool _default = false)
+        {
+            if (node != null)
+            {
+                return ParseBool(node.Value, out result, _default);
+            }
+            result = _default;
+            return false;
+        }
+
+        public static bool ParseBool(string value, out bool result, bool _default = false)
         {
             if (value != "")
             {
-                if (bool.TryParse(value, out bool result))
+                if (bool.TryParse(value, out result))
                 {
-                    outBool = result;
                     return true;
                 }
                 else
                 {
                     Debug.Print("unable to parse value");
-                    outBool = _default; // flag invalid
+                    result = _default; // flag invalid
                     return false;
                 }
             }
+            result = _default;
             return false;
         }
 
-        public static bool ParseDouble(XElement node, ref double outdouble, double _default = -1.0f)
+        public static bool ParseDouble(XAttribute attr, out double result, double _default = -1.0f)
+        {
+            if (attr != null)
+            {
+                return ParseDouble(attr.Value, out result, _default);
+            }
+            result = _default;
+            return false;
+        }
+
+        public static bool ParseDouble(XElement node, out double result, double _default = -1.0f)
         {
             if (node != null)
             {
-                return ParseDouble(node.Value, ref outdouble, _default);
+                return ParseDouble(node.Value, out result, _default);
             }
+            result = default;
             return false;
         }
 
-        public static bool ParseDouble(string value, ref double outdouble, double _default = -1.0f)
+        public static bool ParseDouble(string value, out double result, double _default = -1.0f)
         {
             if (value != "")
             {
-                if (double.TryParse(value, NumberStyles.Float, new CultureInfo("en-GB"), out double result))
+                if (double.TryParse(value, NumberStyles.Float, new CultureInfo("en-GB"), out result))
                 {
-                    outdouble = result;
                     return true;
                 }
                 else
                 {
                     Debug.Print("unable to parse value");
-                    outdouble = _default; // flag invalid
+                    result = _default; // flag invalid
                     return false;
                 }
             }
+            result = _default;
             return false;
         }
 
-        public static bool ParseFloat(XElement node, ref float outFloat, float _default = -1.0f)
+        public static bool ParseFloat(XAttribute attr, out float result, float _default = -1.0f)
+        {
+            if (attr != null)
+            {
+                return ParseFloat(attr.Value, out result, _default);
+            }
+            result = _default;
+            return false;
+        }
+
+        public static bool ParseFloat(XElement node, out float result, float _default = -1.0f)
         {
             if (node != null)
             {
-                return ParseFloat(node.Value, ref outFloat, _default);
+                return ParseFloat(node.Value, out result, _default);
             }
+            result = _default;
             return false;
         }
 
-        public static bool ParseFloat(string value, ref float outFloat, float _default = -1.0f)
+        public static bool ParseFloat(string value, out float result, float _default = -1.0f)
         {
             if (value != "")
             {
-                if (float.TryParse(value, NumberStyles.Float, new CultureInfo("en-GB"), out float result))
+                if (float.TryParse(value, NumberStyles.Float, new CultureInfo("en-GB"), out result))
                 {
-                    outFloat = result;
                     return true;
                 }
                 else
                 {
                     Debug.Print("unable to parse value");
-                    outFloat = _default; // flag invalid
+                    result = _default; // flag invalid
                     return false;
                 }
             }
+            result = _default;
             return false;
         }
 
         // XML node version
-        public static bool ParseInt(XElement node, ref int outVal, int _default = -1)
+        public static bool ParseInt(XAttribute attr, out int result, int _default = -1)
         {
-            if (node != null)
+            if (attr != null)
             {
-                return ParseInt(node.Value, ref outVal, _default);
+                return ParseInt(attr.Value, out result, _default);
             }
+            result = _default;
             return false;
         }
 
+        public static bool ParseInt(XElement node, out int result, int _default = -1)
+        {
+            if (node != null)
+            {
+                return ParseInt(node.Value, out result, _default);
+            }
+            result = _default;
+            return false;
+        }
+
+
         //string version
-        public static bool ParseInt(string value, ref int outVal, int _default = -1)
+        public static bool ParseInt(string value, out int result, int _default = -1)
         {
             if (value != "")
             {
-                if (int.TryParse(value, NumberStyles.Integer, new CultureInfo("en-GB"), out int result))
+                if (int.TryParse(value, NumberStyles.Integer, new CultureInfo("en-GB"), out result))
                 {
-                    outVal = result;
                     return true;
                 }
                 else
                 {
                     Debug.Print("unable to parse value");
-                    outVal = _default;
+                    result = _default;
                     return false;
                 }
             }
+            result = _default;
             return false;
         }
 
-        public static bool ParseSetting(string value, ref FSetting outVal)
+        public static bool ParseSetting(string value, out FSetting result)
         {
             string signifier = value.Substring(0, 1);
             string settingvalue = value.Substring(1);
 
-            switch(signifier)
+            result = FSetting.Bool(false);
+
+            switch (signifier)
             {
                 case "b":
-                    outVal.heldType = 'b';
-                    return ParseBool(settingvalue, ref outVal.b);
+                    result.heldType = 'b';
+                    return ParseBool(settingvalue, out result.b);
+
 
                 case "f":
-                    outVal.heldType = 'f';
-                    return ParseFloat(settingvalue, ref outVal.f);
+                    result.heldType = 'f';
+                    return ParseFloat(settingvalue, out result.f);
 
                 case "i":
-                    outVal.heldType = 'i';
-                    return ParseInt(settingvalue, ref outVal.i);
+                    result.heldType = 'i';
+                    return ParseInt(settingvalue, out result.i);
 
                 case "d":
-                    outVal.heldType = 'd';
-                    return ParseDouble(settingvalue, ref outVal.d);
+                    result.heldType = 'd';
+                    return ParseDouble(settingvalue, out result.d);
 
                 default:
                     break;
             }
+
             return false;
         }
     }

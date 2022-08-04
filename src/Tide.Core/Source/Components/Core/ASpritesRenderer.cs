@@ -11,14 +11,14 @@ namespace Tide.Core
         private readonly Dictionary<string, FAnimationData> animations = new Dictionary<string, FAnimationData>();
         private readonly List<bool> bIsFinished = new List<bool>();
         private readonly List<bool> bShouldDraw = new List<bool>();
-        private readonly List<Color> colors = new List<Color>();
+        public readonly List<Color> colors = new List<Color>();
         private readonly List<float> elapsedTimes = new List<float>();
         private readonly List<int> endFrames = new List<int>();
         private readonly List<float> frameRates = new List<float>();
         private readonly List<bool> loops = new List<bool>();
         private readonly List<string> names = new List<string>();
         private readonly Dictionary<string, Texture2D> nameTextureMap = new Dictionary<string, Texture2D>();
-        private readonly List<float> scales = new List<float>();
+        public readonly List<float> scales = new List<float>();
         private readonly List<Rectangle> sources = new List<Rectangle>();
         private readonly List<int> startFrames = new List<int>();
         private readonly List<string> texIDs = new List<string>();
@@ -123,7 +123,7 @@ namespace Tide.Core
             }
         }
 
-        public void Draw2D(UView view, SpriteBatch spriteBatch, GameTime gameTime)
+        public void Draw(FView view, SpriteBatch spriteBatch, GameTime gameTime)
         {
             float ymod = view.position.Y + view.Scale / 2;
             float yalpha = 1 / view.Scale;
@@ -171,8 +171,8 @@ namespace Tide.Core
                     colors[i],
                     bViewAlignedSprites ? 0 : transforms.angles[i],
                     centre.Center.ToVector2(),
-                    1f,
-                    SpriteEffects.None,
+                    Math.Abs(scales[i]),
+                    scales[i] >= 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
                     0f //(transforms.positions[i].Y + ymod) * yalpha
                 );
             }
