@@ -68,7 +68,7 @@ namespace Tide.Core
 
         public double GetLifeTime(int i)
         {
-            return gameTime.TotalGameTime.TotalSeconds - timestamps[i];
+            return gameTime == null ? 0.0 : gameTime.TotalGameTime.TotalSeconds - timestamps[i];
         }
 
         #region ISerialisableScript
