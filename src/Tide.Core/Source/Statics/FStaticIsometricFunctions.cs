@@ -9,8 +9,8 @@ namespace Tide.Core
         public static Vector2 ToIso(Vector2 coord)
         {
             return new Vector2(
-                coord.X - coord.Y,
-                (coord.X + coord.Y) / 2
+                coord.X + coord.Y,
+                (coord.X - coord.Y) / 2
             );
         }
 
@@ -23,8 +23,8 @@ namespace Tide.Core
         public static Vector2 ToCartesian(Vector2 coord)
         {
             return new Vector2(
-                (2 * coord.Y + coord.X) / 2,
-                (2 * coord.Y - coord.X) / 2
+                (2 * coord.Y - coord.X) / 2,
+                (2 * coord.Y + coord.X) / 2
             );
         }
 
