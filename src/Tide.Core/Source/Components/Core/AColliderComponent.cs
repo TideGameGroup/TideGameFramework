@@ -203,8 +203,8 @@ namespace Tide.Core
 
         internal static bool StaticBroadPhase(AColliderComponent iCollider, int i, AColliderComponent jCollider, int j)
         {
-            GridCell a = GetCell(iCollider.transforms.positions[i]);
-            GridCell b = GetCell(jCollider.transforms.positions[j]);
+            GridCell a = GetCell(iCollider.transforms.worldPositions[i]);
+            GridCell b = GetCell(jCollider.transforms.worldPositions[j]);
 
             int cellDeltaX = Math.Abs(a.X - b.X);
             int cellDeltaY = Math.Abs(a.Y - b.Y);
@@ -229,18 +229,18 @@ namespace Tide.Core
                         case ECollider2DType.EAABB:
                             collision = AABBAABBCollision(
                                 iCollider.shapes[i].aabb,
-                                iCollider.transforms.positions[i],
+                                iCollider.transforms.worldPositions[i],
                                 jCollider.shapes[j].aabb,
-                                jCollider.transforms.positions[j],
+                                jCollider.transforms.worldPositions[j],
                                 out normal);
                             break;
 
                         case ECollider2DType.ECIRCLE:
                             collision = AABBCircleCollision(
                                 iCollider.shapes[i].aabb,
-                                iCollider.transforms.positions[i],
+                                iCollider.transforms.worldPositions[i],
                                 jCollider.shapes[j].circle,
-                                jCollider.transforms.positions[j],
+                                jCollider.transforms.worldPositions[j],
                                 out normal);
                             normal = -normal;
                             break;
@@ -261,18 +261,18 @@ namespace Tide.Core
                         case ECollider2DType.EAABB:
                             collision = AABBCircleCollision(
                                 jCollider.shapes[j].aabb,
-                                jCollider.transforms.positions[j],
+                                jCollider.transforms.worldPositions[j],
                                 iCollider.shapes[i].circle,
-                                iCollider.transforms.positions[i],
+                                iCollider.transforms.worldPositions[i],
                                 out normal);
                             break;
 
                         case ECollider2DType.ECIRCLE:
                             collision = CircleCircleCollision(
                                 iCollider.shapes[i].circle,
-                                iCollider.transforms.positions[i],
+                                iCollider.transforms.worldPositions[i],
                                 jCollider.shapes[j].circle,
-                                jCollider.transforms.positions[j],
+                                jCollider.transforms.worldPositions[j],
                                 out normal);
                             break;
 

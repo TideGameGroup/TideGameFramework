@@ -1,21 +1,18 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using Tide.XMLSchema;
 
 namespace Tide.Core
 {
     public delegate void EntityDelegate(int i);
+
     public delegate void EntityUpdateDelegate(int i, GameTime gameTime);
 
     public class AEntityComponent : UComponent, ISerialisableComponent, IUpdateComponent
     {
-        protected List<double> timestamps = new List<double>();
         protected GameTime gameTime = null;
-
         protected List<int> removeList = new List<int>();
+        protected List<double> timestamps = new List<double>();
 
         public AEntityComponent()
         {
@@ -26,12 +23,13 @@ namespace Tide.Core
             AddChildComponent(SpriteRenderer);
         }
 
+        public ICoordinateSystem CoordinateSystem => Transforms.CoordinateSystem;
         public int Count => Transforms.Count;
-        public ASpritesRenderer SpriteRenderer { get; protected set; }
-        public ATransform Transforms { get; protected set; }
         public EntityDelegate OnAddEntity { get; set; }
         public EntityDelegate OnRemoveEntity { get; set; }
         public EntityUpdateDelegate OnUpdateEntity { get; set; }
+        public ASpritesRenderer SpriteRenderer { get; protected set; }
+        public ATransform Transforms { get; protected set; }
 
         public int Add(Vector2 position, string animation, float scale = 1f)
         {
@@ -42,6 +40,11 @@ namespace Tide.Core
             OnAddEntity?.Invoke(Transforms.Count - 1);
 
             return Transforms.Count - 1;
+        }
+
+        public double GetLifeTime(int i)
+        {
+            return gameTime == null ? 0.0 : gameTime.TotalGameTime.TotalSeconds - timestamps[i];
         }
 
         public bool RemoveAt(int i)
@@ -66,12 +69,8 @@ namespace Tide.Core
             return true;
         }
 
-        public double GetLifeTime(int i)
-        {
-            return gameTime.TotalGameTime.TotalSeconds - timestamps[i];
-        }
-
         #region ISerialisableScript
+
         public void Load(UContentManager content, string serialisedScriptPath)
         {
             if (serialisedScriptPath == "" || serialisedScriptPath == null) { return; }
@@ -81,7 +80,7 @@ namespace Tide.Core
             Transforms.Load(content, entities.transform);
             SpriteRenderer.Load(content, entities.spriteRenderer);
 
-            for (int i = 0; i < Transforms.positions.Count; i++)
+            for (int i = 0; i < Transforms.Count; i++)
             {
                 timestamps.Add(gameTime != null ? gameTime.TotalGameTime.TotalSeconds : 0.0f);
                 OnAddEntity?.Invoke(i);
@@ -102,13 +101,16 @@ namespace Tide.Core
             );
             return ID;
         }
-        #endregion
+
+        #endregion ISerialisableScript
 
         #region IUpdateComponent
+
         public void Update(GameTime gameTime)
         {
             this.gameTime = gameTime;
         }
-        #endregion
+
+        #endregion IUpdateComponent
     }
 }

@@ -61,10 +61,11 @@ namespace Tide.Core
 
             foreach (UComponent component in graph)
             {
-                if (component is T drawable && component.IsVisible)
+                if (component is T drawable && component.IsVisible && component.bCanDraw)
                 {
                     drawable.Draw(window.View, SpriteBatch, gameTime);
                 }
+                component.bCanDraw = component.IsVisible;
             }
 
             drawPass.postPassDelegate?.Invoke(window.View, SpriteBatch, gameTime);

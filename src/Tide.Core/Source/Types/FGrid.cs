@@ -23,42 +23,66 @@ namespace Tide.Core
 
         public T GetAt(FIntVector2 coord)
         {
-            return data[FGridHelper.Get1DIndex(coord, Width)];
+            //if (IsValidIndex(coord))
+           // {
+                return data[FStaticGridFunctions.Get1DIndex(coord, Width)];
+           //}
+            //return default;
         }
 
         public T GetAt(int x, int y)
         {
-            return data[FGridHelper.Get1DIndex(x, y, Width)];
+            if (IsValidIndex(x, y))
+            {
+                return data[FStaticGridFunctions.Get1DIndex(x, y, Width)];
+            }
+            return default;
         }
 
         public T GetAt(int i)
         {
-            return data[i];
+            if (IsValidIndex(i))
+            {
+                return data[i];
+            }
+            return default;
         }
 
         public void SetAt(FIntVector2 coord, T val)
         {
-            data[FGridHelper.Get1DIndex(coord, Width)] = val;
+            data[FStaticGridFunctions.Get1DIndex(coord, Width)] = val;
         }
 
         public void SetAt(int x, int y, T val)
         {
-            data[FGridHelper.Get1DIndex(x, y, Width)] = val;
+            data[FStaticGridFunctions.Get1DIndex(x, y, Width)] = val;
         }
 
         public void SetAt(int i, T val)
         {
             data[i] = val;
         }
-        
+
         public bool IsInBounds(FIntVector2 pos)
         {
-            return FGridHelper.IsInBounds(pos, Width, Height);
+            return FStaticGridFunctions.IsInBounds(pos, Width, Height);
         }
 
         public bool IsValidIndex(int i)
         {
-            return FGridHelper.IsValidIndex(i, Width, Height);
+            return FStaticGridFunctions.IsValidIndex(i, Width, Height);
+        }
+
+        public bool IsValidIndex(FIntVector2 coord)
+        {
+            int i = FStaticGridFunctions.Get1DIndex(coord, Width);
+            return FStaticGridFunctions.IsValidIndex(i, Width, Height);
+        }
+
+        public bool IsValidIndex(int x, int y)
+        {
+            int i = FStaticGridFunctions.Get1DIndex(x, y, Width);
+            return FStaticGridFunctions.IsValidIndex(i, Width, Height);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Tide.Core
 {
@@ -33,19 +34,13 @@ namespace Tide.Core
     public class AInputComponent : UComponent
     {
         private readonly List<FActionHandle> actionHandles = new List<FActionHandle>();
-        private List<EFocus> localFocusList = new List<EFocus>();
-        public static List<EFocus> focusList = new List<EFocus>();
+        private readonly List<EFocus> localFocusList = new List<EFocus>();
+        private static readonly List<EFocus> focusList = new List<EFocus>();
 
         public AInputComponent(TInput handler)
         {
             Handler = handler;
-
-            if (focusList.Count == 0)
-            {
-                PushFocus(EFocus.Game);
-            }
-
-            base.OnUnregisterComponent += DoUnregisterComponent;
+            OnUnregisterComponent += ClearBindings;
             OnSetActive += DoActivateDeactivateComponent;
         }
 
@@ -61,22 +56,9 @@ namespace Tide.Core
                 {
                     focusList.Remove(local);
                 }
+                localFocusList.Clear();
             }
-            else
-            {
-                foreach (var local in localFocusList)
-                {
-                    focusList.Add(local);
-                }
-            }
-
             focusList.Sort();
-        }
-
-        private void DoUnregisterComponent()
-        {
-            ClearBindings();
-            IsActive = false;
         }
 
         public FActionHandle BindAction(string action, EFocus focus, ButtonDelegate callback)
@@ -106,7 +88,7 @@ namespace Tide.Core
 
         public bool CheckValidToTrigger(EFocus focus)
         {
-            return IsActive && focusList.Count > 0 && focus.HasFlag(focusList[0]);
+            return IsActive && (focusList.Count == 0 || focus.HasFlag(focusList[0]));
         }
 
         public void ClearBindings()
@@ -124,8 +106,10 @@ namespace Tide.Core
 
         public void PopFocus(EFocus focus)
         {
-            localFocusList.Remove(focus);
-            focusList.Remove(focus);
+            if (localFocusList.Remove(focus))
+            {
+                focusList.Remove(focus);
+            }
             focusList.Sort();
         }
 

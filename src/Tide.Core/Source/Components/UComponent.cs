@@ -5,20 +5,23 @@ namespace Tide.Core
 {
     public struct FDeferredRegistrationInputs
     {
-        public UComponent child;
         public int at;
+        public UComponent child;
+        public UComponent parent;
     }
 
     public class UComponent
     {
         private readonly List<UComponent> children = new List<UComponent>();
-        private readonly List<FDeferredRegistrationInputs> deferredRegistrations = new List<FDeferredRegistrationInputs>();
-        private readonly List<FDeferredRegistrationInputs> deferredUnregistrations = new List<FDeferredRegistrationInputs>();
-        private bool bIsActive = true;
-        private bool bIsVisible = true;
+        internal bool bIsActive = true;
+        internal bool bCanUpdate = true;
+        internal bool bIsVisible = true;
+        internal bool bCanDraw = true;
 
+        public readonly List<FDeferredRegistrationInputs> deferredRegistrations = new List<FDeferredRegistrationInputs>();
+        public readonly List<FDeferredRegistrationInputs> deferredUnregistrations = new List<FDeferredRegistrationInputs>();
         public List<UComponent> Children => children;
-        public virtual TComponentGraph ComponentGraph => Parent.ComponentGraph;
+        public virtual TComponentGraph ComponentGraph => Parent?.ComponentGraph;
 
         public bool IsActive
         {
@@ -35,15 +38,20 @@ namespace Tide.Core
             }
             set
             {
-                bIsActive = value;
-                OnSetActive?.Invoke(bIsActive);
-
-                foreach (var child in children)
+                if (value != bIsActive)
                 {
-                    child.OnSetActive?.Invoke(bIsActive);
+                    bIsActive = value;
+                    OnSetActive?.Invoke(bIsActive);
+
+                    foreach (var child in children)
+                    {
+                        child.OnSetActive?.Invoke(bIsActive);
+                    }
                 }
             }
         }
+
+        public bool IsDirty => deferredUnregistrations.Count > 0 || deferredRegistrations.Count > 0;
 
         public bool IsVisible
         {
@@ -60,14 +68,17 @@ namespace Tide.Core
             }
             set
             {
-                if (value == false && bIsActive) bIsActive = false;
-
-                bIsVisible = value;
-                OnSetVisibility?.Invoke(bIsVisible);
-
-                foreach (var child in children)
+                if (value != bIsVisible)
                 {
-                    child.OnSetVisibility?.Invoke(bIsActive);
+                    if (value == false && bIsActive) bIsActive = false; //  IsActive = false; ?
+
+                    bIsVisible = value;
+                    OnSetVisibility?.Invoke(bIsVisible);
+
+                    foreach (var child in children)
+                    {
+                        child.OnSetVisibility?.Invoke(bIsActive);
+                    }
                 }
             }
         }
@@ -113,8 +124,11 @@ namespace Tide.Core
 
         public UComponent AddChildComponent(UComponent child, int at = -1)
         {
+            if (child == null) { return null; }
+
             deferredRegistrations.Add(new FDeferredRegistrationInputs
             {
+                parent = this,
                 child = child,
                 at = at
             });
@@ -143,57 +157,35 @@ namespace Tide.Core
                 child.DeferredRemoveChildComponent(child.Children[0]);
             }
 
+            child.IsActive = false;
             child.Parent = null;
             Children.Remove(child);
 
             return true;
         }
 
-        public T GetChildComponent<T>() where T : UComponent
+        public T GetChildComponent<T>(bool includePending = false) where T : UComponent
         {
-            return (T)Children.Find((item) => item is T);
+            UComponent child = Children.Find((item) => item is T);
+
+            if (child == null && includePending)
+            {
+                child = deferredRegistrations.Find((item) => item.child is T).child;
+            }
+            return (T)child;
         }
 
         public UComponent RemoveChildComponent(UComponent child)
         {
+            if (child == null) { return null; }
+
             deferredUnregistrations.Add(new FDeferredRegistrationInputs
             {
+                parent = this,
                 child = child,
                 at = 0
             });
             return child;
-        }
-
-        public void UpdateGraph()
-        {
-            foreach (var f in deferredRegistrations)
-            {
-                DeferredAddChildComponent(f.child, f.at);
-            }
-            deferredRegistrations.Clear();
-
-            foreach (var f in deferredUnregistrations)
-            {
-                DeferredRemoveChildComponent(f.child);
-            }
-            deferredUnregistrations.Clear();
-        }
-
-        internal void InvokeUpdateGraphBindings()
-        {
-            foreach (var f in deferredRegistrations)
-            {
-                OnRegisterChildComponent?.Invoke(f.child);
-                f.child.OnRegisterComponent?.Invoke();
-            }
-            deferredRegistrations.Clear();
-
-            foreach (var f in deferredUnregistrations)
-            {
-                f.child.OnUnregisterComponent?.Invoke();
-                OnUnregisterChildComponent?.Invoke(f.child);
-            }
-            deferredRegistrations.Clear();
         }
     }
 }
