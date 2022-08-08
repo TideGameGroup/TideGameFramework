@@ -31,10 +31,8 @@ namespace Tide.Core
         public readonly FCanvasGraph graph;
         public readonly Dictionary<int, double> highlightedWidgets = new Dictionary<int, double>();
         public readonly List<FSetting> values = new List<FSetting>();
-        public string clickSound = "tick";
         public int focusedWidget = -1;
         public Dictionary<int, double> hoveredWidgets = new Dictionary<int, double>();
-        public string hoverSound = "blip";
 
         public ACanvasComponent(FCanvasComponentConstructorArgs args)
         {
@@ -119,7 +117,7 @@ namespace Tide.Core
             else
             {
                 frameHoveredWidgets.TryAdd(i, gameTime.TotalGameTime.TotalSeconds);
-                audio?.PlaySingle(hoverSound);
+                audio?.PlaySingle(cache.canvas.hoverSounds[i]);
             }
         }
 
@@ -185,7 +183,7 @@ namespace Tide.Core
                     {
                         binding.Invoke(gameTime);
                     }
-                    audio?.PlaySingle(clickSound);
+                    audio?.PlaySingle(cache.canvas.clickSounds[i]);
                 }
             }
         }
