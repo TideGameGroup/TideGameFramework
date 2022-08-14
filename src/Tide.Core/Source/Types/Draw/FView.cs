@@ -8,15 +8,23 @@ namespace Tide.Core
     {
         public Vector2 position;
         public Matrix ProjectionInverse;
-        public Viewport viewport;
+        public Rectangle viewport;
 
-        public FView(Viewport viewport)
+        public FView(Viewport viewport, float scale = 1440)
         {
             position = Vector2.Zero;
-            Scale = 1440f;
+            Scale = scale;
+
+            this.viewport = viewport.Bounds;
+            BuildMatrices();
+        }
+
+        public FView(Rectangle viewport, float scale = 1440)
+        {
+            position = Vector2.Zero;
+            Scale = scale;
 
             this.viewport = viewport;
-
             BuildMatrices();
         }
 
@@ -56,7 +64,7 @@ namespace Tide.Core
             Vector3 _position = Vector3.Zero;
 
             _position.X = position.X - Scale / 2;
-            _position.Y = position.Y - (Scale / viewport.AspectRatio) / 2;
+            _position.Y = position.Y - (Scale / (viewport.Width / viewport.Height)) / 2;
 
             ViewMatrix = Matrix.CreateTranslation(_position);
             ViewMatrix = Matrix.Invert(ViewMatrix);

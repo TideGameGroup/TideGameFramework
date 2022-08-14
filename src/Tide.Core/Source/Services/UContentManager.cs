@@ -36,7 +36,7 @@ namespace Tide.Core
                 pathMappings[name] = mappings.paths[i];
             }
 
-            defaults.Add(typeof(Texture2D), GenerateNullTexture());
+            defaults.Add(typeof(Texture2D), GenerateNullTexture(Color.DeepPink));
             defaults.Add(typeof(SpriteFont), Content.Load<SpriteFont>("Arial"));
         }
 
@@ -44,10 +44,10 @@ namespace Tide.Core
         public Dictionary<string, object> DynamicLibrary { get; private set; }
         public GraphicsDevice GraphicsDevice { get; private set; }
 
-        private Texture2D GenerateNullTexture()
+        public Texture2D GenerateNullTexture(Color color)
         {
             Texture2D nullTex = new Texture2D(GraphicsDevice, 1, 1);
-            nullTex.SetData(new Color[] { Color.DeepPink });
+            nullTex.SetData(new Color[] { color });
             return nullTex;
         }
 

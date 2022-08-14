@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -11,20 +12,16 @@ namespace Tide.Core
     {
         public List<FDrawPass> drawPasses;
         public GraphicsDevice graphicsDevice;
-        public TWindow window;
     }
 
     public class TDraw<T> : ISystem where T : IDrawableComponentType
     {
         private readonly List<FDrawPass> drawPasses = new List<FDrawPass>();
         private readonly GraphicsDevice graphicsDevice;
-        private readonly TWindow window;
 
         public TDraw(TDrawConstructorArgs args)
         {
             StaticValidation.TrySetDefault(args.graphicsDevice, out graphicsDevice);
-            StaticValidation.TrySetDefault(args.window, out window);
-
             SpriteBatch = new SpriteBatch(args.graphicsDevice);
 
             if (args.drawPasses != null)
@@ -45,7 +42,7 @@ namespace Tide.Core
             Matrix? matrix = null;
             if (drawPass.bUseMatrix)
             {
-                matrix = window.View.ViewProjectionMatrix;
+                matrix = drawPass.view.ViewProjectionMatrix;
             }
 
             graphicsDevice.SetRenderTarget(drawPass.renderTarget);
@@ -63,12 +60,12 @@ namespace Tide.Core
             {
                 if (component is T drawable && component.IsVisible && component.bCanDraw)
                 {
-                    drawable.Draw(window.View, SpriteBatch, gameTime);
+                    drawable.Draw(drawPass.view, SpriteBatch, gameTime);
                 }
                 component.bCanDraw = component.IsVisible;
             }
 
-            drawPass.postPassDelegate?.Invoke(window.View, SpriteBatch, gameTime);
+            drawPass.postPassDelegate?.Invoke(drawPass.view, SpriteBatch, gameTime);
 
             SpriteBatch.End();
         }
@@ -87,6 +84,21 @@ namespace Tide.Core
                     ),
                 Color.White);
             SpriteBatch.End();
+        }
+
+        public void SetRenderTarget(RenderTarget2D renderTarget)
+        {
+            for (int i = 0; i < drawPasses.Count; i++)
+            {
+                SetRenderTarget(i, renderTarget);
+            }
+        }
+
+        public void SetRenderTarget(int i, RenderTarget2D renderTarget)
+        {
+            FDrawPass pass = drawPasses[i];
+            pass.renderTarget = renderTarget;
+            drawPasses[i] = pass;
         }
 
         public void Draw(TComponentGraph graph, GameTime gameTime)

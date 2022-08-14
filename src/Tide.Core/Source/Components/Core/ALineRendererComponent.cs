@@ -6,20 +6,28 @@ using System.Text;
 
 namespace Tide.Core
 {
+    public class FLineRendererComponentConstructorArgs
+    {
+        public UContentManager content;
+        public Texture2D texture;
+    }
+
     public class ALineRendererComponent : UComponent, IDrawableComponent
     {
         private readonly Texture2D lineTexture = null;
-        private List<List<Vector2>> points = new List<List<Vector2>>();
-        private List<Color> colors = new List<Color>();
+        private readonly List<List<Vector2>> points = new List<List<Vector2>>();
+        private readonly List<Color> colors = new List<Color>();
+        private readonly List<float> thicknesses = new List<float>();
 
-        public ALineRendererComponent(UContentManager Content)
+        public ALineRendererComponent(FLineRendererComponentConstructorArgs args)
         {
-            lineTexture = Content.Load<Texture2D>("Line");
+            NullCheck(args.content);
+            lineTexture = args.texture ?? args.content.GenerateNullTexture(Color.White);
         }
 
         public int Count => points.Count;
 
-        public void DrawLine(SpriteBatch spriteBatch, Vector2 origin, Vector2 destination, Color color, FView view2D)
+        public void DrawLine(SpriteBatch spriteBatch, Vector2 origin, Vector2 destination, Color color, FView view2D, float thickness = 1f)
         {
             Vector2 origin2d = origin * new Vector2(1f, -1f);
             Vector2 destin2d = destination * new Vector2(1f, -1f);
@@ -27,7 +35,7 @@ namespace Tide.Core
             float dist = Vector2.Distance(origin2d, destin2d);
             float angle = (float)Math.Atan2(destin2d.Y - origin2d.Y, destin2d.X - origin2d.X);
             Vector2 centre = new Vector2(0f, 0.5f);
-            Vector2 scale = new Vector2(dist, 1.0f);
+            Vector2 scale = new Vector2(dist, thickness);
 
             spriteBatch.Draw(lineTexture, origin2d, null, color, angle, centre, scale, SpriteEffects.None, 0);
         }
@@ -42,10 +50,11 @@ namespace Tide.Core
             points[line].Add(point);
         }
 
-        public int AddLine(Color red)
+        public int AddLine(Color color, float thickness = 1f)
         {
             points.Add(new List<Vector2>());
-            colors.Add(red);
+            colors.Add(color);
+            thicknesses.Add(thickness);
             return points.Count - 1;
         }
 
@@ -55,7 +64,7 @@ namespace Tide.Core
             {
                 for (int p = 0; p < points[l].Count - 1; p++)
                 {
-                    DrawLine(spriteBatch, points[l][p], points[l][p + 1], colors[l], view2D);
+                    DrawLine(spriteBatch, points[l][p], points[l][p + 1], colors[l], view2D, thicknesses[l]);
                 }
             }
         }

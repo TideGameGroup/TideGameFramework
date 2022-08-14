@@ -83,7 +83,7 @@ namespace Tide.Tools
             return parents.Count - 1;
         }
 
-        public void Add(
+        public int Add(
             string ID,
             EWidgetAlignment alignment = EWidgetAlignment.L,
             EWidgetAnchor anchor = EWidgetAnchor.NW,
@@ -120,6 +120,8 @@ namespace Tide.Tools
             tooltiptexts.Add(tooltiptext);
             visibilities.Add(visible);
             widgetTypes.Add(widgetType);
+
+            return parents.Count - 1;
         }
 
         public FCanvas AsCanvas()

@@ -93,7 +93,7 @@ namespace Tide.Core
 
         public void ClearBindings()
         {
-            foreach (FActionHandle handle in actionHandles)
+            foreach (FActionHandle handle in new List<FActionHandle>(actionHandles))
             {
                 UnbindAction(handle);
             }
@@ -123,6 +123,7 @@ namespace Tide.Core
         public void UnbindAction(FActionHandle handle)
         {
             Handler.RemoveAction(handle);
+            actionHandles.Remove(handle);
         }
     }
 }

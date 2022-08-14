@@ -22,6 +22,8 @@ namespace Tide.Core
         }
         private ARootScript RootScript { get; }
 
+        public OnEvent PostGraphUpdatedEvent;
+
         private static IEnumerable<UComponent> _GetScriptsRecursive(UComponent script)
         {
             yield return script;
@@ -188,6 +190,7 @@ namespace Tide.Core
             if (graphIsDirty)
             {
                 UpdateGraph(graph);
+                PostGraphUpdatedEvent?.Invoke();
             }
         }
 

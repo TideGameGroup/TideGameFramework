@@ -225,7 +225,12 @@ namespace Tide.Core
                 cache.fontCache[canvas.fonts[i]],
                 canvas.texts[i],
                 rect.Location.ToVector2(),
-                GetWidgetDrawColor(canvas, i, gameTime)
+                GetWidgetDrawColor(canvas, i, gameTime),
+                0,
+                Vector2.Zero,
+                graph.Scale,
+                SpriteEffects.None,
+                0
             );
         }
 

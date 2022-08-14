@@ -181,7 +181,7 @@ namespace Tide.Core
                 if (keyEvents.ContainsKey(action))
                 {
                     keyStatus.Add(action);
-                    foreach (var evt in keyEvents[action])
+                    foreach (var evt in new List<ButtonDelegate>(keyEvents[action]))
                     {
                         evt.Invoke(gameTime);
                     }
@@ -197,7 +197,8 @@ namespace Tide.Core
             statistics.Set("MousePosition", MousePosition.ToString());
 
             // handle key events
-            foreach (var binding in keyBindings)
+            // creates a copy of the list in case new bindings are added during iteration
+            foreach (var binding in new List<FBinding>(keyBindings))
             {
                 // keyboard bindings //
                 if (binding.key != Keys.None)
@@ -251,7 +252,7 @@ namespace Tide.Core
             }
 
             // custom bindings //
-            foreach (var binding in keyBindings)
+            foreach (var binding in new List<FBinding>(keyBindings))
             {
                 if (binding.custom != null)
                 {

@@ -111,11 +111,12 @@ namespace Tide.Core
                 for (int j = 0; j < jCollider.Count; j++) // multithread
                 {
                     // test layers can collides
+                    bool bSameCollide = iCollider == jCollider && i == j;
                     bool bBothEnabled = iCollider.bEnabled[i] && jCollider.bEnabled[j];
                     bool IJCanCollide = (iCollider.layers[i] & jCollider.masks[j]) > 0;
                     bool JICanCollide = (jCollider.layers[j] & iCollider.masks[i]) > 0;
 
-                    if (!bBothEnabled || !IJCanCollide && !JICanCollide)
+                    if (bSameCollide || !bBothEnabled || !IJCanCollide && !JICanCollide)
                     {
                         continue;
                     }
@@ -332,7 +333,7 @@ namespace Tide.Core
             // iterate over colliders and calculate collisions
             for (int i = 0; i < StaticColliders.Count; i++)
             {
-                for (int j = i + 1; j < StaticColliders.Count; j++)
+                for (int j = i; j < StaticColliders.Count; j++)
                 {
                     // skip if internal collisions are disabled
                     if (i == j && !StaticColliders[i].AllowInternalCollisions)
