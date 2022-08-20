@@ -44,17 +44,17 @@ namespace Tide.Core
 
         public float GetAngle(int i)
         {
-            return CoordinateSystem.ConvertAngleFrom(angles[i]);
+            return worldAngles[i];
         }
 
         public Vector2 GetPosition(int i)
         {
-            return CoordinateSystem.ConvertFrom(positions[i]);
+            return worldPositions[i];
         }
 
         public float GetScale(int i)
         {
-            return CoordinateSystem.ConvertScaleFrom(scales[i]);
+            return worldScales[i];
         }
 
         public void RemoveAt(int i)
