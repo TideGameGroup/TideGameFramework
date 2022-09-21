@@ -75,14 +75,14 @@ namespace Tide.Editor
                 rasterizerState = new RasterizerState
                 {
                     ScissorTestEnable = false
-                }
+                },
+                view = window.View
             };
 
             TDrawConstructorArgs drawConstructorArgs =
                 new TDrawConstructorArgs
                 {
                     graphicsDevice = MonoGame.GraphicsDevice,
-                    window = window,
                     drawPasses = new List<FDrawPass>
                     {
                         UIPass
