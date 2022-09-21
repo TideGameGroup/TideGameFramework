@@ -53,6 +53,11 @@ namespace Tide.Core
 
         public T Load<T>(string path)
         {
+            if (string.IsNullOrEmpty(path))
+            {
+                return (T)defaults[typeof(T)];
+            }
+
             if (DynamicLibrary.ContainsKey(path))
             {
                 return (T)DynamicLibrary[path];
