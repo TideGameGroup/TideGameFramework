@@ -9,6 +9,7 @@ namespace Tide.Core
     public class FLineRendererComponentConstructorArgs
     {
         public UContentManager content;
+        public ICoordinateSystem coordinateSystem;
         public Texture2D texture;
     }
 
@@ -23,14 +24,19 @@ namespace Tide.Core
         {
             NullCheck(args.content);
             lineTexture = args.texture ?? args.content.GenerateNullTexture(Color.White);
+            CoordinateSystem = args.coordinateSystem ?? ATransform.defaultCoordinateSystem;
         }
 
         public int Count => points.Count;
+        public ICoordinateSystem CoordinateSystem { get; private set; }
 
         public void DrawLine(SpriteBatch spriteBatch, Vector2 origin, Vector2 destination, Color color, FView view2D, float thickness = 1f)
         {
-            Vector2 origin2d = origin * new Vector2(1f, -1f);
-            Vector2 destin2d = destination * new Vector2(1f, -1f);
+            Vector2 origin2d = CoordinateSystem.ConvertTo(origin);
+            Vector2 destin2d = CoordinateSystem.ConvertTo(destination);
+
+            origin2d *= new Vector2(1f, -1f);
+            destin2d *= new Vector2(1f, -1f);
 
             float dist = Vector2.Distance(origin2d, destin2d);
             float angle = (float)Math.Atan2(destin2d.Y - origin2d.Y, destin2d.X - origin2d.X);
