@@ -348,7 +348,7 @@ namespace Tide.Core
             rect = graph.GetRectangleInParent(cache.canvas, i, scissor);
 
             if (i == focusedWidget) { return true; }
-            if (!scissor.Contains(InputComponent.MousePosition)) { return false; }
+            //if (!scissor.Contains(InputComponent.MousePosition)) { return false; }
             if (!rect.Contains(InputComponent.MousePosition)) { return false; }
 
             return true;
