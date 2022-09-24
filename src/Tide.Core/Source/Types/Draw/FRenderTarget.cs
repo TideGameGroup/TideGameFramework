@@ -17,6 +17,7 @@ namespace Tide.Core
         public FRenderTarget(RenderTargetConstructorArgs args)
         {
             TrySetDefault(args.graphicsDevice, out graphicsDevice);
+            Recreate();
         }
 
         public RenderTarget2D RenderTarget { get; private set; }

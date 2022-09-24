@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MonoGame.Framework.Content.Pipeline.Builder;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -26,6 +27,13 @@ namespace Tide.Core
         public T Find<T>()
         {
             return (T) systems.Find((item) => item is T);
+        }
+
+        // 
+        public void Replace(ISystem system)
+        {
+            systems.RemoveAll((item) => item.GetType() == system.GetType());
+            systems.Add(system);
         }
     }
 }

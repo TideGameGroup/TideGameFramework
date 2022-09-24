@@ -34,6 +34,8 @@ namespace Tide.Core
 
         private void DrawPass(FDrawPass drawPass, TComponentGraph graph, GameTime gameTime)
         {
+            graphicsDevice.SetRenderTarget(drawPass.renderTarget);
+
             if (drawPass.bClearRenderTarget)
             {
                 graphicsDevice.Clear(drawPass.clearColor);
@@ -45,17 +47,31 @@ namespace Tide.Core
                 matrix = drawPass.view.ViewProjectionMatrix;
             }
 
-            graphicsDevice.SetRenderTarget(drawPass.renderTarget);
-
             SpriteBatch.Begin(
                 drawPass.sortMode,
                 drawPass.blendState,
                 drawPass.samplerState,
                 null,
                 drawPass.rasterizerState,
-                null,
+                drawPass.effect,
                 matrix);
 
+            if (drawPass.bIsPostProcess)
+            {
+                DrawPostProcess(drawPass);
+            }
+            else
+            {
+                DrawComponents(drawPass, graph, gameTime);
+            }
+
+            drawPass.postPassDelegate?.Invoke(drawPass.view, SpriteBatch, gameTime);
+
+            SpriteBatch.End();
+        }
+
+        private void DrawComponents(FDrawPass drawPass, TComponentGraph graph, GameTime gameTime)
+        {
             foreach (UComponent component in graph)
             {
                 if (component is T drawable && component.IsVisible && component.bCanDraw)
@@ -64,18 +80,12 @@ namespace Tide.Core
                 }
                 component.bCanDraw = component.IsVisible;
             }
-
-            drawPass.postPassDelegate?.Invoke(drawPass.view, SpriteBatch, gameTime);
-
-            SpriteBatch.End();
         }
 
-        private void DrawToBackBuffer(RenderTarget2D renderTarget)
+        private void DrawPostProcess(FDrawPass drawPass)
         {
-            graphicsDevice.SetRenderTarget(null);
-            SpriteBatch.Begin(0, BlendState.Opaque, SamplerState.PointClamp);
             PresentationParameters parameters = graphicsDevice.PresentationParameters;
-            SpriteBatch.Draw(renderTarget,
+            SpriteBatch.Draw(drawPass.renderSource,
                 new Rectangle(
                     0,
                     0,
@@ -83,7 +93,6 @@ namespace Tide.Core
                     parameters.BackBufferHeight
                     ),
                 Color.White);
-            SpriteBatch.End();
         }
 
         public void SetRenderTarget(RenderTarget2D renderTarget)

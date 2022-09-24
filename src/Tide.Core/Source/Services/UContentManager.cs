@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -38,6 +39,7 @@ namespace Tide.Core
 
             defaults.Add(typeof(Texture2D), GenerateNullTexture(Color.DeepPink));
             defaults.Add(typeof(SpriteFont), Content.Load<SpriteFont>("Arial"));
+            defaults.Add(typeof(SoundEffect), Content.Load<SoundEffect>("Peep"));
         }
 
         public ContentManager Content { get; private set; }

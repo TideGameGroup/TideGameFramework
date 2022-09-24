@@ -64,11 +64,21 @@ namespace Tide.Core
             return MathF.Min(A.x - B.x, A.y - B.y);
         }
 
+        public bool IsMin()
+        {
+            return (x == int.MinValue && y == int.MinValue);
+        }
+
         public static FIntVector2 Lerp(FIntVector2 A, FIntVector2 B, float a)
         {
             Vector2 AV = A.AsVector2();
             Vector2 BV = B.AsVector2();
             return new FIntVector2(Vector2.Lerp(AV, BV, a));
+        }
+
+        public static FIntVector2 MinVector()
+        {
+            return new FIntVector2(int.MinValue, int.MinValue);
         }
 
         public static FIntVector2 operator + (FIntVector2 A, FIntVector2 B)
