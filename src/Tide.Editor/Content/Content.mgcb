@@ -33,6 +33,12 @@
 /processor:PassThroughProcessor
 /build:mappings.xml
 
+#begin peep.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:peep.wav
+
 #begin Textures/BaseUI.png
 /importer:TextureImporter
 /processor:TextureProcessor
