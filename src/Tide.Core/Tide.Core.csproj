@@ -18,4 +18,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Tide.XMLSchema\Tide.XMLSchema.csproj" />
   </ItemGroup>
+  <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
+    <Message Text="Restoring dotnet tools" Importance="High" />
+    <Exec Command="dotnet tool restore" />
+  </Target>
 </Project>

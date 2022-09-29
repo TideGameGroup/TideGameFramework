@@ -64,7 +64,7 @@ namespace Tide.Core
             Vector3 _position = Vector3.Zero;
 
             _position.X = position.X - Scale / 2;
-            _position.Y = position.Y - (Scale / (viewport.Width / viewport.Height)) / 2;
+            _position.Y = -position.Y - (Scale / (viewport.Width / viewport.Height)) / 2;
 
             ViewMatrix = Matrix.CreateTranslation(_position);
             ViewMatrix = Matrix.Invert(ViewMatrix);
