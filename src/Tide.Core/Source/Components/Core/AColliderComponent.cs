@@ -147,12 +147,19 @@ namespace Tide.Core
         internal static bool CircleCircleCollision(FCircle a, Vector2 aP, FCircle b, Vector2 bP, out Vector2 normal)
         {
             float fRadiiSum = a.radius + b.radius;
+            float fRadiiSumsqr = fRadiiSum * fRadiiSum;
             Vector2 dir = aP - bP;
-            float fDist = MathF.Sqrt(Vector2.Dot(dir, dir));
+            float dot = Vector2.Dot(dir, dir);
+            bool bCollides = dot < fRadiiSumsqr;
 
-            normal = -Vector2.Normalize(dir) * (fDist - fRadiiSum);
+            if (bCollides)
+            {
+                normal = -Vector2.Normalize(dir) * (MathF.Sqrt(dot) - fRadiiSum);
+                return true;
+            }
 
-            return fDist < fRadiiSum;
+            normal = Vector2.Zero;
+            return false;
         }
 
         internal static bool ConeConeCollision(FCone a, Vector2 aP, float aA, FCone b, Vector2 bP, float bA)
@@ -215,36 +222,29 @@ namespace Tide.Core
 
         internal static bool StaticNarrowPhase(AColliderComponent iCollider, int i, AColliderComponent jCollider, int j, out Vector2 normal)
         {
-            bool collision = false;
-
-            normal = Vector2.Zero;
-
-            // collider i
             switch (iCollider.colliderTypes[i])
             {
                 case ECollider2DType.EAABB:
-
                     // collider j
                     switch (jCollider.colliderTypes[j])
                     {
                         case ECollider2DType.EAABB:
-                            collision = AABBAABBCollision(
+                            return AABBAABBCollision(
                                 iCollider.shapes[i].aabb,
                                 iCollider.transforms.worldPositions[i],
                                 jCollider.shapes[j].aabb,
                                 jCollider.transforms.worldPositions[j],
                                 out normal);
-                            break;
 
                         case ECollider2DType.ECIRCLE:
-                            collision = AABBCircleCollision(
+                            bool collision = AABBCircleCollision(
                                 iCollider.shapes[i].aabb,
                                 iCollider.transforms.worldPositions[i],
                                 jCollider.shapes[j].circle,
                                 jCollider.transforms.worldPositions[j],
                                 out normal);
                             normal = -normal;
-                            break;
+                            return collision;
 
                         case ECollider2DType.ECONE:
                             break;
@@ -260,22 +260,20 @@ namespace Tide.Core
                     switch (jCollider.colliderTypes[j])
                     {
                         case ECollider2DType.EAABB:
-                            collision = AABBCircleCollision(
+                            return AABBCircleCollision(
                                 jCollider.shapes[j].aabb,
                                 jCollider.transforms.worldPositions[j],
                                 iCollider.shapes[i].circle,
                                 iCollider.transforms.worldPositions[i],
                                 out normal);
-                            break;
 
                         case ECollider2DType.ECIRCLE:
-                            collision = CircleCircleCollision(
+                            return CircleCircleCollision(
                                 iCollider.shapes[i].circle,
                                 iCollider.transforms.worldPositions[i],
                                 jCollider.shapes[j].circle,
                                 jCollider.transforms.worldPositions[j],
                                 out normal);
-                            break;
 
                         case ECollider2DType.ECONE:
                             break;
@@ -322,8 +320,8 @@ namespace Tide.Core
                     }
                     break;
             }
-
-            return collision;
+            normal = Vector2.Zero;
+            return false;
         }
 
         public static void StaticTickImplementation(TComponentGraph ComponentGraph, GameTime gameTime)
