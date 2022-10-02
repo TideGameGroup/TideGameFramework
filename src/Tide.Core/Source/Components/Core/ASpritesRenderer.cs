@@ -171,9 +171,9 @@ namespace Tide.Core
                     colors[i],
                     bViewAlignedSprites ? 0 : transforms.angles[i],
                     centre.Center.ToVector2(),
-                    Math.Abs(scales[i]),
+                    Math.Abs(scales[i] * transforms.scales[i]),
                     scales[i] >= 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally,
-                    0f //(transforms.positions[i].Y + ymod) * yalpha
+                    transforms.layers[i]
                 );
             }
         }

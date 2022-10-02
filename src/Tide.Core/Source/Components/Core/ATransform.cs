@@ -13,6 +13,7 @@ namespace Tide.Core
         internal readonly List<float> angles = new List<float>();
         internal readonly List<Vector2> positions = new List<Vector2>();
         internal readonly List<float> scales = new List<float>();
+        internal readonly List<float> layers = new List<float>();
         public static ICoordinateSystem defaultCoordinateSystem = new FCartesianCoordinates();
 
         public ATransform(ICoordinateSystem coordinateSystem = null)
@@ -31,11 +32,13 @@ namespace Tide.Core
             get { return Matrix.CreateScale(worldScales[i]) * Matrix.CreateRotationZ(worldAngles[i]) * Matrix.CreateTranslation(FStaticVectorFunctions.ToVector3(worldPositions[i])); }
         }
 
-        public void Add(float angle, Vector2 position, float scale = 1.0f)
+        public void Add(float angle, Vector2 position, float scale = 1.0f, float layer = 0.0f)
         {
             angles.Add(CoordinateSystem.ConvertAngleTo(angle));
             positions.Add(CoordinateSystem.ConvertTo(position));
             scales.Add(CoordinateSystem.ConvertAngleTo(scale));
+
+            layers.Add(layer);
 
             worldAngles.Add(angle);
             worldPositions.Add(position);
@@ -71,6 +74,11 @@ namespace Tide.Core
         {
             worldAngles[i] = angle;
             angles[i] = CoordinateSystem.ConvertAngleTo(angle);
+        }
+
+        public void SetLayer(int i, float layer)
+        {
+            layers[i] = layer;
         }
 
         public void SetPosition(int i, Vector2 position)
