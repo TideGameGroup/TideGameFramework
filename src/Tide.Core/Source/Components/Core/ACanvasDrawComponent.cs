@@ -338,6 +338,17 @@ namespace Tide.Core
             spriteBatch.GraphicsDevice.ScissorRectangle = scissor;
         }
 
+        public Color GetHighlightColor(string widget)
+        {
+            int i = graph.widgetNameIndexMap[widget];
+            return GetHighlightColor(i);
+        }
+
+        public Color GetHighlightColor(int i)
+        {
+            return cache.canvas.highlightColors[i];
+        }
+
         public Color GetWidgetColor(string widget)
         {
             int i = graph.widgetNameIndexMap[widget];

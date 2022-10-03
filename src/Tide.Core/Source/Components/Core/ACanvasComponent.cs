@@ -90,10 +90,10 @@ namespace Tide.Core
 
                 OnUnregisterComponent += () =>
                 {
-                    InputComponent.UnbindAction(handle1);
-                    InputComponent.UnbindAction(handle2);
-                    InputComponent.UnbindAction(handle3);
-                    InputComponent.UnbindAction(handle4);
+                    //InputComponent.UnbindAction(handle1);
+                    //InputComponent.UnbindAction(handle2);
+                    //InputComponent.UnbindAction(handle3);
+                    //InputComponent.UnbindAction(handle4);
                 };
             }
 
