@@ -22,8 +22,8 @@ namespace Tide.Core
 
         public TAudio(FAudioConstructorArgs args)
         {
-            StaticValidation.TrySetDefault(args.content, out content);
-            StaticValidation.TrySetDefault(args.settings, out settings);
+            FStaticValidation.TrySetDefault(args.content, out content);
+            FStaticValidation.TrySetDefault(args.settings, out settings);
         }
 
         private SoundEffect Get(string sound)

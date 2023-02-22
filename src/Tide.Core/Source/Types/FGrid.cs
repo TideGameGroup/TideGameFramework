@@ -23,20 +23,12 @@ namespace Tide.Core
 
         public T GetAt(FIntVector2 coord)
         {
-            //if (IsValidIndex(coord))
-           // {
-                return data[FStaticGridFunctions.Get1DIndex(coord, Width)];
-           //}
-            //return default;
+            return GetAt(coord.x, coord.y);
         }
 
         public T GetAt(int x, int y)
         {
-            if (IsValidIndex(x, y))
-            {
-                return data[FStaticGridFunctions.Get1DIndex(x, y, Width)];
-            }
-            return default;
+            return GetAt(FStaticGridFunctions.Get1DIndex(x, y, Width));
         }
 
         public T GetAt(int i)

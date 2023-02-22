@@ -22,8 +22,8 @@ namespace Tide.Core
 
         public UContentManager(UContentManagerConstructorArgs args)
         {
-            StaticValidation.NullCheck(args.contentManager);
-            StaticValidation.NullCheck(args.graphicsDevice);
+            FStaticValidation.NullCheck(args.contentManager);
+            FStaticValidation.NullCheck(args.graphicsDevice);
 
             Content = args.contentManager;
             GraphicsDevice = args.graphicsDevice;

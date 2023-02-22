@@ -25,9 +25,9 @@ namespace Tide.Core
 
         public TMono(TMonoConstructorArgs args)
         {
-            StaticValidation.TrySetDefault(args.componentGraph, out componentGraph);
-            StaticValidation.TrySetDefault(args.systemGraph, out systemGraph);
-            StaticValidation.TrySetDefault(args.game, out game);
+            FStaticValidation.TrySetDefault(args.componentGraph, out componentGraph);
+            FStaticValidation.TrySetDefault(args.systemGraph, out systemGraph);
+            FStaticValidation.TrySetDefault(args.game, out game);
 
             Content.RootDirectory = "Content";
 

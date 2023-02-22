@@ -42,7 +42,7 @@ namespace Tide.Core
 
         public TInput(FInputConstructorArgs args)
         {
-            StaticValidation.TrySetDefault(args.statistics, out statistics);
+            FStaticValidation.TrySetDefault(args.statistics, out statistics);
 
             priorMouseState = Mouse.GetState();
             priorKeyboardState = Keyboard.GetState();

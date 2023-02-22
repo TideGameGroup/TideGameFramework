@@ -7,6 +7,7 @@ namespace Tide.Core
         public bool bAllowUserResizing;
         public bool bUseFixedTimestep;
         public bool bUseHardwareCursor;
+        public bool bUseVerticalSync;
     }
 
     public class TGame : IDisposable
@@ -52,7 +53,8 @@ namespace Tide.Core
             {
                 bAllowUserResizing = true,
                 bUseFixedTimestep = true,
-                bUseHardwareCursor = true
+                bUseHardwareCursor = true,
+                bUseVerticalSync = true
             };
         }
 

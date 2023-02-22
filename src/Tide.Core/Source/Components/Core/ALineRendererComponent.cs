@@ -24,7 +24,7 @@ namespace Tide.Core
         {
             NullCheck(args.content);
             lineTexture = args.texture ?? args.content.GenerateNullTexture(Color.White);
-            CoordinateSystem = args.coordinateSystem ?? ATransform.defaultCoordinateSystem;
+            CoordinateSystem = args.coordinateSystem ?? ATransformComponent.defaultCoordinateSystem;
         }
 
         public int Count => points.Count;

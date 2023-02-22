@@ -16,8 +16,8 @@ namespace Tide.Core
 
         public AEntityComponent()
         {
-            Transforms = new ATransform();
-            SpriteRenderer = new ASpritesRenderer(Transforms);
+            Transforms = new ATransformComponent();
+            SpriteRenderer = new ASpritesRenderComponent(Transforms);
 
             AddChildComponent(Transforms);
             AddChildComponent(SpriteRenderer);
@@ -28,8 +28,8 @@ namespace Tide.Core
         public EntityDelegate OnAddEntity { get; set; }
         public EntityDelegate OnRemoveEntity { get; set; }
         public EntityUpdateDelegate OnUpdateEntity { get; set; }
-        public ASpritesRenderer SpriteRenderer { get; protected set; }
-        public ATransform Transforms { get; protected set; }
+        public ASpritesRenderComponent SpriteRenderer { get; protected set; }
+        public ATransformComponent Transforms { get; protected set; }
 
         public int Add(Vector2 position, string animation, float scale = 1f)
         {

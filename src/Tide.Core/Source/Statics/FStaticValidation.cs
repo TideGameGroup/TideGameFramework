@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Tide.Core
 {
-    public class StaticValidation
+    public class FStaticValidation
     {
         /// <summary>
         /// This function is syntactic sugar for checking passed values are non-null

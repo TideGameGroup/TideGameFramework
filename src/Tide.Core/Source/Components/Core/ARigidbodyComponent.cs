@@ -6,14 +6,14 @@ namespace Tide.Core
     public struct FRigidbody2DComponentContructorArgs
     {
         public AColliderComponent collider2DComponent;
-        public ATransform transforms;
+        public ATransformComponent transforms;
     }
 
     public class ARigidbodyComponent : UComponent, IPhysicsComponent
     {
         private readonly AColliderComponent collider2DComponent;
 
-        private readonly ATransform transforms;
+        private readonly ATransformComponent transforms;
         private List<Vector2> impulses = new List<Vector2>();
         private List<Vector2> accelerations = new List<Vector2>();
 

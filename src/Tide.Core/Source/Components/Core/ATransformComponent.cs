@@ -5,7 +5,8 @@ using Tide.XMLSchema;
 
 namespace Tide.Core
 {
-    public class ATransform : UComponent, ISerialisableComponent
+
+    public class ATransformComponent : UComponent, ISerialisableComponent
     {
         internal readonly List<float> worldAngles = new List<float>();
         internal readonly List<Vector2> worldPositions = new List<Vector2>();
@@ -16,7 +17,7 @@ namespace Tide.Core
         internal readonly List<float> layers = new List<float>();
         public static ICoordinateSystem defaultCoordinateSystem = new FCartesianCoordinates();
 
-        public ATransform(ICoordinateSystem coordinateSystem = null)
+        public ATransformComponent(ICoordinateSystem coordinateSystem = null)
         {
             CoordinateSystem = coordinateSystem ?? defaultCoordinateSystem;
         }

@@ -323,6 +323,20 @@ namespace Tide.Core
                     }
                     break;
 
+                case EWidgetType.DROPDOWN:
+                    DoHover(gameTime, frameHoveredWidgets, i);
+
+                    if (suffix == ".OnReleased")
+                    {
+                        focusedWidget = i;
+                        cache.canvas.texts[i] = "";
+                        OnWidgetFocused?.Invoke(i);
+
+                        // create a new canvas component for dropdown
+
+                    }
+                    break;
+
                 default:
                     break;
             }

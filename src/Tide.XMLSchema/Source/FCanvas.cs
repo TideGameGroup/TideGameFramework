@@ -31,7 +31,8 @@ namespace Tide.XMLSchema
         SLIDER,
         TICKBOX,
         SCROLLBAR,
-        TEXTFIELD
+        TEXTFIELD,
+        DROPDOWN,
     }
 
     public struct FCanvas : ISerialisedInstanceData

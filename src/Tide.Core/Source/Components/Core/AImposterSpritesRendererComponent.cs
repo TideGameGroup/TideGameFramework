@@ -8,11 +8,11 @@ namespace Tide.Core
     {
         private readonly int angleCount;
         private List<int> angleList;
-        private ATransform transforms;
+        private ATransformComponent transforms;
 
-        public AImposterSpritesRendererComponent(ATransform transforms, int angles)
+        public AImposterSpritesRendererComponent(ATransformComponent transforms, int angles)
         {
-            SpriteRenderer = new ASpritesRenderer(transforms);
+            SpriteRenderer = new ASpritesRenderComponent(transforms);
 
             AddChildComponent(SpriteRenderer);
 
@@ -23,7 +23,7 @@ namespace Tide.Core
         }
 
         public int Count => transforms.Count;
-        public ASpritesRenderer SpriteRenderer { get; private set; }
+        public ASpritesRenderComponent SpriteRenderer { get; private set; }
 
         public int AddSprite(string defaultAnimation = "")
         {

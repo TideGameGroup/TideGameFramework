@@ -24,11 +24,11 @@ namespace Tide.Core
 
         public TWindow(FWindowConstructorArgs args)
         {
-            StaticValidation.NullCheck(args.settings);
-            StaticValidation.TrySetDefault(args.graphicsDeviceManager, out graphicsDeviceManager);
-            StaticValidation.TrySetDefault(args.window, out window);
-            StaticValidation.TrySetDefault(args.width, out screenWidth);
-            StaticValidation.TrySetDefault(args.height, out screenHeight);
+            FStaticValidation.NullCheck(args.settings);
+            FStaticValidation.TrySetDefault(args.graphicsDeviceManager, out graphicsDeviceManager);
+            FStaticValidation.TrySetDefault(args.window, out window);
+            FStaticValidation.TrySetDefault(args.width, out screenWidth);
+            FStaticValidation.TrySetDefault(args.height, out screenHeight);
 
             UserWidth = screenWidth;
             UserHeight = screenHeight;

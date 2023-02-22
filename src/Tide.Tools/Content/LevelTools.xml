@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XnaContent xmlns:XMLSchema="Tide.XMLSchema" XnaVersion="0.1">
+  <Asset Type="XMLSchema:FCanvas">
+    <alignments>
+      <Item>L</Item>
+    </alignments>
+    <anchors>
+      <Item>W</Item>
+    </anchors>
+    <clickSounds>
+      <Item></Item>
+    </clickSounds>
+    <colors>FFFFFFFF</colors>
+    <fonts>
+      <Item>Arial</Item>
+    </fonts>
+    <highlightColors>FFFFFFFF</highlightColors>
+    <hoverSounds>
+      <Item></Item>
+    </hoverSounds>
+    <ID>new_canvas</ID>
+    <IDs>
+      <Item>Export</Item>
+    </IDs>
+    <parents>-1</parents>
+    <rectangles>0 0 32 32</rectangles>
+    <root>0 0 0 0</root>
+    <sources>16 0 16 16</sources>
+    <texts>
+      <Item></Item>
+    </texts>
+    <textures>
+      <Item>Icons</Item>
+    </textures>
+    <tooltips>
+      <Item></Item>
+    </tooltips>
+    <tooltiptexts>
+      <Item></Item>
+    </tooltiptexts>
+    <visibilities>true</visibilities>
+    <widgetTypes>
+      <Item>BUTTON</Item>
+    </widgetTypes>
+  </Asset>
+</XnaContent>

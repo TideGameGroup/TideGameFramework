@@ -7,13 +7,13 @@ namespace Tide.Core
     public struct FKinematic2DComponentContructorArgs
     {
         public AColliderComponent collider2DComponent;
-        public ATransform transforms;
+        public ATransformComponent transforms;
     }
 
     public class AKinematicComponent : UComponent, IPhysicsComponent, ISerialisableComponent
     {
         private readonly AColliderComponent collider2DComponent;
-        private readonly ATransform transforms;
+        private readonly ATransformComponent transforms;
 
         private List<bool> bIsFixed = new List<bool>();
         private List<Vector2> impulses = new List<Vector2>();

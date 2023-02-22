@@ -6,7 +6,7 @@ using Tide.XMLSchema;
 
 namespace Tide.Core
 {
-    public class ASpritesRenderer : UComponent, IDrawableComponent, ISerialisableComponent
+    public class ASpritesRenderComponent : UComponent, IDrawableComponent, ISerialisableComponent
     {
         private readonly Dictionary<string, FAnimationData> animations = new Dictionary<string, FAnimationData>();
         private readonly List<bool> bIsFinished = new List<bool>();
@@ -22,7 +22,7 @@ namespace Tide.Core
         private readonly List<Rectangle> sources = new List<Rectangle>();
         private readonly List<int> startFrames = new List<int>();
         private readonly List<string> texIDs = new List<string>();
-        private readonly ATransform transforms;
+        private readonly ATransformComponent transforms;
         private readonly List<int> widths = new List<int>();
 
         // flags
@@ -30,7 +30,7 @@ namespace Tide.Core
 
         public float globalScale = 1.0f;
 
-        public ASpritesRenderer(ATransform transforms)
+        public ASpritesRenderComponent(ATransformComponent transforms)
         {
             this.transforms = transforms;
         }
@@ -59,7 +59,7 @@ namespace Tide.Core
             elapsedTimes.Add(0);
 
             // play animation on entity if animation is provided
-            if (defaultAnimation != "")
+            if (defaultAnimation != null && defaultAnimation != "")
             {
                 Play(index, defaultAnimation, 0, false);
             }

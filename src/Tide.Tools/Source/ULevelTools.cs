@@ -19,7 +19,7 @@ namespace Tide.Tools
                 new FCanvasComponentConstructorArgs
                 {
                     audio = null,
-                    canvas = GenerateFCanvas(),
+                    canvas = content.Load<FCanvas>("LevelTools"),
                     content = content,
                     focus = EFocus.Console,
                     input = input,

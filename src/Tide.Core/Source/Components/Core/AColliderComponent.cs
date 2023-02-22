@@ -16,7 +16,7 @@ namespace Tide.Core
         private readonly List<uint> layers = new List<uint>();
         private readonly List<uint> masks = new List<uint>();
         private readonly List<ShapeUnion> shapes = new List<ShapeUnion>();
-        private readonly ATransform transforms;
+        private readonly ATransformComponent transforms;
         private readonly List<CollisionCallback> collisionCallbacks = new List<CollisionCallback>();
         protected readonly List<bool> bEnabled = new List<bool>();
         public uint layer = 0;
@@ -24,7 +24,7 @@ namespace Tide.Core
         public AKinematicComponent kinematic2DComponent;
         public ARigidbodyComponent rigidbody2DComponent;
 
-        public AColliderComponent(ATransform transforms)
+        public AColliderComponent(ATransformComponent transforms)
         {
             this.transforms = transforms;
             AllowInternalCollisions = false;

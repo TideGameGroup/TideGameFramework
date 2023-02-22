@@ -21,7 +21,7 @@ namespace Tide.Core
 
         public TDraw(TDrawConstructorArgs args)
         {
-            StaticValidation.TrySetDefault(args.graphicsDevice, out graphicsDevice);
+            FStaticValidation.TrySetDefault(args.graphicsDevice, out graphicsDevice);
             SpriteBatch = new SpriteBatch(args.graphicsDevice);
 
             if (args.drawPasses != null)
@@ -29,6 +29,7 @@ namespace Tide.Core
                 drawPasses.AddRange(args.drawPasses);
             }
         }
+
 
         public SpriteBatch SpriteBatch { get; private set; }
 

@@ -13,11 +13,10 @@ namespace Tide.Core
     public class UComponent
     {
         private readonly List<UComponent> children = new List<UComponent>();
-        internal bool bIsActive = true;
-        internal bool bCanUpdate = true;
-        internal bool bIsVisible = true;
         internal bool bCanDraw = true;
-
+        internal bool bCanUpdate = true;
+        internal bool bIsActive = true;
+        internal bool bIsVisible = true;
         public readonly List<FDeferredRegistrationInputs> deferredRegistrations = new List<FDeferredRegistrationInputs>();
         public readonly List<FDeferredRegistrationInputs> deferredUnregistrations = new List<FDeferredRegistrationInputs>();
         public List<UComponent> Children => children;
@@ -77,7 +76,7 @@ namespace Tide.Core
 
                     foreach (var child in children)
                     {
-                        child.OnSetVisibility?.Invoke(bIsActive);
+                        child.OnSetVisibility?.Invoke(bIsVisible);
                     }
                 }
             }
