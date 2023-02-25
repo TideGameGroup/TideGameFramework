@@ -34,7 +34,7 @@ namespace Tide.Core
         public int Add(Vector2 position, string animation, float scale = 1f)
         {
             Transforms.Add(0, position, scale);
-            SpriteRenderer.Add(animation, scale);
+            SpriteRenderer.Add(animation, 1.0f);
             timestamps.Add(gameTime != null ? gameTime.TotalGameTime.TotalSeconds : 0.0f);
 
             OnAddEntity?.Invoke(Transforms.Count - 1);
