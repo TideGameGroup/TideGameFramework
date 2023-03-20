@@ -2,7 +2,11 @@
 
 # TideGameFramework
 
-Tide is a Data-oriented, 2D game framework built atop Monogame.
+### This project is in an alpha state and is likely to change. 
+
+Tide is a Data-oriented, 2D game framework built atop Monogame. It was built for game jams and examples of the games it has been used for can be found on itch.io:
+
+https://martinkearl.itch.io/
 
 # Building
 
