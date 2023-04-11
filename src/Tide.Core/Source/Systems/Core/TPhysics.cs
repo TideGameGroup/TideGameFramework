@@ -3,7 +3,7 @@ using System;
 
 namespace Tide.Core
 {
-    public struct TPhysicsConstructorArgs
+    public struct FPhysicsConstructorArgs
     {
         public int numPhysicsSubsteps;
     }
@@ -12,7 +12,7 @@ namespace Tide.Core
     {
         private readonly int numPhysicsSubsteps;
 
-        public TPhysics(TPhysicsConstructorArgs args)
+        public TPhysics(FPhysicsConstructorArgs args)
         {
             numPhysicsSubsteps = args.numPhysicsSubsteps;
         }
