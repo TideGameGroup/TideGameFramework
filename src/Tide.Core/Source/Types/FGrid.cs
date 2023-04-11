@@ -40,6 +40,18 @@ namespace Tide.Core
             return default;
         }
 
+        public void Resize(int width, int height)
+        {
+            Height = height;
+            Width = width;
+
+            data.Clear();
+            for (int i = 0; i < Height * Width; i++)
+            {
+                data.Add(default);
+            }
+        }
+
         public void SetAt(FIntVector2 coord, T val)
         {
             data[FStaticGridFunctions.Get1DIndex(coord, Width)] = val;
