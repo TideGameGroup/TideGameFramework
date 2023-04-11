@@ -40,8 +40,14 @@ namespace Tide.Tools
                     if (node != null)
                     {
                         var staticProperty = data.GetType().GetProperty("ExpectedVersion", BindingFlags.Public | BindingFlags.Static);
-                        var value = staticProperty.GetValue(data, null);
-                        node.SetAttributeValue("XnaVersion", value);
+                        if (staticProperty != null)
+                        {
+                            node.SetAttributeValue("XnaVersion", staticProperty.GetValue(data, null));
+                        }
+                        else
+                        {
+                            node.SetAttributeValue("XnaVersion", 0.0f);
+                        }
                     }
                     doc.Save(path);
                     return;
