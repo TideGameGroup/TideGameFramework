@@ -265,6 +265,7 @@ namespace Tide.Core
                     break;
 
                 case EWidgetType.PANEL:
+                    DoHover(gameTime, frameHoveredWidgets, i);
                     break;
 
                 case EWidgetType.BUTTON:

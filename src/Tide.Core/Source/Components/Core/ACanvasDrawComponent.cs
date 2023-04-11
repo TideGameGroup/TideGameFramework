@@ -309,29 +309,32 @@ namespace Tide.Core
             DrawCanvas(cache.canvas, spriteBatch, gameTime);
 
             // draw tooltips
-            foreach (int i in component.hoveredWidgets.Keys)
+            if (component.IsActive)
             {
-                if (gameTime.TotalGameTime.TotalSeconds - component.hoveredWidgets[i] < 0.5)
+                foreach (int i in component.hoveredWidgets.Keys)
                 {
-                    continue;
-                }
-
-                if (input != null && cache.tooltipCache.ContainsKey(cache.canvas.tooltips[i]))
-                {
-                    FCanvas canvasData = cache.tooltipCache[cache.canvas.tooltips[i]];
-                    canvasData.root.X = (int)input.MousePosition.X;
-                    canvasData.root.Y = (int)input.MousePosition.Y;
-
-                    for (int t = 0; t < canvasData.IDs.Length; t++)
+                    if (gameTime.TotalGameTime.TotalSeconds - component.hoveredWidgets[i] < 0.5)
                     {
-                        if (canvasData.IDs[t] == "tooltip_text")
-                        {
-                            canvasData.texts[t] = cache.canvas.tooltiptexts[i];
-                            cache.tooltipCache[cache.canvas.tooltips[i]] = canvasData;
-                        }
+                        continue;
                     }
 
-                    DrawCanvas(canvasData, spriteBatch, gameTime);
+                    if (input != null && cache.tooltipCache.ContainsKey(cache.canvas.tooltips[i]))
+                    {
+                        FCanvas canvasData = cache.tooltipCache[cache.canvas.tooltips[i]];
+                        canvasData.root.X = (int)input.MousePosition.X;
+                        canvasData.root.Y = -(view2D.viewport.Height - (int)input.MousePosition.Y);
+
+                        for (int t = 0; t < canvasData.IDs.Length; t++)
+                        {
+                            if (canvasData.IDs[t] == "tooltip_text")
+                            {
+                                canvasData.texts[t] = cache.canvas.tooltiptexts[i];
+                                cache.tooltipCache[cache.canvas.tooltips[i]] = canvasData;
+                            }
+                        }
+
+                        DrawCanvas(canvasData, spriteBatch, gameTime);
+                    }
                 }
             }
 

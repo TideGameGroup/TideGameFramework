@@ -115,9 +115,9 @@ namespace Tide.Core
             serialisedSet.Add(ID,
                 new FTransform
                 {
-                    positions = positions.ToArray(),
-                    angles = angles.ToArray(),
-                    scales = scales.ToArray()
+                    positions = worldPositions.ToArray(),
+                    angles = worldAngles.ToArray(),
+                    scales = worldScales.ToArray()
                 }
             );
 

@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
+using System.Xml.Linq;
 using Tide.XMLSchema;
 
 namespace Tide.Core
@@ -50,6 +52,9 @@ namespace Tide.Core
 
             CinematicCanvasRenderer = new ACanvasDrawComponent(canvasRenderArgs);
 
+            AddChildComponent(CinematicCanvas);
+            AddChildComponent(CinematicCanvasRenderer);
+
             canvases.Add("self", CinematicCanvas);
 
             currentPage = page;
@@ -59,6 +64,8 @@ namespace Tide.Core
             {
                 CinematicCanvas.IsActive = false;
                 CinematicCanvas.IsVisible = false;
+                CinematicCanvasRenderer.IsActive = false;
+                CinematicCanvasRenderer.IsVisible = false;
             }
         }
 
@@ -186,6 +193,14 @@ namespace Tide.Core
             functions.TryAdd(name, func);
         }
 
+        public void RunFunctionByName(string name, GameTime gt)
+        {
+            if (name != "")
+            {
+                functions[name].Invoke(gt);
+            }
+        }
+
         public void UnregisterCanvas(string name)
         {
             canvases.Remove(name);
@@ -199,8 +214,6 @@ namespace Tide.Core
             {
                 IsActive = false;
                 IsVisible = false;
-                RemoveChildComponent(CinematicCanvas);
-                RemoveChildComponent(CinematicCanvasRenderer);
                 return;
             }
 
@@ -226,6 +239,8 @@ namespace Tide.Core
 
             CinematicCanvas.IsActive = true;
             CinematicCanvas.IsVisible = true;
+            CinematicCanvasRenderer.IsActive = true;
+            CinematicCanvasRenderer.IsVisible = true;
             currentPage = 0;
             deferredPage = 0;
             BindCinematic(currentPage, 0.0);
@@ -253,15 +268,11 @@ namespace Tide.Core
             {
                 currentPage = 0;
                 deferredPage = 0;
-                AddChildComponent(CinematicCanvas);
-                AddChildComponent(CinematicCanvasRenderer);
                 BindCinematic(currentPage, 0.0);
             }
             else
             {
                 Load(content, serialisedScriptPath);
-                AddChildComponent(CinematicCanvas);
-                AddChildComponent(CinematicCanvasRenderer);
                 currentCinematic = serialisedScriptPath;
             }
         }
@@ -298,16 +309,11 @@ namespace Tide.Core
                         CinematicCanvas.SetWidgetText("text", texts[currentPage]);
                     }
                 }
-                else
-                {
-                    RemoveChildComponent(CinematicCanvas);
-                    //currentPage = -1;
-                }
             }
 
             if (currentFunction != "")
             {
-                functions[currentFunction].Invoke(gameTime);
+                RunFunctionByName(currentFunction, gameTime);
             }
         }
 
